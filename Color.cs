@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
 
-namespace TKGUI
+namespace OpenTKGUI
 {
     /// <summary>
     /// Represents a color including alpha. Contains methods for color manipulation.

@@ -5,7 +5,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace TKGUI
+namespace OpenTKGUI
 {
     /// <summary>
     /// A solid-color control that may never receive input or focus.
@@ -37,7 +37,7 @@ namespace TKGUI
             }
         }
 
-        public override void Render()
+        public override void Render(GUIRenderContext Context)
         {
             Render(this.Color, this.Size);   
         }
@@ -45,7 +45,7 @@ namespace TKGUI
         /// <summary>
         /// Renders a solid-colored quad with the given size in pixels.
         /// </summary>
-        public static void Render(Color Color, Vector2d Size)
+        public static void Render(Color Color, Point Size)
         {
             GL.Color4(Color);
             GL.Begin(BeginMode.Quads);

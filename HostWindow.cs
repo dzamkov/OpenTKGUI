@@ -5,7 +5,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace TKGUI
+namespace OpenTKGUI
 {
     /// <summary>
     /// A window hosting a TKGUI Panel.
@@ -25,7 +25,18 @@ namespace TKGUI
         /// </summary>
         public static void Main(string[] Args)
         {
-            new HostWindow(new Blank(Color.RGB(1.0, 0.0, 0.0)), "Test").Run();
+            ManualContainer mc = new ManualContainer();
+            mc.AddChild(null, new Blank(Color.RGB(1.0, 0.0, 0.0)), new Rectangle(0.0, 0.0, 5.0, 5.0));
+            mc.AddChild(null, new Blank(Color.RGB(0.0, 1.0, 0.0)), new Rectangle(60.0, 60.0, 40.0, 40.0));
+            mc.AddChild(null, new Blank(Color.RGB(0.0, 0.0, 1.0)), new Rectangle(100.0, 100.0, 40.0, 40.0));
+
+            ManualContainer mcc = new ManualContainer();
+            mcc.AddChild(null, new Blank(Color.RGB(1.0, 0.0, 0.0)), new Rectangle(0.0, 0.0, 100.0, 100.0));
+            mcc.AddChild(null, new Blank(Color.RGB(1.0, 1.0, 0.0)), new Rectangle(100.0, 100.0, 100.0, 100.0));
+
+            mc.AddChild(null, mcc, new Rectangle(300.0, 300.0, 170.0, 170.0));
+
+            new HostWindow(mc, "Test").Run();
         }
 #endif
 
@@ -38,9 +49,20 @@ namespace TKGUI
             GL.Translate(-0.5, -0.5, 0.0);
             GL.Scale(1.0 / (double)this.Width, 1.0 / (double)this.Height, 1.0);
 
-            this._Control.Render();
+            this._Control.Render(new GUIRenderContext(this.ViewSize));
 
             this.SwapBuffers();
+        }
+
+        /// <summary>
+        /// Gets the size of the area rendered on this window.
+        /// </summary>
+        public Point ViewSize
+        {
+            get
+            {
+                return new Point((double)this.Width, (double)this.Height);
+            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -48,7 +70,7 @@ namespace TKGUI
             if (this._Control != null)
             {
                 GL.Viewport(0, 0, this.Width, this.Height);
-                this._Control.Resize(new Vector2d((double)this.Width, (double)this.Height), null);
+                this._Control.Resize(null, this.ViewSize);
             }
         }
 

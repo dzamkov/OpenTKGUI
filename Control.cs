@@ -5,14 +5,140 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace TKGUI
+namespace OpenTKGUI
 {
     /// <summary>
-    /// Context given to a GLPanel when an event occurs.
+    /// Context given to a control when an event occurs. This allows the control to interact with the gui system as a whole.
     /// </summary>
-    public interface IGLGUIContext
+    public class GUIContext
     {
 
+    }
+    /// <summary>
+    /// Context given to a control for render that prevents controls from interfering with each other by setting GL states directly.
+    /// </summary>
+    public class GUIRenderContext
+    {
+        public GUIRenderContext(Point ViewSize)
+        {
+            this._Effects = new Stack<_Effect>();
+            this._ViewSize = ViewSize;
+        }
+
+        /// <summary>
+        /// Pushes an effect on the stack that will cause all rendering not the specified region defined by a rectangle to be
+        /// ignored. The rectangle is in the current coordinate space of the context.
+        /// </summary>
+        public void PushClip(Rectangle Clip)
+        {
+            if (this._TopTranslate != null)
+            {
+                Clip.Location += this._TopTranslate.Offset;
+            }
+            if (this._TopClip == null)
+            {
+                GL.Enable(EnableCap.ScissorTest);
+            }
+            else
+            {
+                Clip = Rectangle.Intersection(Clip, this._TopClip.Rectangle);
+            }
+            _ClipEffect ce = new _ClipEffect()
+            {
+                Previous = this._TopClip,
+                Rectangle = Clip
+            };
+            ce.Apply(this._ViewSize.Y);
+            this._Effects.Push(this._TopClip = ce);
+        }
+
+        /// <summary>
+        /// Pushes an effect that translates the coordinate space by the specified amount.
+        /// </summary>
+        public void PushTranslate(Point Offset)
+        {
+            GL.Translate(Offset.X, Offset.Y, 0.0);
+            if (this._TopTranslate != null)
+            {
+                Offset += this._TopTranslate.Offset;
+            }
+            _TranslateEffect te = new _TranslateEffect()
+            {
+                Offset = Offset,
+                Previous = this._TopTranslate
+            };
+            this._Effects.Push(this._TopTranslate = te);
+        }
+
+        /// <summary>
+        /// Undoes the most recent command/effect given to the context.
+        /// </summary>
+        public void Pop()
+        {
+            _Effect e = this._Effects.Pop();
+
+            // Remove clip effect
+            _ClipEffect ce = e as _ClipEffect;
+            if (ce != null)
+            {
+                this._TopClip = ce.Previous;
+                if (this._TopClip == null)
+                {
+                    GL.Disable(EnableCap.ScissorTest);
+                }
+                else
+                {
+                    this._TopClip.Apply(this._ViewSize.Y);
+                }
+            }
+
+            // Remove translate effect
+            _TranslateEffect te = e as _TranslateEffect;
+            if (te != null)
+            {
+                this._TopTranslate = te.Previous;
+                if (this._TopTranslate != null)
+                {
+                    Point noffset = this._TopTranslate.Offset - te.Offset;
+                    GL.Translate(noffset.X, noffset.Y, 0.0);
+                }
+                else
+                {
+                    GL.Translate(-te.Offset.X, -te.Offset.Y, 0.0);
+                }
+            }
+        }
+
+        private class _Effect
+        {
+
+        }
+
+        private class _ClipEffect : _Effect
+        {
+            public Rectangle Rectangle;
+            public _ClipEffect Previous;
+
+            public void Apply(double ViewHeight)
+            {
+                GL.Scissor(
+                    (int)this.Rectangle.Location.X,
+                    (int)(ViewHeight - this.Rectangle.Location.Y - this.Rectangle.Size.Y),
+                    (int)this.Rectangle.Size.X,
+                    (int)this.Rectangle.Size.Y);
+            }
+        }
+
+        private class _TranslateEffect : _Effect
+        {
+            public Point Offset;
+            public _TranslateEffect Previous;
+        }
+
+        private Point _ViewSize;
+        private _TranslateEffect _TopTranslate;
+        private _ClipEffect _TopClip;
+        private Stack<_Effect> _Effects;
     }
 
     /// <summary>
@@ -23,7 +149,7 @@ namespace TKGUI
         /// <summary>
         /// Gets the size (in pixels) of this panel when rendered.
         /// </summary>
-        public Vector2d Size
+        public Point Size
         {
             get
             {
@@ -32,11 +158,10 @@ namespace TKGUI
         }
 
         /// <summary>
-        /// Renders the panel to the current GL context. The coordinate space for the panel
-        /// should already be set up (with (0, 0) at the upperleft corner and (Size.X, Size.Y) at the
-        /// bottomright corner).
+        /// Renders the control with the given context.
         /// </summary>
-        public virtual void Render()
+        /// <remarks>Rendering, when the given context is current, should be done from (0.0, 0.0) to (Size.X, Size.Y).</remarks>
+        public virtual void Render(GUIRenderContext Context)
         {
 
         }
@@ -44,7 +169,7 @@ namespace TKGUI
         /// <summary>
         /// Updates the state of the panel after the specified amount of time elapses.
         /// </summary>
-        public virtual void Update(double Time, IGLGUIContext Context)
+        public virtual void Update(GUIContext Context, double Time)
         {
 
         }
@@ -52,21 +177,21 @@ namespace TKGUI
         /// <summary>
         /// Resizes the control. Size must be specified in pixels.
         /// </summary>
-        public void Resize(Vector2d Size, IGLGUIContext Context)
+        public void Resize(GUIContext Context, Point Size)
         {
-            Vector2d oldsize = this._Size;
+            Point oldsize = this._Size;
             this._Size = Size;
-            this.OnResize(oldsize, Size, Context);
+            this.OnResize(Context, oldsize, Size);
         }
 
         /// <summary>
         /// Called when the size of the control is forcibly changed.
         /// </summary>
-        protected virtual void OnResize(Vector2d OldSize, Vector2d NewSize, IGLGUIContext Context)
+        protected virtual void OnResize(GUIContext Context, Point OldSize, Point NewSize)
         {
 
         }
 
-        private Vector2d _Size;
+        private Point _Size;
     }
 }
