@@ -45,11 +45,9 @@ namespace OpenTKGUI
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
-            GL.Scale(2.0, -2.0, 1.0);
-            GL.Translate(-0.5, -0.5, 0.0);
-            GL.Scale(1.0 / (double)this.Width, 1.0 / (double)this.Height, 1.0);
-
-            this._Control.Render(new GUIRenderContext(this.ViewSize));
+            GUIRenderContext rc = new GUIRenderContext(this.ViewSize);
+            rc.Setup();
+            this._Control.Render(rc);
 
             this.SwapBuffers();
         }

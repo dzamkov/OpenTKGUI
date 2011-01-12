@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,10 +50,11 @@
     <Compile Include="Blank.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Control.cs" />
+    <Compile Include="GUIRenderContext.cs" />
     <Compile Include="HostWindow.cs" />
+    <Compile Include="Image.cs" />
     <Compile Include="ManualContainer.cs" />
     <Compile Include="Rectangle.cs" />
-    <Compile Include="TexGen.cs" />
     <Compile Include="Point.cs" />
   </ItemGroup>
 </Project>

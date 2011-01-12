@@ -39,21 +39,7 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Render(this.Color, this.Size);   
-        }
-
-        /// <summary>
-        /// Renders a solid-colored quad with the given size in pixels.
-        /// </summary>
-        public static void Render(Color Color, Point Size)
-        {
-            GL.Color4(Color);
-            GL.Begin(BeginMode.Quads);
-            GL.Vertex2(0.0, 0.0);
-            GL.Vertex2(Size.X, 0.0);
-            GL.Vertex2(Size.X, Size.Y);
-            GL.Vertex2(0.0, Size.Y);
-            GL.End();
+            Context.DrawSolid(this._Color, new Rectangle(this.Size));
         }
 
         private Color _Color;
