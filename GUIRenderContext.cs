@@ -65,16 +65,16 @@ namespace OpenTKGUI
             double xx = x + Rectangle.Size.X;
             double yy = y + Rectangle.Size.Y;
             GL.Begin(BeginMode.Quads);
-            GL.Vertex2(x, y); GL.TexCoord2(0f, 0f);
-            GL.Vertex2(xx, y); GL.TexCoord2(1f, 0f);
-            GL.Vertex2(xx, yy); GL.TexCoord2(1f, 1f);
-            GL.Vertex2(x, yy); GL.TexCoord2(0f, 1f);
+            GL.Vertex2(x, y); GL.TexCoord2(1f, 0f);
+            GL.Vertex2(xx, y); GL.TexCoord2(1f, 1f);
+            GL.Vertex2(xx, yy); GL.TexCoord2(0f, 1f);
+            GL.Vertex2(x, yy); GL.TexCoord2(0f, 0f);
             GL.End();
         }
 
         public void DrawTexture(int Texture, Rectangle Rectangle)
         {
-            this.DrawTexture(Texture, Rectangle);
+            this.DrawTexture(Texture, Color.RGB(1.0, 1.0, 1.0), Rectangle);
         }
 
         /// <summary>

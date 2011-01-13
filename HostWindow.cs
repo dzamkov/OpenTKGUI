@@ -26,15 +26,7 @@ namespace OpenTKGUI
         public static void Main(string[] Args)
         {
             ManualContainer mc = new ManualContainer();
-            mc.AddChild(null, new Blank(Color.RGB(1.0, 0.0, 0.0)), new Rectangle(0.0, 0.0, 5.0, 5.0));
-            mc.AddChild(null, new Blank(Color.RGB(0.0, 1.0, 0.0)), new Rectangle(60.0, 60.0, 40.0, 40.0));
-            mc.AddChild(null, new Blank(Color.RGB(0.0, 0.0, 1.0)), new Rectangle(100.0, 100.0, 40.0, 40.0));
-
-            ManualContainer mcc = new ManualContainer();
-            mcc.AddChild(null, new Blank(Color.RGB(1.0, 0.0, 0.0)), new Rectangle(0.0, 0.0, 100.0, 100.0));
-            mcc.AddChild(null, new Blank(Color.RGB(1.0, 1.0, 0.0)), new Rectangle(100.0, 100.0, 100.0, 100.0));
-
-            mc.AddChild(null, mcc, new Rectangle(300.0, 300.0, 170.0, 170.0));
+            mc.AddChild(null, new Button("Hello?!?"), new Rectangle(200.0, 200.0, 100.0, 30.0));
 
             new HostWindow(mc, "Test").Run();
         }
@@ -42,6 +34,9 @@ namespace OpenTKGUI
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            GL.ClearColor(Color.RGB(0.8, 0.8, 0.8));
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 

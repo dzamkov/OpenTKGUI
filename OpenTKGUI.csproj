@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blank.cs" />
+    <Compile Include="Button.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Control.cs" />
     <Compile Include="GUIRenderContext.cs" />
