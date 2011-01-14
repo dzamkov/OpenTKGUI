@@ -65,16 +65,31 @@ namespace OpenTKGUI
             double xx = x + Rectangle.Size.X;
             double yy = y + Rectangle.Size.Y;
             GL.Begin(BeginMode.Quads);
-            GL.Vertex2(x, y); GL.TexCoord2(1f, 0f);
-            GL.Vertex2(xx, y); GL.TexCoord2(1f, 1f);
-            GL.Vertex2(xx, yy); GL.TexCoord2(0f, 1f);
-            GL.Vertex2(x, yy); GL.TexCoord2(0f, 0f);
+            GL.TexCoord2(0f, 0f); GL.Vertex2(x, y);
+            GL.TexCoord2(1f, 0f); GL.Vertex2(xx, y);
+            GL.TexCoord2(1f, 1f); GL.Vertex2(xx, yy);
+            GL.TexCoord2(0f, 1f); GL.Vertex2(x, yy); 
             GL.End();
         }
 
         public void DrawTexture(int Texture, Rectangle Rectangle)
         {
             this.DrawTexture(Texture, Color.RGB(1.0, 1.0, 1.0), Rectangle);
+        }
+
+        /// <summary>
+        /// Draws a part from a skin. Allows color modulation.
+        /// </summary>
+        public void DrawSkinPart(Color Modulate, SkinPart SkinPart, Rectangle Rectangle)
+        {
+            GL.Color4(Modulate);
+            GL.Enable(EnableCap.Texture2D);
+            SkinPart._Render(Rectangle);
+        }
+
+        public void DrawSkinPart(SkinPart SkinPart, Rectangle Rectangle)
+        {
+            this.DrawSkinPart(Color.RGB(1.0, 1.0, 1.0), SkinPart, Rectangle);
         }
 
         /// <summary>

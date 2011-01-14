@@ -8,7 +8,7 @@
     <ProjectGuid>{D78F7DC8-1193-483A-8530-C373A3D99422}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TKGUI</RootNamespace>
+    <RootNamespace>OpenTKGUI</RootNamespace>
     <AssemblyName>OpenTKGUI</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -53,9 +53,24 @@
     <Compile Include="Control.cs" />
     <Compile Include="GUIRenderContext.cs" />
     <Compile Include="HostWindow.cs" />
-    <Compile Include="Image.cs" />
     <Compile Include="ManualContainer.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Point.cs" />
+    <Compile Include="Res.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Res.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Skin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Res.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Res.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SkinDefault.png" />
   </ItemGroup>
 </Project>

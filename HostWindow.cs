@@ -26,7 +26,7 @@ namespace OpenTKGUI
         public static void Main(string[] Args)
         {
             ManualContainer mc = new ManualContainer();
-            mc.AddChild(null, new Button("Hello?!?"), new Rectangle(200.0, 200.0, 100.0, 30.0));
+            mc.AddChild(null, new Button("Hello?!?"), new Rectangle(200.0, 200.0, 300.0, 90.0));
 
             new HostWindow(mc, "Test").Run();
         }
