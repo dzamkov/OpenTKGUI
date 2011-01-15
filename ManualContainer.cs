@@ -21,13 +21,13 @@ namespace OpenTKGUI
         /// <summary>
         /// Adds a child control at the specified position and size.
         /// </summary>
-        public void AddChild(GUIContext Context, Control Child, Rectangle Area)
+        public void AddChild(Control Child, Rectangle Area)
         {
-            Child.Resize(Context, Area.Size);
+            Child.Resize(Area.Size);
             this._Children.Add(new _Child()
             {
                 Control = Child,
-                Position = Area.Location
+                Offset = Area.Location
             });
         }
 
@@ -36,17 +36,25 @@ namespace OpenTKGUI
             Context.PushClip(new Rectangle(new Point(), this.Size));
             foreach (_Child c in this._Children)
             {
-                Context.PushTranslate(c.Position);
+                Context.PushTranslate(c.Offset);
                 c.Control.Render(Context);
                 Context.Pop();
             }
             Context.Pop();
         }
 
+        public override void Update(GUIContext Context, double Time)
+        {
+            foreach (_Child c in this._Children)
+            {
+                c.Control.Update(Context.CreateSubcontext(c.Control, c.Offset), Time);
+            }
+        }
+
         private struct _Child
         {
             public Control Control;
-            public Point Position;
+            public Point Offset;
         }
 
         private List<_Child> _Children;

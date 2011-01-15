@@ -1,20 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-
 namespace OpenTKGUI
 {
-    /// <summary>
-    /// Context given to a control when an event occurs. This allows the control to interact with the gui system as a whole.
-    /// </summary>
-    public class GUIContext
-    {
-
-    }
-
     /// <summary>
     /// The basic unit of TKGUI. Describes a gui component that can be drawn and receive events.
     /// </summary>
@@ -51,17 +38,17 @@ namespace OpenTKGUI
         /// <summary>
         /// Resizes the control. Size must be specified in pixels.
         /// </summary>
-        public void Resize(GUIContext Context, Point Size)
+        public void Resize(Point Size)
         {
             Point oldsize = this._Size;
             this._Size = Size;
-            this.OnResize(Context, oldsize, Size);
+            this.OnResize(oldsize, Size);
         }
 
         /// <summary>
         /// Called when the size of the control is forcibly changed.
         /// </summary>
-        protected virtual void OnResize(GUIContext Context, Point OldSize, Point NewSize)
+        protected virtual void OnResize(Point OldSize, Point NewSize)
         {
 
         }

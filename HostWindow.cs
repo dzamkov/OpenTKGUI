@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace OpenTKGUI
 {
@@ -26,7 +27,7 @@ namespace OpenTKGUI
         public static void Main(string[] Args)
         {
             ManualContainer mc = new ManualContainer();
-            mc.AddChild(null, new Button("Hello?!?"), new Rectangle(200.0, 200.0, 300.0, 40.0));
+            mc.AddChild(new Button("Hello?!?"), new Rectangle(200.0, 200.0, 300.0, 40.0));
 
             new HostWindow(mc, "Test").Run();
         }
@@ -47,6 +48,63 @@ namespace OpenTKGUI
             this.SwapBuffers();
         }
 
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            this._Control.Update(new _GUIContext(this), e.Time);
+        }
+
+        /// <summary>
+        /// The top-level gui context when using a host window.
+        /// </summary>
+        private class _GUIContext : GUIContext
+        {
+            public _GUIContext(HostWindow Window)
+            {
+                this.Window = Window;
+            }
+
+            public override Control Control
+            {
+                get
+                {
+                    return this.Window._Control;
+                }
+            }
+
+            public override MouseState MouseState
+            {
+                get
+                {
+                    MouseDevice md = this.Window.Mouse;
+                    if (md != null)
+                    {
+                        return new _MouseState(md);
+                    }
+                    return null;
+                }
+            }
+
+            public HostWindow Window;
+        }
+
+        private class _MouseState : MouseState
+        {
+            public _MouseState(MouseDevice Device)
+            {
+                this.Device = Device;
+            }
+
+            public override Point Position
+            {
+                get
+                {
+                    return new Point(this.Device.X, this.Device.Y);
+                }
+            }
+
+            public MouseDevice Device;
+        }
+
         /// <summary>
         /// Gets the size of the area rendered on this window.
         /// </summary>
@@ -63,7 +121,7 @@ namespace OpenTKGUI
             if (this._Control != null)
             {
                 GL.Viewport(0, 0, this.Width, this.Height);
-                this._Control.Resize(null, this.ViewSize);
+                this._Control.Resize(this.ViewSize);
             }
         }
 
