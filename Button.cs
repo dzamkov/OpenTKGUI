@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using OpenTK.Input;
+
 namespace OpenTKGUI
 {
     /// <summary>
@@ -16,9 +18,21 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             Skin s = Skin.Default;
-            Context.DrawSkinPart(
-                Color.Mix(Color.RGB(1.0, 1.0, 1.0), Color.RGB(0.9, 0.9, 1.0), this._MouseOverHighlight / _HighlightMax),
-                Skin.Default.GetPart(0, 0, 32, 32), new Rectangle(this.Size));
+            if (this._MouseOver)
+            {
+                if (this._MouseDown)
+                {
+                    Context.DrawSkinPart(s.GetPart(64, 0, 32, 32), new Rectangle(this.Size));
+                }
+                else
+                {
+                    Context.DrawSkinPart(s.GetPart(32, 0, 32, 32), new Rectangle(this.Size));
+                }
+            }
+            else
+            {
+                Context.DrawSkinPart(s.GetPart(0, 0, 32, 32), new Rectangle(this.Size));
+            }
         }
 
         public override void Update(GUIContext Context, double Time)
@@ -26,19 +40,48 @@ namespace OpenTKGUI
             MouseState ms = Context.MouseState;
             if (ms != null)
             {
-                // Mouse is over button
-                this._MouseOverHighlight = Math.Min(this._MouseOverHighlight + Time, _HighlightMax);
+                this._MouseOver = true;
+                if (ms.IsButtonDown(MouseButton.Left))
+                {
+                    this._MouseDown = true;
+                }
+                else
+                {
+                    if (this._MouseDown)
+                    {
+                        // That would be a click!
+                        this._Click();
+                        this._MouseDown = false;
+                    }
+                }
             }
             else
             {
-                // Mouse is not over button
-                this._MouseOverHighlight = Math.Max(this._MouseOverHighlight - Time, 0.0);
+                this._MouseDown = false;
+                this._MouseOver = false;
             }
         }
 
-        private const double _HighlightMax = 0.1;
+        private void _Click()
+        {
+            if (this.Click != null)
+            {
+                this.Click.Invoke(this);
+            }
+        }
 
-        private double _MouseOverHighlight;
+        /// <summary>
+        /// An event fired whenever this button is clicked.
+        /// </summary>
+        public event ClickHandler Click;
+
+        private bool _MouseDown;
+        private bool _MouseOver;
         private string _Text;
     }
+
+    /// <summary>
+    /// Handles a click event from a button.
+    /// </summary>
+    public delegate void ClickHandler(Button Button);
 }

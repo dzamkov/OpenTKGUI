@@ -82,7 +82,7 @@ namespace OpenTKGUI
         /// </summary>
         public void DrawSkinPart(Color Modulate, SkinPart SkinPart, Rectangle Rectangle)
         {
-            GL.Color4(Modulate);
+            GL.Color4((Color4)Modulate);
             GL.Enable(EnableCap.Texture2D);
             SkinPart._Render(Rectangle);
         }

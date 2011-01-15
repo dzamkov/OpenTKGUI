@@ -28,7 +28,7 @@ namespace OpenTKGUI
         {
             ManualContainer mc = new ManualContainer();
             mc.AddChild(new Button("Hello?!?"), new Rectangle(200.0, 200.0, 300.0, 40.0));
-
+            mc.AddChild(new Button("Test?!?"), new Rectangle(200.0, 250.0, 300.0, 40.0));
             new HostWindow(mc, "Test").Run();
         }
 #endif
@@ -100,6 +100,11 @@ namespace OpenTKGUI
                 {
                     return new Point(this.Device.X, this.Device.Y);
                 }
+            }
+
+            public override bool IsButtonDown(MouseButton Button)
+            {
+                return this.Device[Button];
             }
 
             public MouseDevice Device;

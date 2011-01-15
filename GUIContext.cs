@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using OpenTK.Input;
+
 namespace OpenTKGUI
 {
     /// <summary>
@@ -82,6 +84,11 @@ namespace OpenTKGUI
                 }
             }
 
+            public override bool IsButtonDown(MouseButton Button)
+            {
+                return this._Parent.IsButtonDown(Button);
+            }
+
             private Point _Position;
             private MouseState _Parent;
         }
@@ -96,5 +103,10 @@ namespace OpenTKGUI
         /// Gets the current position of the mouse in relation to the control.
         /// </summary>
         public abstract Point Position { get; }
+
+        /// <summary>
+        /// Gets if the specified mouse button is down.
+        /// </summary>
+        public abstract bool IsButtonDown(MouseButton Button);
     }
 }

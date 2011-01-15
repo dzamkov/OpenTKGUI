@@ -35,6 +35,11 @@ namespace OpenTKGUI
             return RGBA(R, G, B, 1.0);
         }
 
+        public static Color Alpha(double A)
+        {
+            return RGBA(1.0, 1.0, 1.0, A);
+        }
+
         /// <summary>
         /// Mixes two colors based on the specified amount. If the amount is 0.0,
         /// the resulting color will be A. If the amount is 1.0, the resulting color
