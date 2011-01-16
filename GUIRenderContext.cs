@@ -84,12 +84,28 @@ namespace OpenTKGUI
         {
             GL.Color4((Color4)Modulate);
             GL.Enable(EnableCap.Texture2D);
-            SkinPart._Render(Rectangle);
+            SkinPart.Render(Rectangle);
         }
 
         public void DrawSkinPart(SkinPart SkinPart, Rectangle Rectangle)
         {
             this.DrawSkinPart(Color.RGB(1.0, 1.0, 1.0), SkinPart, Rectangle);
+        }
+
+        /// <summary>
+        /// Draws text to the specified location.
+        /// </summary>
+        public void DrawText(Color Color, TextSample Sample, Point TopLeft)
+        {
+            Sample.Render(Color, TopLeft);
+        }
+
+        /// <summary>
+        /// Draws text to the specified location.
+        /// </summary>
+        public void DrawCenteredText(Color Color, TextSample Sample, Point Center)
+        {
+            Sample.Render(Color, Center - Sample.Size * 0.5);
         }
 
         /// <summary>

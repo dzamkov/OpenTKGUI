@@ -121,7 +121,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Renders the part to the given rectangle.
         /// </summary>
-        internal void _Render(Rectangle Rect)
+        protected internal void Render(Rectangle Rect)
         {
             GL.BindTexture(TextureTarget.Texture2D, this._Skin.Texture);
 

@@ -33,6 +33,14 @@ namespace OpenTKGUI
             {
                 Context.DrawSkinPart(s.GetPart(0, 0, 32, 32), new Rectangle(this.Size));
             }
+
+
+            if (this._TextSample == null)
+            {
+                this._TextSample = new SystemFont("Verdana", 20.0, true).GetSample(this._Text);
+            }
+
+            Context.DrawCenteredText(Color.RGB(0.0, 0.0, 0.0), this._TextSample, this.Size * 0.5);
         }
 
         public override void Update(GUIContext Context, double Time)
@@ -77,6 +85,7 @@ namespace OpenTKGUI
 
         private bool _MouseDown;
         private bool _MouseOver;
+        private TextSample _TextSample;
         private string _Text;
     }
 

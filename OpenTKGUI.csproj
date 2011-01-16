@@ -51,6 +51,7 @@
     <Compile Include="Button.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Control.cs" />
+    <Compile Include="Font.cs" />
     <Compile Include="GUIContext.cs" />
     <Compile Include="GUIRenderContext.cs" />
     <Compile Include="HostWindow.cs" />
