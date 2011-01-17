@@ -42,9 +42,22 @@ namespace OpenTKGUI
         public static void Main(string[] Args)
         {
             ManualContainer mc = new ManualContainer();
-            mc.AddChild(new Button("Jello?!?"), new Rectangle(200.0, 200.0, 300.0, 30.0));
-            mc.AddChild(new Button("Test"), new Rectangle(200.0, 250.0, 300.0, 30.0));
-            mc.AddChild(new Textbox(), new Rectangle(200.0, 300.0, 300.0, 30.0));
+            Button a;
+            Button b;
+            Textbox c;
+            Textbox d;
+            mc.AddChild(a = new Button("Jello?!?"), new Rectangle(200.0, 200.0, 300.0, 30.0));
+            mc.AddChild(b = new Button("Test"), new Rectangle(200.0, 250.0, 300.0, 30.0));
+            mc.AddChild(c = new Textbox(), new Rectangle(200.0, 300.0, 300.0, 30.0));
+            mc.AddChild(d = new Textbox(), new Rectangle(200.0, 350.0, 300.0, 30.0));
+            c.TextEntered += delegate(string Text)
+            {
+                a.Text = Text;
+            };
+            d.TextChanged += delegate(string Text)
+            {
+                b.Text = Text;
+            };
             new HostWindow(mc, "Test").Run();
         }
 #endif

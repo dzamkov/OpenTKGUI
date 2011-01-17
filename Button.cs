@@ -15,6 +15,26 @@ namespace OpenTKGUI
             this._Text = Text;
         }
 
+        /// <summary>
+        /// Gets or sets the text for the button.
+        /// </summary>
+        public string Text
+        {
+            get
+            {
+                return this._Text;
+            }
+            set
+            {
+                this._Text = value;
+                if (this._TextSample != null)
+                {
+                    this._TextSample.Dispose();
+                    this._TextSample = null;
+                }
+            }
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             Skin s = Skin.Default;

@@ -68,6 +68,23 @@ namespace OpenTKGUI
         /// </summary>
         public abstract void Render(Color Color, Point Offset);
 
+        /// <summary>
+        /// Gets if the specified character is valid in text samples. 
+        /// </summary>
+        public static bool ValidChar(char C)
+        {
+            int i = (int)C;
+            if (i >= 32 && i <= 126)
+            {
+                return true;
+            }
+            if (i > 255)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void Dispose()
         {
             this.OnDispose();
@@ -177,7 +194,7 @@ namespace OpenTKGUI
                         {
                             using (Graphics g = Graphics.FromImage(bm))
                             {
-                                SizeF sf = g.MeasureString(this._Text, this._Font.GDIFont);
+                                SizeF sf = g.MeasureString(this._Text, this._Font.GDIFont, new PointF(0.0f, 0.0f), this._Format);
                                 Point size = new Point(sf.Width, sf.Height);
                                 this._Size = size;
                                 return size;
@@ -198,19 +215,22 @@ namespace OpenTKGUI
                     this._MakeTexture();
                 }
 
-                GL.Enable(EnableCap.Texture2D);
-                GL.BindTexture(TextureTarget.Texture2D, this._TextureID);
-                GL.Color4((Color4)Color);
-                double x = Offset.X;
-                double y = Offset.Y;
-                double xx = x + this._TextureWidth;
-                double yy = y + this._TextureHeight;
-                GL.Begin(BeginMode.Quads);
-                GL.TexCoord2(0f, 0f); GL.Vertex2(x, y);
-                GL.TexCoord2(1f, 0f); GL.Vertex2(xx, y);
-                GL.TexCoord2(1f, 1f); GL.Vertex2(xx, yy);
-                GL.TexCoord2(0f, 1f); GL.Vertex2(x, yy); 
-                GL.End();
+                if (this._TextureWidth > 0 && this._TextureHeight > 0)
+                {
+                    GL.Enable(EnableCap.Texture2D);
+                    GL.BindTexture(TextureTarget.Texture2D, this._TextureID);
+                    GL.Color4((Color4)Color);
+                    double x = Offset.X;
+                    double y = Offset.Y;
+                    double xx = x + this._TextureWidth;
+                    double yy = y + this._TextureHeight;
+                    GL.Begin(BeginMode.Quads);
+                    GL.TexCoord2(0f, 0f); GL.Vertex2(x, y);
+                    GL.TexCoord2(1f, 0f); GL.Vertex2(xx, y);
+                    GL.TexCoord2(1f, 1f); GL.Vertex2(xx, yy);
+                    GL.TexCoord2(0f, 1f); GL.Vertex2(x, yy);
+                    GL.End();
+                }
             }
 
             private void _MakeTexture()
@@ -218,64 +238,84 @@ namespace OpenTKGUI
                 Point size = this.Size;
                 int texwidth = this._TextureWidth = (int)Math.Ceiling(size.X);
                 int texheight = this._TextureHeight = (int)Math.Ceiling(size.Y);
-
-                // Draw text to texture
-                using (Bitmap bm = new Bitmap(texwidth, texheight))
+                if (texwidth > 0 && texheight > 0)
                 {
-                    using (Graphics g = Graphics.FromImage(bm))
+                    // Draw text to texture
+                    using (Bitmap bm = new Bitmap(texwidth, texheight))
                     {
-                        if (this._Font.Antialias)
+                        using (Graphics g = Graphics.FromImage(bm))
                         {
-                            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                        }
-                        g.Clear(Color.Transparent);
-
-                        string text = this._Text;
-                        
-                       
-                        StringFormat sf = new StringFormat();
-                        g.DrawString(text, this._Font.GDIFont, Brushes.White, new PointF(0.0f, 0.0f), sf);
-
-                        // Get character bounds (32 at a time) (and kind of a hacky way to do it).
-                        this._CharacterBounds = new Rectangle[text.Length];
-                        int advance = 32;
-                        for (int i = 0; i < text.Length; i += advance)
-                        {
-                            int dif = text.Length - i;
-                            CharacterRange[] crmeasure = new CharacterRange[dif > advance ? advance : dif];
-                            for (int t = 0; t < crmeasure.Length; t++)
+                            if (this._Font.Antialias)
                             {
-                                crmeasure[t] = new CharacterRange(i + t, 1);
+                                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
                             }
+                            g.Clear(Color.Transparent);
 
-                            sf.SetMeasurableCharacterRanges(crmeasure);
-                            Region[] rs = g.MeasureCharacterRanges(text, this._Font.GDIFont, new RectangleF(0.0f, 0.0f, texwidth, texheight), sf);
-                            for (int t = 0; t < rs.Length; t++)
+                            string text = this._Text;
+
+
+                            StringFormat sf = this._Format;
+                            g.DrawString(text, this._Font.GDIFont, Brushes.White, new PointF(0.0f, 0.0f), sf);
+
+                            // Get character bounds (32 at a time) (and kind of a hacky way to do it).
+                            this._CharacterBounds = new Rectangle[text.Length];
+                            int advance = 32;
+                            for (int i = 0; i < text.Length; i += advance)
                             {
-                                this._CharacterBounds[i + t] = rs[t].GetBounds(g);
+                                int dif = text.Length - i;
+                                CharacterRange[] crmeasure = new CharacterRange[dif > advance ? advance : dif];
+                                for (int t = 0; t < crmeasure.Length; t++)
+                                {
+                                    crmeasure[t] = new CharacterRange(i + t, 1);
+                                }
+
+                                sf.SetMeasurableCharacterRanges(crmeasure);
+                                Region[] rs = g.MeasureCharacterRanges(text, this._Font.GDIFont, new RectangleF(0.0f, 0.0f, texwidth, texheight), sf);
+                                for (int t = 0; t < rs.Length; t++)
+                                {
+                                    if (i + t < this._CharacterBounds.Length)
+                                    {
+                                        this._CharacterBounds[i + t] = rs[t].GetBounds(g);
+                                    }
+                                }
                             }
                         }
+
+                        this._TextureID = GL.GenTexture();
+                        GL.BindTexture(TextureTarget.Texture2D, this._TextureID);
+                        GL.TexEnv(TextureEnvTarget.TextureEnv,
+                            TextureEnvParameter.TextureEnvMode,
+                            (float)TextureEnvMode.Modulate);
+
+                        BitmapData bd = bm.LockBits(
+                            new System.Drawing.Rectangle(0, 0, bm.Width, bm.Height),
+                            ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                        GL.TexImage2D(TextureTarget.Texture2D,
+                            0, PixelInternalFormat.Rgba,
+                            bm.Width, bm.Height, 0,
+                            OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bd.Scan0);
+
+                        bm.UnlockBits(bd);
+
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                     }
+                }
+                else
+                {
+                    this._CharacterBounds = new Rectangle[this._Text.Length];
+                }
+            }
 
-                    this._TextureID = GL.GenTexture();
-                    GL.BindTexture(TextureTarget.Texture2D, this._TextureID);
-                    GL.TexEnv(TextureEnvTarget.TextureEnv,
-                        TextureEnvParameter.TextureEnvMode,
-                        (float)TextureEnvMode.Modulate);
-
-                    BitmapData bd = bm.LockBits(
-                        new System.Drawing.Rectangle(0, 0, bm.Width, bm.Height),
-                        ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                    GL.TexImage2D(TextureTarget.Texture2D,
-                        0, PixelInternalFormat.Rgba,
-                        bm.Width, bm.Height, 0,
-                        OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bd.Scan0);
-
-                    bm.UnlockBits(bd);
-
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            /// <summary>
+            /// Gets the string format used for drawing or measuring text.
+            /// </summary>
+            private StringFormat _Format
+            {
+                get
+                {
+                    return new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
                 }
             }
 
