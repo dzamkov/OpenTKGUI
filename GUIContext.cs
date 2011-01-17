@@ -16,9 +16,33 @@ namespace OpenTKGUI
         public abstract Control Control { get; }
 
         /// <summary>
-        /// Gets the state of the mouse as seen by this control, or null if the mouse is not in the control.
+        /// Gets or sets the control that currently has keyboard focus, or null if there is no such control.
+        /// </summary>
+        public abstract Control KeyboardFocus { get; set; }
+
+        /// <summary>
+        /// Gets the state of the mouse as seen by this control, null if the mouse is not in the control.
         /// </summary>
         public abstract MouseState MouseState { get; }
+
+        /// <summary>
+        /// Gets the state of the keyboard as seen by this control. This will never be null, even if the control does
+        /// not have keyboard focus. This should not be used directly by controls as it may break assumptions users get from the
+        /// interface.
+        /// </summary>
+        public abstract KeyboardState ForceKeyboardState { get; }
+
+        /// <summary>
+        /// Gets the state of the keyboard as seen by this control. This will be null unless this control currently
+        /// has keyboard focus.
+        /// </summary>
+        public KeyboardState KeyboardState
+        {
+            get
+            {
+                return this.KeyboardFocus == this.Control ? this.ForceKeyboardState : null;
+            }
+        }
 
         /// <summary>
         /// Creates a subcontext for a child of the intended control. The child can use the subcontext to interact with the GUI system through its parent.
@@ -60,6 +84,26 @@ namespace OpenTKGUI
                         }
                     }
                     return null;
+                }
+            }
+
+            public override Control KeyboardFocus
+            {
+                get
+                {
+                    return this._ParentContext.KeyboardFocus;
+                }
+                set
+                {
+                    this._ParentContext.KeyboardFocus = value;
+                }
+            }
+
+            public override KeyboardState ForceKeyboardState
+            {
+                get
+                {
+                    return this._ParentContext.ForceKeyboardState;
                 }
             }
 
@@ -108,5 +152,21 @@ namespace OpenTKGUI
         /// Gets if the specified mouse button is down.
         /// </summary>
         public abstract bool IsButtonDown(MouseButton Button);
+    }
+
+    /// <summary>
+    /// The state of the keyboard at one time.
+    /// </summary>
+    public abstract class KeyboardState
+    {
+        /// <summary>
+        /// Gets if the specified keyboard key is down.
+        /// </summary>
+        public abstract bool IsKeyDown(Key Key);
+
+        /// <summary>
+        /// Gets the keys that were pressed since the last update.
+        /// </summary>
+        public abstract IEnumerable<Key> Presses { get; }
     }
 }

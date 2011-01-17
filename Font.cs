@@ -189,7 +189,6 @@ namespace OpenTKGUI
                         {
                             if (this._Font.Antialias)
                             {
-                                g.SmoothingMode = SmoothingMode.HighQuality;
                                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
                             }
                             g.Clear(Color.Transparent);

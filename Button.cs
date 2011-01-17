@@ -37,7 +37,7 @@ namespace OpenTKGUI
 
             if (this._TextSample == null)
             {
-                this._TextSample = new SystemFont("Verdana", 20.0, true).GetSample(this._Text);
+                this._TextSample = new SystemFont("Verdana", 14.0, true).GetSample(this._Text);
             }
 
             Context.DrawCenteredText(Color.RGB(0.0, 0.0, 0.0), this._TextSample, this.Size * 0.5);
