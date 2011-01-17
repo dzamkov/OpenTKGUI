@@ -19,10 +19,19 @@ namespace OpenTKGUI
             this.WindowState = WindowState.Maximized;
             this._Control = Control;
 
-            this._KeyPresses = new List<Key>();
+            this._KeyEvents = new List<KeyEvent>();
+            this._KeyPresses = new List<char>();
             this.Keyboard.KeyUp += delegate(object sender, KeyboardKeyEventArgs e)
             {
-                this._KeyPresses.Add(e.Key);
+                this._KeyEvents.Add(new KeyEvent(e.Key, ButtonEventType.Up));
+            };
+            this.Keyboard.KeyDown += delegate(object sender, KeyboardKeyEventArgs e)
+            {
+                this._KeyEvents.Add(new KeyEvent(e.Key, ButtonEventType.Down));
+            };
+            this.KeyPress += delegate(object sender, KeyPressEventArgs e)
+            {
+                this._KeyPresses.Add(e.KeyChar);
             };
         }
 
@@ -33,8 +42,8 @@ namespace OpenTKGUI
         public static void Main(string[] Args)
         {
             ManualContainer mc = new ManualContainer();
-            mc.AddChild(new Button("Hello?!?"), new Rectangle(200.0, 200.0, 300.0, 30.0));
-            mc.AddChild(new Button("Test?!?"), new Rectangle(200.0, 250.0, 300.0, 30.0));
+            mc.AddChild(new Button("Jello?!?"), new Rectangle(200.0, 200.0, 300.0, 30.0));
+            mc.AddChild(new Button("Test"), new Rectangle(200.0, 250.0, 300.0, 30.0));
             mc.AddChild(new Textbox(), new Rectangle(200.0, 300.0, 300.0, 30.0));
             new HostWindow(mc, "Test").Run();
         }
@@ -58,13 +67,14 @@ namespace OpenTKGUI
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             this._Control.Update(new _GUIContext(this), e.Time);
+            this._KeyEvents.Clear();
             this._KeyPresses.Clear();
         }
 
         /// <summary>
         /// The top-level gui context when using a host window.
         /// </summary>
-        private class _GUIContext : GUIContext
+        private sealed class _GUIContext : GUIContext
         {
             public _GUIContext(HostWindow Window)
             {
@@ -83,6 +93,18 @@ namespace OpenTKGUI
                 }
             }
 
+            public override Control MouseFocus
+            {
+                get
+                {
+                    return this.Window._MouseFocus;
+                }
+                set
+                {
+                    this.Window._MouseFocus = value;
+                }
+            }
+
             public override Control Control
             {
                 get
@@ -91,7 +113,7 @@ namespace OpenTKGUI
                 }
             }
 
-            public override MouseState MouseState
+            public override MouseState ForceMouseState
             {
                 get
                 {
@@ -101,6 +123,21 @@ namespace OpenTKGUI
                         return new _MouseState(md);
                     }
                     return null;
+                }
+            }
+
+            public override MouseState MouseState
+            {
+                get
+                {
+                    if (CanHaveMouseState(this.MouseFocus, this.Control))
+                    {
+                        return this.ForceMouseState;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
 
@@ -151,7 +188,15 @@ namespace OpenTKGUI
                 return this.Device[Key];
             }
 
-            public override IEnumerable<Key> Presses
+            public override IEnumerable<KeyEvent> Events
+            {
+                get
+                {
+                    return this.Window._KeyEvents;
+                }
+            }
+
+            public override IEnumerable<char> Presses
             {
                 get
                 {
@@ -183,7 +228,9 @@ namespace OpenTKGUI
             }
         }
 
-        private List<Key> _KeyPresses;
+        private List<KeyEvent> _KeyEvents;
+        private List<char> _KeyPresses;
+        private Control _MouseFocus;
         private Control _KeyboardFocus;
         private Control _Control;
     }

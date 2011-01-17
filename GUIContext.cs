@@ -21,7 +21,20 @@ namespace OpenTKGUI
         public abstract Control KeyboardFocus { get; set; }
 
         /// <summary>
-        /// Gets the state of the mouse as seen by this control, null if the mouse is not in the control.
+        /// Gets or sets the control that currently has mouse focus, or null if there is no such control.
+        /// </summary>
+        public abstract Control MouseFocus { get; set; }
+
+        /// <summary>
+        /// Gets the state of the mouse as seen by this control. This will not be null unless the mouse itself is not active, even if the mouse is not in the control
+        /// or the control does not have mouse focus. This should not be used directly by controls as it may break assumptions users get from the
+        /// interface.
+        /// </summary>
+        public abstract MouseState ForceMouseState { get; }
+
+        /// <summary>
+        /// Gets the state of the mouse as seen by this control, null if the mouse is not in the control or some other
+        /// control has mouse focus.
         /// </summary>
         public abstract MouseState MouseState { get; }
 
@@ -42,6 +55,14 @@ namespace OpenTKGUI
             {
                 return this.KeyboardFocus == this.Control ? this.ForceKeyboardState : null;
             }
+        }
+
+        /// <summary>
+        /// Gets if the target control can get the mouse state, given the control with mouse focus.
+        /// </summary>
+        public static bool CanHaveMouseState(Control MouseFocus, Control Target)
+        {
+            return MouseFocus == null || MouseFocus == Target;
         }
 
         /// <summary>
@@ -73,17 +94,36 @@ namespace OpenTKGUI
             {
                 get
                 {
-                    MouseState ms = this._ParentContext.MouseState;
+                    MouseState ms = this._ParentContext.ForceMouseState;
                     if (ms != null)
                     {
                         Point npos = ms.Position - this._Offset;
-                        Point size = this._Child.Size;
-                        if (npos.X >= 0.0 && npos.Y >= 0.0 && npos.X < size.X && npos.Y < size.Y)
+                        if (this.MouseFocus == null)
+                        {
+                            Point size = this._Child.Size;
+                            if (npos.X >= 0.0 && npos.Y >= 0.0 && npos.X < size.X && npos.Y < size.Y)
+                            {
+                                return new _SubMouseState(npos, ms);
+                            }
+                        }
+                        if (this.MouseFocus == this.Control)
                         {
                             return new _SubMouseState(npos, ms);
                         }
                     }
                     return null;
+                }
+            }
+
+            public override Control MouseFocus
+            {
+                get
+                {
+                    return this._ParentContext.MouseFocus;
+                }
+                set
+                {
+                    this._ParentContext.MouseFocus = value;
                 }
             }
 
@@ -104,6 +144,14 @@ namespace OpenTKGUI
                 get
                 {
                     return this._ParentContext.ForceKeyboardState;
+                }
+            }
+
+            public override MouseState ForceMouseState
+            {
+                get
+                {
+                    return this._ParentContext.ForceMouseState;
                 }
             }
 
@@ -155,7 +203,7 @@ namespace OpenTKGUI
     }
 
     /// <summary>
-    /// The state of the keyboard at one time.
+    /// The state of the keyboard during an update, keeping track of changes since the last update.
     /// </summary>
     public abstract class KeyboardState
     {
@@ -165,8 +213,51 @@ namespace OpenTKGUI
         public abstract bool IsKeyDown(Key Key);
 
         /// <summary>
-        /// Gets the keys that were pressed since the last update.
+        /// Gets the keys events that where generated since the last update.
         /// </summary>
-        public abstract IEnumerable<Key> Presses { get; }
+        public abstract IEnumerable<KeyEvent> Events { get; }
+
+        /// <summary>
+        /// Gets the characters that where typed since the last update.
+        /// </summary>
+        public abstract IEnumerable<char> Presses { get; }
+    }
+
+    /// <summary>
+    /// A type of event for a bottom.
+    /// </summary>
+    public enum ButtonEventType
+    {
+        /// <summary>
+        /// The button is pushed down.
+        /// </summary>
+        Down,
+
+        /// <summary>
+        /// The button is released.
+        /// </summary>
+        Up,
+    }
+
+    /// <summary>
+    /// An event for a key.
+    /// </summary>
+    public struct KeyEvent
+    {
+        public KeyEvent(Key Key, ButtonEventType Type)
+        {
+            this.Key = Key;
+            this.Type = Type;
+        }
+
+        /// <summary>
+        /// The key that is the subject of the event.
+        /// </summary>
+        public Key Key;
+        
+        /// <summary>
+        /// The type of event this is.
+        /// </summary>
+        public ButtonEventType Type;
     }
 }
