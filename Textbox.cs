@@ -73,7 +73,7 @@ namespace OpenTKGUI
             Context.Pop();
         }
 
-        public override void Update(GUIContext Context, double Time)
+        public override void Update(GUIControlContext Context, double Time)
         {
             // Handle mouse selection.
             MouseState ms = Context.MouseState;
@@ -83,8 +83,8 @@ namespace OpenTKGUI
                 {
                     if (!this._MouseDown)
                     {
-                        Context.MouseFocus = this;
-                        Context.KeyboardFocus = this;
+                        Context.CaptureMouse();
+                        Context.CaptureKeyboard();
                         this._Selection = new TextSelection(this._SelectedIndex(ms.Position));
                         this._MouseDown = true;
                     }
@@ -97,13 +97,13 @@ namespace OpenTKGUI
                 {
                     if (this._MouseDown)
                     {
-                        Context.MouseFocus = null;
+                        Context.ReleaseMouse();
                         this._MouseDown = false;
                     }
                 }
             }
             TextSelection ts = this._Selection;
-            if (ts != null && Context.KeyboardFocus != this)
+            if (ts != null && !Context.HasKeyboard)
             {
                 this._Selection = ts = null;
                 if (this.TextEntered != null)
@@ -196,7 +196,7 @@ namespace OpenTKGUI
                 if (ks.IsKeyDown(Key.Enter))
                 {
                     this._Selection = null;
-                    Context.KeyboardFocus = null;
+                    Context.ReleaseKeyboard();
 
                     if (this.TextEntered != null)
                     {

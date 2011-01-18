@@ -28,11 +28,19 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Updates the state of the panel after the specified amount of time elapses.
+        /// Updates the state of the control after the specified amount of time elapses.
         /// </summary>
-        public virtual void Update(GUIContext Context, double Time)
+        public virtual void Update(GUIControlContext Context, double Time)
         {
 
+        }
+
+        /// <summary>
+        /// Updates the state of the control as a root control.
+        /// </summary>
+        public void Update(GUIContext Context, double Time)
+        {
+            this.Update(Context.CreateRootControlContext(this, new Point(0.0, 0.0)), Time);
         }
 
         /// <summary>

@@ -43,11 +43,11 @@ namespace OpenTKGUI
             Context.Pop();
         }
 
-        public override void Update(GUIContext Context, double Time)
+        public override void Update(GUIControlContext Context, double Time)
         {
             foreach (_Child c in this._Children)
             {
-                c.Control.Update(Context.CreateSubcontext(c.Control, c.Offset), Time);
+                c.Control.Update(Context.CreateChildContext(c.Control, c.Offset), Time);
             }
         }
 

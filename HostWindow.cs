@@ -118,43 +118,15 @@ namespace OpenTKGUI
                 }
             }
 
-            public override Control Control
-            {
-                get
-                {
-                    return this.Window._Control;
-                }
-            }
-
-            public override MouseState ForceMouseState
-            {
-                get
-                {
-                    MouseDevice md = this.Window.Mouse;
-                    if (md != null)
-                    {
-                        return new _MouseState(md);
-                    }
-                    return null;
-                }
-            }
-
             public override MouseState MouseState
             {
                 get
                 {
-                    if (CanHaveMouseState(this.MouseFocus, this.Control))
-                    {
-                        return this.ForceMouseState;
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    return new _MouseState(this.Window.Mouse);
                 }
             }
 
-            public override KeyboardState ForceKeyboardState
+            public override KeyboardState KeyboardState
             {
                 get
                 {

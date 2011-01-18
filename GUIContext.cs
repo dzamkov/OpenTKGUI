@@ -6,15 +6,11 @@ using OpenTK.Input;
 namespace OpenTKGUI
 {
     /// <summary>
-    /// Context given to a control when an event occurs. This allows the control to interact with the gui system as a whole.
+    /// Context used to update controls. This context is not intended for any specific control and gives absolute positions and values
+    /// for all parameters.
     /// </summary>
     public abstract class GUIContext
     {
-        /// <summary>
-        /// Gets the control this context is intended for.
-        /// </summary>
-        public abstract Control Control { get; }
-
         /// <summary>
         /// Gets or sets the control that currently has keyboard focus, or null if there is no such control.
         /// </summary>
@@ -26,146 +22,166 @@ namespace OpenTKGUI
         public abstract Control MouseFocus { get; set; }
 
         /// <summary>
-        /// Gets the state of the mouse as seen by this control. This will not be null unless the mouse itself is not active, even if the mouse is not in the control
-        /// or the control does not have mouse focus. This should not be used directly by controls as it may break assumptions users get from the
-        /// interface.
-        /// </summary>
-        public abstract MouseState ForceMouseState { get; }
-
-        /// <summary>
-        /// Gets the state of the mouse as seen by this control, null if the mouse is not in the control or some other
-        /// control has mouse focus.
+        /// Gets the state of the mouse, if possible.
         /// </summary>
         public abstract MouseState MouseState { get; }
 
         /// <summary>
-        /// Gets the state of the keyboard as seen by this control. This will never be null, even if the control does
-        /// not have keyboard focus. This should not be used directly by controls as it may break assumptions users get from the
-        /// interface.
+        /// Gets the state of the keyboard, if possible.
         /// </summary>
-        public abstract KeyboardState ForceKeyboardState { get; }
+        public abstract KeyboardState KeyboardState { get; }
 
         /// <summary>
-        /// Gets the state of the keyboard as seen by this control. This will be null unless this control currently
-        /// has keyboard focus.
+        /// Creates a control context based on this context for a top-level control.
+        /// </summary>
+        public GUIControlContext CreateRootControlContext(Control Control, Point Offset)
+        {
+            return new GUIControlContext(this, Control, Offset);
+        }
+    }
+
+    /// <summary>
+    /// Context used to update a control. This control provides information specific to a single control.
+    /// </summary>
+    public class GUIControlContext
+    {
+        internal GUIControlContext(GUIContext Source, Control Control, Point Offset)
+        {
+            this._Source = Source;
+            this._Control = Control;
+            this._Offset = Offset;
+        }
+
+        /// <summary>
+        /// Gets the control this context is intended for.
+        /// </summary>
+        public Control Control
+        {
+            get
+            {
+                return this._Control;
+            }
+        }
+
+        /// <summary>
+        /// Gets the offset of this control from the root update context.
+        /// </summary>
+        public Point Offset
+        {
+            get
+            {
+                return this._Offset;
+            }
+        }
+
+        /// <summary>
+        /// Captures mouse focus.
+        /// </summary>
+        public void CaptureMouse()
+        {
+            this._Source.MouseFocus = this._Control;
+        }
+
+        /// <summary>
+        /// Releases mouse focus, if this control currently has it.
+        /// </summary>
+        public void ReleaseMouse()
+        {
+            this._Source.MouseFocus = null;
+        }
+
+        /// <summary>
+        /// Gets if this control has mouse focus.
+        /// </summary>
+        public bool HasMouse
+        {
+            get
+            {
+                return this._Source.MouseFocus == this._Control;
+            }
+        }
+
+        /// <summary>
+        /// Captures keyboard focus.
+        /// </summary>
+        public void CaptureKeyboard()
+        {
+            this._Source.KeyboardFocus = this._Control;
+        }
+
+        /// <summary>
+        /// Releases keyboard focus, if this control currently has it.
+        /// </summary>
+        public void ReleaseKeyboard()
+        {
+            this._Source.KeyboardFocus = null;
+        }
+
+        /// <summary>
+        /// Gets if this control has keyboard focus.
+        /// </summary>
+        public bool HasKeyboard
+        {
+            get
+            {
+                return this._Source.KeyboardFocus == this._Control;
+            }
+        }
+
+        /// <summary>
+        /// Gets the mouse state for the control
+        /// </summary>
+        public MouseState MouseState
+        {
+            get
+            {
+                MouseState ms = this._Source.MouseState;
+                if (ms != null)
+                {
+                    Point pos = ms.Position - this._Offset;
+                    Control focus = this._Source.MouseFocus;
+                    if (focus == this._Control)
+                    {
+                        return new _OffsetMouseState(this._Source.MouseState, pos);
+                    }
+                    if (focus == null)
+                    {
+                        Point size = this._Control.Size;
+                        if (pos.X >= 0.0 && pos.Y >= 0.0 && pos.X < size.X && pos.Y < size.Y)
+                        {
+                            return new _OffsetMouseState(this._Source.MouseState, pos);
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the keyboard state for the control
         /// </summary>
         public KeyboardState KeyboardState
         {
             get
             {
-                return this.KeyboardFocus == this.Control ? this.ForceKeyboardState : null;
-            }
-        }
-
-        /// <summary>
-        /// Gets if the target control can get the mouse state, given the control with mouse focus.
-        /// </summary>
-        public static bool CanHaveMouseState(Control MouseFocus, Control Target)
-        {
-            return MouseFocus == null || MouseFocus == Target;
-        }
-
-        /// <summary>
-        /// Creates a subcontext for a child of the intended control. The child can use the subcontext to interact with the GUI system through its parent.
-        /// </summary>
-        public GUIContext CreateSubcontext(Control Child, Point Offset)
-        {
-            return new _SubGUIContext(Child, Offset, this);
-        }
-
-        private class _SubGUIContext : GUIContext
-        {
-            public _SubGUIContext(Control Child, Point Offset, GUIContext ParentContext)
-            {
-                this._Child = Child;
-                this._Offset = Offset;
-                this._ParentContext = ParentContext;
-            }
-
-            public override Control Control
-            {
-                get
+                KeyboardState ks = this._Source.KeyboardState;
+                if (ks != null)
                 {
-                    return this._Child;
-                }
-            }
-
-            public override MouseState MouseState
-            {
-                get
-                {
-                    MouseState ms = this._ParentContext.ForceMouseState;
-                    if (ms != null)
+                    if (this._Source.KeyboardFocus == this._Control)
                     {
-                        Point npos = ms.Position - this._Offset;
-                        if (this.MouseFocus == null)
-                        {
-                            Point size = this._Child.Size;
-                            if (npos.X >= 0.0 && npos.Y >= 0.0 && npos.X < size.X && npos.Y < size.Y)
-                            {
-                                return new _SubMouseState(npos, ms);
-                            }
-                        }
-                        if (this.MouseFocus == this.Control)
-                        {
-                            return new _SubMouseState(npos, ms);
-                        }
+                        return ks;
                     }
-                    return null;
                 }
+                return null;
             }
-
-            public override Control MouseFocus
-            {
-                get
-                {
-                    return this._ParentContext.MouseFocus;
-                }
-                set
-                {
-                    this._ParentContext.MouseFocus = value;
-                }
-            }
-
-            public override Control KeyboardFocus
-            {
-                get
-                {
-                    return this._ParentContext.KeyboardFocus;
-                }
-                set
-                {
-                    this._ParentContext.KeyboardFocus = value;
-                }
-            }
-
-            public override KeyboardState ForceKeyboardState
-            {
-                get
-                {
-                    return this._ParentContext.ForceKeyboardState;
-                }
-            }
-
-            public override MouseState ForceMouseState
-            {
-                get
-                {
-                    return this._ParentContext.ForceMouseState;
-                }
-            }
-
-            private Control _Child;
-            private Point _Offset;
-            private GUIContext _ParentContext;
         }
 
-        private class _SubMouseState : MouseState
+        private class _OffsetMouseState : MouseState
         {
-            public _SubMouseState(Point Position, MouseState Parent)
+            public _OffsetMouseState(MouseState Source, Point Position)
             {
+                this._Source = Source;
                 this._Position = Position;
-                this._Parent = Parent;
             }
 
             public override Point Position
@@ -178,21 +194,35 @@ namespace OpenTKGUI
 
             public override bool IsButtonDown(MouseButton Button)
             {
-                return this._Parent.IsButtonDown(Button);
+                return this._Source.IsButtonDown(Button);
             }
 
             private Point _Position;
-            private MouseState _Parent;
+            private MouseState _Source;
         }
+
+        /// <summary>
+        /// Creates a control context for a child control of this control.
+        /// </summary>
+        /// <param name="Control">The child control.</param>
+        /// <param name="Offset">The offset of the child control.</param>
+        public GUIControlContext CreateChildContext(Control Control, Point Offset)
+        {
+            return new GUIControlContext(this._Source, Control, this._Offset + Offset);
+        }
+
+        private GUIContext _Source;
+        private Point _Offset;
+        private Control _Control;
     }
 
     /// <summary>
-    /// The state of the mouse at one time, in relation to a control.
+    /// The state of the mouse at one time.
     /// </summary>
     public abstract class MouseState
     {
         /// <summary>
-        /// Gets the current position of the mouse in relation to the control.
+        /// Gets the current position of the mouse.
         /// </summary>
         public abstract Point Position { get; }
 

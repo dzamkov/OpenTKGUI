@@ -63,7 +63,7 @@ namespace OpenTKGUI
             Context.DrawCenteredText(Color.RGB(0.0, 0.0, 0.0), this._TextSample, this.Size * 0.5);
         }
 
-        public override void Update(GUIContext Context, double Time)
+        public override void Update(GUIControlContext Context, double Time)
         {
             MouseState ms = Context.MouseState;
             if (ms != null)
