@@ -47,9 +47,9 @@ namespace OpenTKGUI
             Textbox c;
             Textbox d;
             mc.AddChild(a = new Button("Jello?!?"), new Rectangle(200.0, 200.0, 300.0, 30.0));
-            mc.AddChild(b = new Button("Test"), new Rectangle(200.0, 250.0, 300.0, 30.0));
-            mc.AddChild(c = new Textbox(), new Rectangle(200.0, 300.0, 300.0, 30.0));
-            mc.AddChild(d = new Textbox(), new Rectangle(200.0, 350.0, 300.0, 30.0));
+            mc.AddChild(b = new Button("Test"), new Rectangle(200.0, 240.0, 300.0, 30.0));
+            mc.AddChild(c = new Textbox(), new Rectangle(200.0, 280.0, 300.0, 30.0));
+            mc.AddChild(d = new Textbox(), new Rectangle(200.0, 320.0, 300.0, 30.0));
             c.TextEntered += delegate(string Text)
             {
                 a.Text = Text;
