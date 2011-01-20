@@ -64,6 +64,7 @@
       <DependentUpon>Res.resx</DependentUpon>
     </Compile>
     <Compile Include="Skin.cs" />
+    <Compile Include="Surface.cs" />
     <Compile Include="Textbox.cs" />
   </ItemGroup>
   <ItemGroup>

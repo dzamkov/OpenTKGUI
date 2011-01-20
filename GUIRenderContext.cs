@@ -78,18 +78,16 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Draws a part from a skin. Allows color modulation.
+        /// Draws a surface with the specified offset.
         /// </summary>
-        public void DrawSkinPart(Color Modulate, SkinPart SkinPart, Rectangle Rectangle)
+        public void DrawSurface(Surface Surface, Point Offset)
         {
-            GL.Color4((Color4)Modulate);
-            GL.Enable(EnableCap.Texture2D);
-            SkinPart.Render(Rectangle);
+            Surface.Render(Offset, this);
         }
 
-        public void DrawSkinPart(SkinPart SkinPart, Rectangle Rectangle)
+        public void DrawSurface(Surface Surface)
         {
-            this.DrawSkinPart(Color.RGB(1.0, 1.0, 1.0), SkinPart, Rectangle);
+            Surface.Render(this);
         }
 
         /// <summary>

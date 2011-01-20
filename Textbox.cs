@@ -34,7 +34,7 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             Skin s = Skin.Default;
-            Context.DrawSkinPart(s.GetPart(96, 0, 32, 32), new Rectangle(this.Size));
+            Context.DrawSurface(s.GetSurface(96, 0, 32, 32, this.Size));
 
             Rectangle inner = new Rectangle(this.Size).Pad(_Padding);
             Context.PushClip(inner);

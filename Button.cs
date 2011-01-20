@@ -38,22 +38,23 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             Skin s = Skin.Default;
+            Surface sf;
             if (this._MouseOver)
             {
                 if (this._MouseDown)
                 {
-                    Context.DrawSkinPart(s.GetPart(64, 0, 32, 32), new Rectangle(this.Size));
+                    sf = s.GetSurface(64, 0, 32, 32, this.Size);
                 }
                 else
                 {
-                    Context.DrawSkinPart(s.GetPart(32, 0, 32, 32), new Rectangle(this.Size));
+                    sf = s.GetSurface(32, 0, 32, 32, this.Size);
                 }
             }
             else
             {
-                Context.DrawSkinPart(s.GetPart(0, 0, 32, 32), new Rectangle(this.Size));
+                sf = s.GetSurface(0, 0, 32, 32, this.Size);
             }
-
+            Context.DrawSurface(sf);
 
             if (this._TextSample == null)
             {

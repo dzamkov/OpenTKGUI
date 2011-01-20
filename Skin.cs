@@ -59,11 +59,45 @@ namespace OpenTKGUI
         private static Skin _Default;
 
         /// <summary>
-        /// Gets an image part of this skin. The part will be stretched in the middle to maintain its resolution.
+        /// Gets a skin surface for the given region in the skin. No stretching or resizing is applied to the surface.
         /// </summary>
-        public SkinPart GetPart(int X, int Y, int Width, int Height)
+        public SkinSurface GetSurface(int X, int Y, int Width, int Height)
         {
-            return new SkinPart(this, X, Y, Width, Height);
+            List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
+            List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
+            xstops.Add(new SkinSurface.Stop(X, 0.0));
+            xstops.Add(new SkinSurface.Stop(X + Width, Width));
+            ystops.Add(new SkinSurface.Stop(Y, 0.0));
+            ystops.Add(new SkinSurface.Stop(Y + Height, Height));
+            return this.GetSurface(xstops, ystops);
+        }
+
+        /// <summary>
+        /// Gets a skin surface for the given region in the skin. The surface will be stretched at the midline to get the target size.
+        /// </summary>
+        public SkinSurface GetSurface(int X, int Y, int Width, int Height, Point TargetSize)
+        {
+            List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
+            List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
+            xstops.Add(new SkinSurface.Stop(X, 0.0));
+            xstops.Add(new SkinSurface.Stop(X + Width / 2 - 1, Width / 2 - 1));
+            xstops.Add(new SkinSurface.Stop(X + Width / 2 + 1, TargetSize.X - Width / 2 + 1));
+            xstops.Add(new SkinSurface.Stop(X + Width, TargetSize.X));
+
+            ystops.Add(new SkinSurface.Stop(Y, 0.0));
+            ystops.Add(new SkinSurface.Stop(Y + Height / 2 - 1, Height / 2 - 1));
+            ystops.Add(new SkinSurface.Stop(Y + Height / 2 + 1, TargetSize.Y - Height / 2 + 1));
+            ystops.Add(new SkinSurface.Stop(Y + Height, TargetSize.Y));
+            return this.GetSurface(xstops, ystops);
+        }
+
+        /// <summary>
+        /// Gets a skin surface for the given region in the skin. Stretching and resizing is to be manually specified with stops. Lists
+        /// must be discarded after being supplied.
+        /// </summary>
+        public SkinSurface GetSurface(List<SkinSurface.Stop> XStops, List<SkinSurface.Stop> YStops)
+        {
+            return new SkinSurface(this, XStops, YStops);
         }
 
         /// <summary>
@@ -105,64 +139,41 @@ namespace OpenTKGUI
     }
 
     /// <summary>
-    /// A part of a skin that may be drawn.
+    /// A surface that renders part of a skin, with optional modifications.
     /// </summary>
-    public class SkinPart
+    public class SkinSurface : Surface
     {
-        internal SkinPart(Skin Skin, int X, int Y, int Width, int Height)
+        internal SkinSurface(Skin Skin, List<Stop> XStops, List<Stop> YStops)
         {
+            _MultiplyTextureOffsets(XStops, 1.0 / (double)Skin.Width);
+            _MultiplyTextureOffsets(YStops, 1.0 / (double)Skin.Height);
             this._Skin = Skin;
-            this._X = X;
-            this._Y = Y;
-            this._Width = Width;
-            this._Height = Height;
+            this._XStops = XStops;
+            this._YStops = YStops;
         }
 
-        /// <summary>
-        /// Renders the part to the given rectangle.
-        /// </summary>
-        protected internal void Render(Rectangle Rect)
+        public override void Render(Point Offset, GUIRenderContext Context)
         {
+            GL.Enable(EnableCap.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, this._Skin.Texture);
+            GL.Color4(1.0, 1.0, 1.0, 1.0);
 
-            Point size = new Point(this._Width, this._Height);
-            Point[] coords = new Point[]
-            {
-                Rect.Location,
-                Rect.Location + size * 0.5 - new Point(1, 1),
-                Rect.Location + Rect.Size - size * 0.5 + new Point(1, 1),
-                Rect.Location + Rect.Size
-            };
-            int[] ucoords = new int[]
-            {
-                this._X,
-                this._X + this._Width / 2 - 1,
-                this._X + this._Width / 2 + 1,
-                this._X + this._Width
-            };
-            int[] vcoords = new int[]
-            {
-                this._Y,
-                this._Y + this._Height / 2 - 1,
-                this._Y + this._Height / 2 + 1,
-                this._Y + this._Height
-            };
+            int xs = this._XStops.Count - 1;
+            int ys = this._YStops.Count - 1;
 
-            double multu = 1.0 / (double)this._Skin.Width;
-            double multv = 1.0 / (double)this._Skin.Height;
             GL.Begin(BeginMode.Quads);
-            for (int tx = 0; tx < 3; tx++)
+            for (int tx = 0; tx < xs; tx++)
             {
-                for (int ty = 0; ty < 3; ty++)
+                for (int ty = 0; ty < ys; ty++)
                 {
-                    double x = coords[tx].X;
-                    double y = coords[ty].Y;
-                    double xx = coords[tx + 1].X;
-                    double yy = coords[ty + 1].Y;
-                    double u = ucoords[tx] * multu;
-                    double v = vcoords[ty] * multv;
-                    double uu = ucoords[tx + 1] * multu;
-                    double vv = vcoords[ty + 1] * multv;
+                    double x = this._XStops[tx].RenderOffset + Offset.X;
+                    double y = this._YStops[ty].RenderOffset + Offset.Y;
+                    double xx = this._XStops[tx + 1].RenderOffset + Offset.X;
+                    double yy = this._YStops[ty + 1].RenderOffset + Offset.Y;
+                    double u = this._XStops[tx].TextureOffset;
+                    double v = this._YStops[ty].TextureOffset;
+                    double uu = this._XStops[tx + 1].TextureOffset;
+                    double vv = this._YStops[ty + 1].TextureOffset;
                     GL.TexCoord2(u, v); GL.Vertex2(x, y);
                     GL.TexCoord2(uu, v); GL.Vertex2(xx, y);
                     GL.TexCoord2(uu, vv); GL.Vertex2(xx, yy);
@@ -172,10 +183,43 @@ namespace OpenTKGUI
             GL.End();
         }
 
+        /// <summary>
+        /// Applies the texture offsets in a list of stops by applying an offset and a multipler.
+        /// </summary>
+        private static void _MultiplyTextureOffsets(List<Stop> Stops, double Multipler)
+        {
+            for (int t = 0; t < Stops.Count; t++)
+            {
+                Stop st = Stops[t];
+                Stops[t] = new Stop(st.TextureOffset * Multipler, st.RenderOffset);
+            }
+        }
+
+        /// <summary>
+        /// Represents a line on an axis that correlates an offset when rendered to an offset from the source texture. Using multiple stops can create
+        /// stretching effects.
+        /// </summary>
+        public struct Stop
+        {
+            public Stop(double TextureOffset, double RenderOffset)
+            {
+                this.TextureOffset = TextureOffset;
+                this.RenderOffset = RenderOffset;
+            }
+
+            /// <summary>
+            /// The offset of the stop from the source texture region.
+            /// </summary>
+            public double TextureOffset;
+
+            /// <summary>
+            /// The offset of the stop from the begining of the rendered surface.
+            /// </summary>
+            public double RenderOffset;
+        }
+
         private Skin _Skin;
-        private int _X;
-        private int _Y;
-        private int _Width;
-        private int _Height;
+        private List<Stop> _XStops;
+        private List<Stop> _YStops;
     }
 }

@@ -100,4 +100,13 @@ namespace OpenTKGUI
         public double X;
         public double Y;
     }
+
+    /// <summary>
+    /// An axis.
+    /// </summary>
+    public enum Axis
+    {
+        Horizontal,
+        Vertical
+    }
 }
