@@ -77,16 +77,24 @@ namespace OpenTKGUI
         /// </summary>
         public SkinSurface GetSurface(int X, int Y, int Width, int Height, Point TargetSize)
         {
+            return this.GetSurface(X, Y, Width, Height, Width / 2, Height / 2, TargetSize);
+        }
+
+        /// <summary>
+        /// Gets a skin surface for the given region in the skin. The surface will be stretched at the stretch lines to get the target size.
+        /// </summary>
+        public SkinSurface GetSurface(int X, int Y, int Width, int Height, int XStretchLine, int YStretchLine, Point TargetSize)
+        {
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
             xstops.Add(new SkinSurface.Stop(X, 0.0));
-            xstops.Add(new SkinSurface.Stop(X + Width / 2 - 1, Width / 2 - 1));
-            xstops.Add(new SkinSurface.Stop(X + Width / 2 + 1, TargetSize.X - Width / 2 + 1));
+            xstops.Add(new SkinSurface.Stop(X + XStretchLine - 1, XStretchLine - 1));
+            xstops.Add(new SkinSurface.Stop(X + XStretchLine + 1, TargetSize.X + XStretchLine - Width + 1));
             xstops.Add(new SkinSurface.Stop(X + Width, TargetSize.X));
 
             ystops.Add(new SkinSurface.Stop(Y, 0.0));
-            ystops.Add(new SkinSurface.Stop(Y + Height / 2 - 1, Height / 2 - 1));
-            ystops.Add(new SkinSurface.Stop(Y + Height / 2 + 1, TargetSize.Y - Height / 2 + 1));
+            ystops.Add(new SkinSurface.Stop(Y + YStretchLine - 1, YStretchLine - 1));
+            ystops.Add(new SkinSurface.Stop(Y + YStretchLine + 1, TargetSize.Y + YStretchLine - Height + 1));
             ystops.Add(new SkinSurface.Stop(Y + Height, TargetSize.Y));
             return this.GetSurface(xstops, ystops);
         }

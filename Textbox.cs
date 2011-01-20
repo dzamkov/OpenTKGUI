@@ -169,7 +169,7 @@ namespace OpenTKGUI
                     this._MakeTextSample();
                 }
 
-                // Navigatioin
+                // Navigation
                 foreach (KeyEvent ke in ks.Events)
                 {
                     if (ke.Type == ButtonEventType.Down)

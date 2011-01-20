@@ -40,6 +40,15 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets if the specified point is inside the rectangle.
+        /// </summary>
+        public bool In(Point Point)
+        {
+            return Point.X >= this.Location.X && Point.Y >= this.Location.Y &&
+                Point.X < this.Location.X + this.Size.X && Point.Y < this.Location.Y + this.Size.Y;
+        }
+
+        /// <summary>
         /// Gets the intersection of two rectangles.
         /// </summary>
         public static Rectangle Intersection(Rectangle A, Rectangle B)

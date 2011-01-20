@@ -41,24 +41,23 @@ namespace OpenTKGUI
         /// </summary>
         public static void Main(string[] Args)
         {
+            LayerContainer lc = new LayerContainer();
             ManualContainer mc = new ManualContainer();
             Button a;
             Button b;
             Textbox c;
             Textbox d;
-            mc.AddChild(a = new Button("Jello?!?"), new Rectangle(200.0, 200.0, 300.0, 30.0));
-            mc.AddChild(b = new Button("Test"), new Rectangle(200.0, 240.0, 300.0, 30.0));
-            mc.AddChild(c = new Textbox(), new Rectangle(200.0, 280.0, 300.0, 30.0));
-            mc.AddChild(d = new Textbox(), new Rectangle(200.0, 320.0, 300.0, 30.0));
-            c.TextEntered += delegate(string Text)
-            {
-                a.Text = Text;
-            };
-            d.TextChanged += delegate(string Text)
-            {
-                b.Text = Text;
-            };
-            new HostWindow(mc, "Test").Run();
+            mc.AddChild(a = new Button("Jello?!?"), new Rectangle(20.0, 20.0, 300.0, 30.0));
+            mc.AddChild(b = new Button("Test"), new Rectangle(20.0, 60.0, 300.0, 30.0));
+            mc.AddChild(c = new Textbox(), new Rectangle(20.0, 100.0, 300.0, 30.0));
+            mc.AddChild(d = new Textbox(), new Rectangle(20.0, 140.0, 300.0, 30.0));
+            mc.Color = Color.RGB(0.85, 0.85, 0.85);
+
+            Form f = new Form(mc);
+            f.ResizeClient(new Point(340.0, 190.0));
+            lc.AddControl(f, new Point(400.0, 400.0));
+
+            new HostWindow(lc, "Test").Run();
         }
 #endif
 

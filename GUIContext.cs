@@ -144,7 +144,7 @@ namespace OpenTKGUI
                     {
                         return new _OffsetMouseState(this._Source.MouseState, pos);
                     }
-                    if (focus == null)
+                    if (!this._DisableMouse && focus == null)
                     {
                         Point size = this._Control.Size;
                         if (pos.X >= 0.0 && pos.Y >= 0.0 && pos.X < size.X && pos.Y < size.Y)
@@ -208,10 +208,24 @@ namespace OpenTKGUI
         /// <param name="Offset">The offset of the child control.</param>
         public GUIControlContext CreateChildContext(Control Control, Point Offset)
         {
-            return new GUIControlContext(this._Source, Control, this._Offset + Offset);
+            GUIControlContext cc = new GUIControlContext(this._Source, Control, this._Offset + Offset);
+            cc._DisableMouse = this._DisableMouse;
+            return cc;
+        }
+
+        /// <summary>
+        /// Creates a control context for a child control of this control. If DisableMouse is true, the child context will not 
+        /// be able to access the mouse unless it has mouse focus.
+        /// </summary>
+        public GUIControlContext CreateChildContext(Control Control, Point Offset, bool DisableMouse)
+        {
+            GUIControlContext cc = new GUIControlContext(this._Source, Control, this._Offset + Offset);
+            cc._DisableMouse |= DisableMouse;
+            return cc;
         }
 
         private GUIContext _Source;
+        private bool _DisableMouse;
         private Point _Offset;
         private Control _Control;
     }
