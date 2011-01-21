@@ -34,6 +34,18 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Removes a hovering layer control from this container.
+        /// </summary>
+        public void RemoveControl(LayerControl Control)
+        {
+            if (Control._Container == this)
+            {
+                Control._Container = null;
+                this._LayerControls.Remove(Control);
+            }
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             if (this._Background != null)
@@ -52,7 +64,9 @@ namespace OpenTKGUI
         {
             MouseState ms = Context.MouseState;
             Point? mousepos = ms != null ? (Point?)ms.Position : null;
-            foreach (LayerControl lc in this._LayerControls)
+            LinkedList<LayerControl> oldlayercontrols = this._LayerControls;
+            this._LayerControls = new LinkedList<LayerControl>(this._LayerControls);
+            foreach (LayerControl lc in oldlayercontrols)
             {
                 lc.Update(Context.CreateChildContext(lc, lc._Position, mousepos == null), Time);
                 if (mousepos != null)
@@ -63,6 +77,8 @@ namespace OpenTKGUI
                     }
                 }
             }
+
+
             if (this._Background != null)
             {
                 this._Background.Update(Context.CreateChildContext(this._Background, new Point(), mousepos == null), Time);

@@ -61,41 +61,41 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets a skin surface for the given region in the skin. No stretching or resizing is applied to the surface.
         /// </summary>
-        public SkinSurface GetSurface(int X, int Y, int Width, int Height)
+        public SkinSurface GetSurface(SkinRectangle Rect, int Height)
         {
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
-            xstops.Add(new SkinSurface.Stop(X, 0.0));
-            xstops.Add(new SkinSurface.Stop(X + Width, Width));
-            ystops.Add(new SkinSurface.Stop(Y, 0.0));
-            ystops.Add(new SkinSurface.Stop(Y + Height, Height));
+            xstops.Add(new SkinSurface.Stop(Rect.X, 0.0));
+            xstops.Add(new SkinSurface.Stop(Rect.X + Rect.Width, Rect.Width));
+            ystops.Add(new SkinSurface.Stop(Rect.Y, 0.0));
+            ystops.Add(new SkinSurface.Stop(Rect.Y + Rect.Height, Rect.Height));
             return this.GetSurface(xstops, ystops);
         }
 
         /// <summary>
         /// Gets a skin surface for the given region in the skin. The surface will be stretched at the midline to get the target size.
         /// </summary>
-        public SkinSurface GetSurface(int X, int Y, int Width, int Height, Point TargetSize)
+        public SkinSurface GetSurface(SkinRectangle Rect, Point TargetSize)
         {
-            return this.GetSurface(X, Y, Width, Height, Width / 2, Height / 2, TargetSize);
+            return this.GetSurface(Rect, Rect.Width / 2, Rect.Height / 2, TargetSize);
         }
 
         /// <summary>
         /// Gets a skin surface for the given region in the skin. The surface will be stretched at the stretch lines to get the target size.
         /// </summary>
-        public SkinSurface GetSurface(int X, int Y, int Width, int Height, int XStretchLine, int YStretchLine, Point TargetSize)
+        public SkinSurface GetSurface(SkinRectangle Rect, int XStretchLine, int YStretchLine, Point TargetSize)
         {
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
-            xstops.Add(new SkinSurface.Stop(X, 0.0));
-            xstops.Add(new SkinSurface.Stop(X + XStretchLine - 1, XStretchLine - 1));
-            xstops.Add(new SkinSurface.Stop(X + XStretchLine + 1, TargetSize.X + XStretchLine - Width + 1));
-            xstops.Add(new SkinSurface.Stop(X + Width, TargetSize.X));
+            xstops.Add(new SkinSurface.Stop(Rect.X, 0.0));
+            xstops.Add(new SkinSurface.Stop(Rect.X + XStretchLine - 1, XStretchLine - 1));
+            xstops.Add(new SkinSurface.Stop(Rect.X + XStretchLine + 1, TargetSize.X + XStretchLine - Rect.Width + 1));
+            xstops.Add(new SkinSurface.Stop(Rect.X + Rect.Width, TargetSize.X));
 
-            ystops.Add(new SkinSurface.Stop(Y, 0.0));
-            ystops.Add(new SkinSurface.Stop(Y + YStretchLine - 1, YStretchLine - 1));
-            ystops.Add(new SkinSurface.Stop(Y + YStretchLine + 1, TargetSize.Y + YStretchLine - Height + 1));
-            ystops.Add(new SkinSurface.Stop(Y + Height, TargetSize.Y));
+            ystops.Add(new SkinSurface.Stop(Rect.Y, 0.0));
+            ystops.Add(new SkinSurface.Stop(Rect.Y + YStretchLine - 1, YStretchLine - 1));
+            ystops.Add(new SkinSurface.Stop(Rect.Y + YStretchLine + 1, TargetSize.Y + YStretchLine - Rect.Height + 1));
+            ystops.Add(new SkinSurface.Stop(Rect.Y + Rect.Height, TargetSize.Y));
             return this.GetSurface(xstops, ystops);
         }
 
@@ -144,6 +144,28 @@ namespace OpenTKGUI
         private int _Width;
         private int _Height;
         private int _Texture;
+    }
+
+    /// <summary>
+    /// A source rectangle for a skin.
+    /// </summary>
+    public struct SkinRectangle
+    {
+        public SkinRectangle(int X, int Y, int Width, int Height)
+        {
+            this.X = X;
+            this.Y = Y;
+            this.Width = Width;
+            this.Height = Height;
+        }
+
+        public int X;
+
+        public int Y;
+
+        public int Width;
+
+        public int Height;
     }
 
     /// <summary>

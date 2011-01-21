@@ -11,7 +11,13 @@ namespace OpenTKGUI
     public class Button : Control
     {
         public Button(string Text)
+            : this(new ButtonStyle(), Text)
         {
+        }
+
+        public Button(ButtonStyle Style, string Text)
+        {
+            this._Style = Style;
             this._Text = Text;
         }
 
@@ -37,31 +43,34 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Skin s = Skin.Default;
+            Skin s = this._Style.Skin;
             Surface sf;
             if (this._MouseOver)
             {
                 if (this._MouseDown)
                 {
-                    sf = s.GetSurface(64, 0, 32, 32, this.Size);
+                    sf = s.GetSurface(this._Style.Pushed, this.Size);
                 }
                 else
                 {
-                    sf = s.GetSurface(32, 0, 32, 32, this.Size);
+                    sf = s.GetSurface(this._Style.Active, this.Size);
                 }
             }
             else
             {
-                sf = s.GetSurface(0, 0, 32, 32, this.Size);
+                sf = s.GetSurface(this._Style.Normal, this.Size);
             }
             Context.DrawSurface(sf);
 
-            if (this._TextSample == null)
+            if (this._Text != null && this._Text.Length != 0)
             {
-                this._TextSample = new SystemFont("Verdana", 14.0, true).GetSample(this._Text);
-            }
+                if (this._TextSample == null)
+                {
+                    this._TextSample = new SystemFont("Verdana", 14.0, true).GetSample(this._Text);
+                }
 
-            Context.DrawCenteredText(Color.RGB(0.0, 0.0, 0.0), this._TextSample, this.Size * 0.5);
+                Context.DrawCenteredText(Color.RGB(0.0, 0.0, 0.0), this._TextSample, this.Size * 0.5);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)
@@ -108,6 +117,18 @@ namespace OpenTKGUI
         private bool _MouseOver;
         private TextSample _TextSample;
         private string _Text;
+        private ButtonStyle _Style;
+    }
+
+    /// <summary>
+    /// Gives styling options for a button.
+    /// </summary>
+    public sealed class ButtonStyle
+    {
+        public Skin Skin = Skin.Default;
+        public SkinRectangle Normal = new SkinRectangle(0, 0, 32, 32);
+        public SkinRectangle Active = new SkinRectangle(32, 0, 32, 32);
+        public SkinRectangle Pushed = new SkinRectangle(64, 0, 32, 32);
     }
 
     /// <summary>

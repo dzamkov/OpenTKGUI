@@ -13,11 +13,10 @@ namespace OpenTKGUI
     /// </summary>
     public class HostWindow : GameWindow
     {
-        public HostWindow(Control Control, string Title)
+        public HostWindow(BuildControlHandler BuildControl, string Title)
             : base(640, 480, GraphicsMode.Default, Title, GameWindowFlags.Default)
         {
             this.WindowState = WindowState.Maximized;
-            this._Control = Control;
 
             this._KeyEvents = new List<KeyEvent>();
             this._KeyPresses = new List<char>();
@@ -33,6 +32,8 @@ namespace OpenTKGUI
             {
                 this._KeyPresses.Add(e.KeyChar);
             };
+
+            this._Control = BuildControl();
         }
 
 #if DEBUG
@@ -41,23 +42,26 @@ namespace OpenTKGUI
         /// </summary>
         public static void Main(string[] Args)
         {
-            LayerContainer lc = new LayerContainer();
-            ManualContainer mc = new ManualContainer();
-            Button a;
-            Button b;
-            Textbox c;
-            Textbox d;
-            mc.AddChild(a = new Button("Jello?!?"), new Rectangle(20.0, 20.0, 300.0, 30.0));
-            mc.AddChild(b = new Button("Test"), new Rectangle(20.0, 60.0, 300.0, 30.0));
-            mc.AddChild(c = new Textbox(), new Rectangle(20.0, 100.0, 300.0, 30.0));
-            mc.AddChild(d = new Textbox(), new Rectangle(20.0, 140.0, 300.0, 30.0));
-            mc.Color = Color.RGB(0.85, 0.85, 0.85);
+            new HostWindow(delegate
+            {
+                LayerContainer lc = new LayerContainer();
+                ManualContainer mc = new ManualContainer();
+                Button a;
+                Button b;
+                Textbox c;
+                Textbox d;
+                mc.AddChild(a = new Button("Jello?!?"), new Rectangle(20.0, 20.0, 300.0, 30.0));
+                mc.AddChild(b = new Button("Test"), new Rectangle(20.0, 60.0, 300.0, 30.0));
+                mc.AddChild(c = new Textbox(), new Rectangle(20.0, 100.0, 300.0, 30.0));
+                mc.AddChild(d = new Textbox(), new Rectangle(20.0, 140.0, 300.0, 30.0));
+                mc.Color = Color.RGB(0.85, 0.85, 0.85);
 
-            Form f = new Form(mc);
-            f.ResizeClient(new Point(340.0, 190.0));
-            lc.AddControl(f, new Point(400.0, 400.0));
-
-            new HostWindow(lc, "Test").Run();
+                Form f = new Form(mc);
+                f.ResizeClient(new Point(340.0, 190.0));
+                f.AddCloseButton();
+                lc.AddControl(f, new Point(400.0, 400.0));
+                return lc;
+            }, "Test").Run();
         }
 #endif
 
@@ -218,4 +222,10 @@ namespace OpenTKGUI
         private Control _KeyboardFocus;
         private Control _Control;
     }
+
+    /// <summary>
+    /// A function that creates a control hierarchy when controls are needed. This allows the construction of controls to be delayed until
+    /// the graphics context is set up.
+    /// </summary>
+    public delegate Control BuildControlHandler();
 }

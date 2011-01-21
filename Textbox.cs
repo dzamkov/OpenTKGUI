@@ -10,10 +10,17 @@ namespace OpenTKGUI
     /// </summary>
     public class Textbox : Control
     {
-        public Textbox()
+        public Textbox(TextboxStyle Style)
         {
+            this._Style = Style;
             this._Text = "";
             this._MakeTextSample();
+        }
+
+        public Textbox()
+            : this(new TextboxStyle())
+        {
+
         }
 
         /// <summary>
@@ -33,8 +40,8 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Skin s = Skin.Default;
-            Context.DrawSurface(s.GetSurface(96, 0, 32, 32, this.Size));
+            Skin s = this._Style.Skin;
+            Context.DrawSurface(s.GetSurface(this._Style.Textbox, this.Size));
 
             Rectangle inner = new Rectangle(this.Size).Pad(_Padding);
             Context.PushClip(inner);
@@ -318,6 +325,7 @@ namespace OpenTKGUI
         private TextSelection _Selection;
         private string _Text;
         private TextSample _TextSample;
+        private TextboxStyle _Style;
     }
 
     /// <summary>
@@ -377,5 +385,14 @@ namespace OpenTKGUI
         /// The character the end of the selection is before.
         /// </summary>
         public int End;
+    }
+
+    /// <summary>
+    /// Gives styling options for a textbox.
+    /// </summary>
+    public sealed class TextboxStyle
+    {
+        public Skin Skin = Skin.Default;
+        public SkinRectangle Textbox = new SkinRectangle(96, 0, 32, 32);
     }
 }
