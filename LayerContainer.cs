@@ -21,6 +21,21 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets or sets the style default shadows are rendered with.
+        /// </summary>
+        public ShadowStyle ShadowStyle
+        {
+            get
+            {
+                return this._ShadowStyle;
+            }
+            set
+            {
+                this._ShadowStyle = value;
+            }
+        }
+
+        /// <summary>
         /// Adds a hovering layer control to the top of the layer container (above all other controls). The added control must not
         /// be used by any other layer containers.
         /// </summary>
@@ -51,6 +66,10 @@ namespace OpenTKGUI
             if (this._Background != null)
             {
                 this._Background.Render(Context);
+            }
+            foreach (LayerControl lc in this._LayerControls)
+            {
+                lc.RenderShadow(lc._Position, Context);
             }
             foreach (LayerControl lc in this._LayerControls)
             {
@@ -109,6 +128,7 @@ namespace OpenTKGUI
             }
         }
 
+        private ShadowStyle _ShadowStyle = new ShadowStyle();
         private Control _Background;
         private LinkedList<LayerControl> _LayerControls;
     }
@@ -144,7 +164,28 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Renders a shadow for the hovering control. The context given will not be translated or clipped from
+        /// the layer container.
+        /// </summary>
+        public virtual void RenderShadow(Point Position, GUIRenderContext Context)
+        {
+            ShadowStyle ss = this._Container.ShadowStyle;
+            double width = ss.Width;
+            Context.DrawSurface(ss.Skin.GetSurface(ss.Image, this.Size + new Point(width * 2.0, width * 2.0)), Position - new Point(width, width));
+        }
+
         internal LayerContainer _Container;
         internal Point _Position;
+    }
+
+    /// <summary>
+    /// Gives styling options for the default shadow on hovering controls.
+    /// </summary>
+    public class ShadowStyle
+    {
+        public Skin Skin = Skin.Default;
+        public SkinRectangle Image = new SkinRectangle(112, 32, 16, 16);
+        public double Width = 6.0;
     }
 }

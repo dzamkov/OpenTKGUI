@@ -67,7 +67,7 @@ namespace OpenTKGUI
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            GL.ClearColor(Color.RGB(0.8, 0.8, 0.8));
+            GL.ClearColor(Color.RGB(1.0, 1.0, 1.0));
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             GL.MatrixMode(MatrixMode.Projection);
