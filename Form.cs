@@ -97,14 +97,43 @@ namespace OpenTKGUI
         public override void Update(GUIControlContext Context, double Time)
         {
             int i = 0;
+            double lasttitlex = this.Size.X - this._Style.TitleBarMargin;
             foreach (Point loc in this._ButtonLocations)
             {
                 Button button = this._Buttons[i];
                 button.Update(Context.CreateChildContext(button, loc), Time);
+                lasttitlex = loc.X;
                 i++;
             }
 
             this._Client.Update(Context.CreateChildContext(this._Client, this.ClientRectangle.Location), Time);
+
+            // Form needs to be dragged?
+            MouseState ms = Context.MouseState;
+            if (ms != null)
+            {
+                Point mousepos = ms.Position;
+                if (this._FormDragOffset == null)
+                {
+                    if (new Rectangle(this._Style.TitleBarMargin, 0.0, lasttitlex, this._Style.TitleBarSize).In(mousepos))
+                    {
+                        if (ms.IsButtonDown(MouseButton.Left))
+                        {
+                            Context.CaptureMouse();
+                            this._FormDragOffset = mousepos;
+                        }
+                    }
+                }
+                else
+                {
+                    this.Position = this.Position + mousepos - this._FormDragOffset.Value;
+                    if (!ms.IsButtonDown(MouseButton.Left))
+                    {
+                        Context.ReleaseMouse();
+                        this._FormDragOffset = null;
+                    }
+                }
+            }
         }
 
         protected override void OnResize(Point OldSize, Point NewSize)
@@ -130,7 +159,7 @@ namespace OpenTKGUI
         {
             get
             {
-                double x = this.Size.X - this._Style.ButtonRightMargin;
+                double x = this.Size.X - this._Style.TitleBarMargin;
                 double y = this._Style.TitleBarMidline - this._Style.ButtonSize.Y / 2.0;
                 for (int t = 0; t < this._Buttons.Count; t++)
                 {
@@ -141,6 +170,7 @@ namespace OpenTKGUI
             }
         }
 
+        private Point? _FormDragOffset;
         private List<Button> _Buttons;
         private FormStyle _Style;
         private Control _Client;
@@ -157,7 +187,7 @@ namespace OpenTKGUI
         public double TitleBarSize = 32.0;
         public double BorderSize = 7.0;
         public double TitleBarMidline = 15.0;
-        public double ButtonRightMargin = 7.0;
+        public double TitleBarMargin = 7.0;
         public Point ButtonSize = new Point(16.0, 16.0);
         public double ButtonSeperation = 4.0;
         public ButtonStyle CloseButtonStyle = new ButtonStyle()
