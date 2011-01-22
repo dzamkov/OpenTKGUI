@@ -126,9 +126,9 @@ namespace OpenTKGUI
     public sealed class ButtonStyle
     {
         public Skin Skin = Skin.Default;
-        public SkinRectangle Normal = new SkinRectangle(0, 0, 32, 32);
-        public SkinRectangle Active = new SkinRectangle(32, 0, 32, 32);
-        public SkinRectangle Pushed = new SkinRectangle(64, 0, 32, 32);
+        public SkinArea Normal = new SkinArea(0, 0, 32, 32);
+        public SkinArea Active = new SkinArea(32, 0, 32, 32);
+        public SkinArea Pushed = new SkinArea(64, 0, 32, 32);
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public Font Font = Font.Default;
     }

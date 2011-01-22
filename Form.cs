@@ -222,10 +222,10 @@ namespace OpenTKGUI
     public sealed class FormStyle
     {
         public Skin Skin = Skin.Default;
-        public SkinRectangle Form = new SkinRectangle(0, 32, 64, 64);
+        public SkinArea Form = new SkinArea(0, 32, 64, 64);
         public int FormVerticalStretchLine = 44;
+        public double BorderSize = 6.0;
         public double TitleBarSize = 32.0;
-        public double BorderSize = 7.0;
         public double TitleBarMidline = 15.0;
         public double TitleBarMargin = 7.0;
         public Font TitleBarFont = Font.Default;
@@ -235,9 +235,9 @@ namespace OpenTKGUI
         public ButtonStyle CloseButtonStyle = new ButtonStyle()
         {
             Skin = Skin.Default,
-            Normal = new SkinRectangle(64, 32, 16, 16),
-            Active = new SkinRectangle(80, 32, 16, 16),
-            Pushed = new SkinRectangle(96, 32, 16, 16)
+            Normal = new SkinArea(64, 32, 16, 16),
+            Active = new SkinArea(80, 32, 16, 16),
+            Pushed = new SkinArea(96, 32, 16, 16)
         };
     }
 }

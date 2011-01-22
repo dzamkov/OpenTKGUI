@@ -185,7 +185,7 @@ namespace OpenTKGUI
     public class ShadowStyle
     {
         public Skin Skin = Skin.Default;
-        public SkinRectangle Image = new SkinRectangle(112, 32, 16, 16);
+        public SkinArea Image = new SkinArea(112, 32, 16, 16);
         public double Width = 6.0;
     }
 }

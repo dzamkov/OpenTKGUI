@@ -65,6 +65,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Res.resx</DependentUpon>
     </Compile>
+    <Compile Include="Scrollbar.cs" />
     <Compile Include="Skin.cs" />
     <Compile Include="Surface.cs" />
     <Compile Include="Textbox.cs" />

@@ -49,6 +49,32 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets a point that has its components swapped from this point.
+        /// </summary>
+        public Point Swap
+        {
+            get
+            {
+                return new Point(this.Y, this.X);
+            }
+        }
+
+        /// <summary>
+        /// Swaps the two components of the point if condition is true.
+        /// </summary>
+        public Point SwapIf(bool Condition)
+        {
+            if (Condition)
+            {
+                return this.Swap;
+            }
+            else
+            {
+                return this;
+            }
+        }
+
+        /// <summary>
         /// Gets the angle of this point (representing an offset).
         /// </summary>
         public double Angle

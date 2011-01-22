@@ -50,16 +50,18 @@ namespace OpenTKGUI
                 Button b;
                 Textbox c;
                 Textbox d;
+                Scrollbar e;
                 mc.AddChild(a = new Button("Jello?!?"), new Rectangle(20.0, 20.0, 300.0, 30.0));
                 mc.AddChild(b = new Button("Test"), new Rectangle(20.0, 60.0, 300.0, 30.0));
                 mc.AddChild(c = new Textbox(), new Rectangle(20.0, 100.0, 300.0, 30.0));
                 mc.AddChild(d = new Textbox(), new Rectangle(20.0, 140.0, 300.0, 30.0));
+                mc.AddChild(e = new Scrollbar(Axis.Horizontal), new Rectangle(20.0, 180.0, 300.0, 30.0));
                 mc.Color = Color.RGB(0.85, 0.85, 0.85);
 
                 
 
                 Form f = new Form(mc, "Test");
-                f.ResizeClient(new Point(340.0, 190.0));
+                f.ResizeClient(new Point(340.0, 230.0));
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(400.0, 400.0));
 

@@ -61,7 +61,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets a skin surface for the given region in the skin. No stretching or resizing is applied to the surface.
         /// </summary>
-        public SkinSurface GetSurface(SkinRectangle Rect, int Height)
+        public SkinSurface GetSurface(SkinArea Rect, int Height)
         {
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
@@ -75,7 +75,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets a skin surface for the given region in the skin. The surface will be stretched at the midline to get the target size.
         /// </summary>
-        public SkinSurface GetSurface(SkinRectangle Rect, Point TargetSize)
+        public SkinSurface GetSurface(SkinArea Rect, Point TargetSize)
         {
             return this.GetSurface(Rect, Rect.Width / 2, Rect.Height / 2, TargetSize);
         }
@@ -83,7 +83,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets a skin surface for the given region in the skin. The surface will be stretched at the stretch lines to get the target size.
         /// </summary>
-        public SkinSurface GetSurface(SkinRectangle Rect, int XStretchLine, int YStretchLine, Point TargetSize)
+        public SkinSurface GetSurface(SkinArea Rect, int XStretchLine, int YStretchLine, Point TargetSize)
         {
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
@@ -153,11 +153,11 @@ namespace OpenTKGUI
     }
 
     /// <summary>
-    /// A source rectangle for a skin.
+    /// A source area for a skin.
     /// </summary>
-    public struct SkinRectangle
+    public struct SkinArea
     {
-        public SkinRectangle(int X, int Y, int Width, int Height)
+        public SkinArea(int X, int Y, int Width, int Height)
         {
             this.X = X;
             this.Y = Y;
