@@ -56,10 +56,18 @@ namespace OpenTKGUI
                 mc.AddChild(d = new Textbox(), new Rectangle(20.0, 140.0, 300.0, 30.0));
                 mc.Color = Color.RGB(0.85, 0.85, 0.85);
 
-                Form f = new Form(mc);
+                
+
+                Form f = new Form(mc, "Test");
                 f.ResizeClient(new Point(340.0, 190.0));
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(400.0, 400.0));
+
+                c.TextEntered += delegate(string Text)
+                {
+                    f.Text = Text;
+                };
+
                 return lc;
             }, "Test").Run();
         }

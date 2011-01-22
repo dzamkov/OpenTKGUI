@@ -43,11 +43,12 @@ namespace OpenTKGUI
             Skin s = this._Style.Skin;
             Context.DrawSurface(s.GetSurface(this._Style.Textbox, this.Size));
 
-            Rectangle inner = new Rectangle(this.Size).Pad(_Padding);
+            Rectangle inner = new Rectangle(this.Size).Pad(this._Style.InteriorMargin);
             Context.PushClip(inner);
 
             // Draw text
-            Context.DrawText(Color.RGB(0.0, 0.0, 0.0), this._TextSample, inner.Location);
+            Point texloc = new Point(inner.Location.X, inner.Location.Y + inner.Size.Y / 2.0 - this._TextSample.Size.Y / 2.0);
+            Context.DrawText(this._Style.TextColor, this._TextSample, texloc);
 
             
             // Draw selection
@@ -63,8 +64,8 @@ namespace OpenTKGUI
                     double endx = inner.Location.X + _SelectionX(charbounds, endi);
                     Rectangle clip = new Rectangle(startx, inner.Location.Y, endx - startx, inner.Size.Y);
                     Context.PushClip(clip);
-                    Context.DrawSolid(Color.RGB(0.0, 0.5, 1.0), clip);
-                    Context.DrawText(Color.RGB(1.0, 1.0, 1.0), this._TextSample, inner.Location);
+                    Context.DrawSolid(this._Style.SelectionBackgroundColor, clip);
+                    Context.DrawText(this._Style.SelectionTextColor, this._TextSample, texloc);
                     Context.Pop();
                 }
 
@@ -73,7 +74,7 @@ namespace OpenTKGUI
                 {
                     int curi = this._Selection.Start;
                     double cursx = inner.Location.X + _SelectionX(charbounds, curi);
-                    Context.DrawSolid(Color.RGB(0.0, 0.0, 0.0), new Rectangle(cursx, inner.Location.Y, 1.0, inner.Size.Y));
+                    Context.DrawSolid(this._Style.CursorColor, new Rectangle(cursx, inner.Location.Y, 1.0, inner.Size.Y));
                 }
             }
 
@@ -121,9 +122,10 @@ namespace OpenTKGUI
 
             // Flash the cursor
             this._CursorFlashTime += Time;
-            while (this._CursorFlashTime > _CursorFlashRate)
+            double cfr = this._Style.CursorFlashRate;
+            while (this._CursorFlashTime > cfr)
             {
-                this._CursorFlashTime -= _CursorFlashRate * 2.0;
+                this._CursorFlashTime -= cfr * 2.0;
             }
 
             // Update text
@@ -215,7 +217,7 @@ namespace OpenTKGUI
 
         private void _MakeTextSample()
         {
-            this._TextSample = new SystemFont("Verdana", 16.0, true).GetSample(this._Text);
+            this._TextSample = this._Style.Font.GetSample(this._Text);
         }
 
         /// <summary>
@@ -224,7 +226,7 @@ namespace OpenTKGUI
         private int _SelectedIndex(Point Point)
         {
             double x = Point.X;
-            x -= _Padding;
+            x -= this._Style.InteriorMargin;
             Rectangle[] charbounds = this._TextSample.CharacterBounds;
             if (charbounds.Length == 0)
             {
@@ -317,9 +319,6 @@ namespace OpenTKGUI
         /// </summary>
         public event TextEnteredHandler TextEntered;
 
-        private const double _Padding = 4.0;
-        private const double _CursorFlashRate = 0.1;
-
         private double _CursorFlashTime;
         private bool _MouseDown;
         private TextSelection _Selection;
@@ -394,5 +393,12 @@ namespace OpenTKGUI
     {
         public Skin Skin = Skin.Default;
         public SkinRectangle Textbox = new SkinRectangle(96, 0, 32, 32);
+        public double CursorFlashRate = 0.1;
+        public double InteriorMargin = 4.0;
+        public Color CursorColor = Color.RGB(0.0, 0.0, 0.0);
+        public Color SelectionBackgroundColor = Color.RGB(0.0, 0.5, 1.0);
+        public Color SelectionTextColor = Color.RGB(1.0, 1.0, 1.0);
+        public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
+        public Font Font = Font.Default;
     }
 }

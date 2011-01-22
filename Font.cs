@@ -18,6 +18,27 @@ namespace OpenTKGUI
     public abstract class Font : IDisposable
     {
         /// <summary>
+        /// Gets or sets the default font used for controls.
+        /// </summary>
+        public static Font Default
+        {
+            get
+            {
+                if (_Default == null)
+                {
+                    _Default = new SystemFont("Verdana", 14.0, true);
+                }
+                return _Default;
+            }
+            set
+            {
+                _Default = value;
+            }
+        }
+
+        private static Font _Default;
+
+        /// <summary>
         /// Gets a text sample for the specified text when drawn with this font.
         /// </summary>
         public abstract TextSample GetSample(string Text);

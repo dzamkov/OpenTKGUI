@@ -10,17 +10,18 @@ namespace OpenTKGUI
     /// </summary>
     public class Form : LayerControl
     { 
-        public Form(Control Client)
-            : this(new FormStyle(), Client)
+        public Form(Control Client, string Text)
+            : this(new FormStyle(), Client, Text)
         {
 
         }
 
-        public Form(FormStyle Style, Control Client)
+        public Form(FormStyle Style, Control Client, string Text)
         {
             this._Buttons = new List<Button>();
             this._Client = Client;
             this._Style = Style;
+            this._Text = Text;
         }
 
         /// <summary>
@@ -53,6 +54,26 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets or sets the text in the titlebar of the form.
+        /// </summary>
+        public string Text
+        {
+            get
+            {
+                return this._Text;
+            }
+            set
+            {
+                this._Text = value;
+                if (this._TextSample != null)
+                {
+                    this._TextSample.Dispose();
+                    this._TextSample = null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds a button the the right of the titlebar of the form. Buttons will have no text on them and will be distinguishable only by style.
         /// </summary>
         public Button AddTitlebarButton(ButtonStyle Style)
@@ -77,13 +98,17 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
+            // Client
             Context.PushTranslate(this.ClientRectangle.Location);
             this._Client.Render(Context);
             Context.Pop();
 
+            // Form
             Skin s = this._Style.Skin;
             Context.DrawSurface(s.GetSurface(this._Style.Form, this._Style.Form.Width / 2, this._Style.FormVerticalStretchLine, this.Size));
 
+
+            // Buttons
             int i = 0;
             foreach (Point loc in this._ButtonLocations)
             {
@@ -91,6 +116,19 @@ namespace OpenTKGUI
                 this._Buttons[i].Render(Context);
                 Context.Pop();
                 i++;
+            }
+
+            // Text
+            if (this._Text != null && this._Text != "")
+            {
+                if (this._TextSample == null)
+                {
+                    this._TextSample = this._Style.TitleBarFont.GetSample(this._Text);
+                }
+                Context.DrawText(
+                    this._Style.TitleBarTextColor, 
+                    this._TextSample, 
+                    new Point(this._Style.TitleBarMargin, this._Style.TitleBarMidline - this._TextSample.Size.Y / 2.0));
             }
         }
 
@@ -115,7 +153,7 @@ namespace OpenTKGUI
                 Point mousepos = ms.Position;
                 if (this._FormDragOffset == null)
                 {
-                    if (new Rectangle(this._Style.TitleBarMargin, 0.0, lasttitlex, this._Style.TitleBarSize).In(mousepos))
+                    if (new Rectangle(this._Style.TitleBarMargin, 0.0, lasttitlex - this._Style.TitleBarMargin, this._Style.TitleBarSize).In(mousepos))
                     {
                         if (ms.IsButtonDown(MouseButton.Left))
                         {
@@ -170,6 +208,8 @@ namespace OpenTKGUI
             }
         }
 
+        private TextSample _TextSample;
+        private string _Text;
         private Point? _FormDragOffset;
         private List<Button> _Buttons;
         private FormStyle _Style;
@@ -188,6 +228,8 @@ namespace OpenTKGUI
         public double BorderSize = 7.0;
         public double TitleBarMidline = 15.0;
         public double TitleBarMargin = 7.0;
+        public Font TitleBarFont = Font.Default;
+        public Color TitleBarTextColor = Color.RGB(0.3, 0.3, 0.3);
         public Point ButtonSize = new Point(16.0, 16.0);
         public double ButtonSeperation = 4.0;
         public ButtonStyle CloseButtonStyle = new ButtonStyle()
