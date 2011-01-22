@@ -174,6 +174,7 @@ namespace OpenTKGUI
                 }
                 if (changed)
                 {
+                    this._CursorFlashTime = 0.0;
                     this._TextSample.Dispose();
                     this._MakeTextSample();
                 }
@@ -393,7 +394,7 @@ namespace OpenTKGUI
     {
         public Skin Skin = Skin.Default;
         public SkinRectangle Textbox = new SkinRectangle(96, 0, 32, 32);
-        public double CursorFlashRate = 0.1;
+        public double CursorFlashRate = 0.5;
         public double InteriorMargin = 4.0;
         public Color CursorColor = Color.RGB(0.0, 0.0, 0.0);
         public Color SelectionBackgroundColor = Color.RGB(0.0, 0.5, 1.0);

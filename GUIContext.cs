@@ -257,7 +257,7 @@ namespace OpenTKGUI
         public abstract bool IsKeyDown(Key Key);
 
         /// <summary>
-        /// Gets the keys events that where generated since the last update.
+        /// Gets the keys events that were generated since the last update.
         /// </summary>
         public abstract IEnumerable<KeyEvent> Events { get; }
 

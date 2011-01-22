@@ -88,13 +88,19 @@ namespace OpenTKGUI
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();
             xstops.Add(new SkinSurface.Stop(Rect.X, 0.0));
-            xstops.Add(new SkinSurface.Stop(Rect.X + XStretchLine - 1, XStretchLine - 1));
-            xstops.Add(new SkinSurface.Stop(Rect.X + XStretchLine + 1, TargetSize.X + XStretchLine - Rect.Width + 1));
+            if (TargetSize.X > Rect.Width)
+            {
+                xstops.Add(new SkinSurface.Stop(Rect.X + XStretchLine - 1, XStretchLine - 1));
+                xstops.Add(new SkinSurface.Stop(Rect.X + XStretchLine + 1, TargetSize.X + XStretchLine - Rect.Width + 1));
+            }
             xstops.Add(new SkinSurface.Stop(Rect.X + Rect.Width, TargetSize.X));
 
             ystops.Add(new SkinSurface.Stop(Rect.Y, 0.0));
-            ystops.Add(new SkinSurface.Stop(Rect.Y + YStretchLine - 1, YStretchLine - 1));
-            ystops.Add(new SkinSurface.Stop(Rect.Y + YStretchLine + 1, TargetSize.Y + YStretchLine - Rect.Height + 1));
+            if (TargetSize.Y > Rect.Height)
+            {
+                ystops.Add(new SkinSurface.Stop(Rect.Y + YStretchLine - 1, YStretchLine - 1));
+                ystops.Add(new SkinSurface.Stop(Rect.Y + YStretchLine + 1, TargetSize.Y + YStretchLine - Rect.Height + 1));
+            }
             ystops.Add(new SkinSurface.Stop(Rect.Y + Rect.Height, TargetSize.Y));
             return this.GetSurface(xstops, ystops);
         }

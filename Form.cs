@@ -230,7 +230,7 @@ namespace OpenTKGUI
         public double TitleBarMargin = 7.0;
         public Font TitleBarFont = Font.Default;
         public Color TitleBarTextColor = Color.RGB(0.3, 0.3, 0.3);
-        public Point ButtonSize = new Point(16.0, 16.0);
+        public Point ButtonSize = new Point(20.0, 16.0);
         public double ButtonSeperation = 4.0;
         public ButtonStyle CloseButtonStyle = new ButtonStyle()
         {
