@@ -133,8 +133,4 @@ namespace OpenTKGUI
         public Font Font = Font.Default;
     }
 
-    /// <summary>
-    /// Handles a click event from a button.
-    /// </summary>
-    public delegate void ClickHandler(Button Button);
 }

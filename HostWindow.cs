@@ -65,7 +65,10 @@ namespace OpenTKGUI
                 f.ResizeClient(new Point(340.0, 260.0));
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(200.0, 200.0));
-
+				e.ValueChanged += delegate(double Value)
+				{
+					fp.Value = Value;
+				};
                 c.TextEntered += delegate(string Text)
                 {
                     f.Text = Text;
