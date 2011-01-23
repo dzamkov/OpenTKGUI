@@ -40,10 +40,18 @@ namespace OpenTKGUI
             this._TopLeftButton.Click += delegate
             {
                 this.Value = this._Value - this._MinorIncrement;
+				if(this.ValueChanged != null)
+				{
+					this.ValueChanged(this._Value);
+				}
             };
             this._BottomRightButton.Click += delegate
             {
                 this.Value = this._Value + this._MinorIncrement;
+				if(this.ValueChanged != null)
+				{
+					this.ValueChanged(this._Value);
+				}
             };
 
             this._Value = 0.0;
