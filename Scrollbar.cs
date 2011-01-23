@@ -126,8 +126,8 @@ namespace OpenTKGUI
             this._GetScrollMeasurements(out areastart, out areaend, out areasize, out sliderstart, out slidersize);
             if (this._Direction == Axis.Horizontal)
             {
-                Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point((int)areastart, 0.0));
-                Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point((int)sliderstart, 0.0));
+                Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point(Math.Round(areastart), 0.0));
+                Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(Math.Round(sliderstart), 0.0));
             }
 
 
