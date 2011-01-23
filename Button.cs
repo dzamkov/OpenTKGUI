@@ -66,10 +66,10 @@ namespace OpenTKGUI
             {
                 if (this._TextSample == null)
                 {
-                    this._TextSample = this._Style.Font.GetSample(this._Text);
+                    this._TextSample = this._Style.Font.CreateSample(this._Text, this.Size, TextAlign.Center, TextAlign.Center, TextWrap.Clip);
                 }
 
-                Context.DrawCenteredText(this._Style.TextColor, this._TextSample, this.Size * 0.5);
+                Context.DrawText(this._Style.TextColor, this._TextSample, new Rectangle(this.Size));
             }
         }
 

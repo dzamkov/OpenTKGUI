@@ -39,9 +39,28 @@ namespace OpenTKGUI
         private static Font _Default;
 
         /// <summary>
-        /// Gets a text sample for the specified text when drawn with this font.
+        /// Gets a text sample for the specified text when drawn with this font. Note that multiple lines can be created with '\n'.
         /// </summary>
-        public abstract TextSample GetSample(string Text);
+        public TextSample CreateSample(string Text)
+        {
+            return this.CreateSample(Text, null, TextAlign.Left, TextAlign.Top, TextWrap.Clip);
+        }
+
+        /// <summary>
+        /// Gets a text sample for the specified text when drawn with this font. Note that multiple lines can be created with '\n'.
+        /// <returns></returns>
+        public abstract TextSample CreateSample(string Text, Point? MaxSize, TextAlign HorizontalAlign, TextAlign VerticalAlign, TextWrap Wrap);
+
+        /// <summary>
+        /// Gets an estimate of the size of a character drawn with this font.
+        /// </summary>
+        public virtual Point EstimateCharacterSize
+        {
+            get
+            {
+                return new Point(20.0, 20.0);
+            }
+        }
 
         public void Dispose()
         {
@@ -58,7 +77,7 @@ namespace OpenTKGUI
     }
 
     /// <summary>
-    /// Information and methods for a single-lined text when drawn with font. TextSample's may be rendered directly, or preferably, from
+    /// Information and methods for a text when drawn with font. TextSample's may be rendered directly, or preferably, from
     /// a GUIRenderContext. TextSample's that need to be rendered repeatedly should be saved and used until they are no longer needed, as opposed to
     /// being discarded and recreated on each render.
     /// </summary>
@@ -85,26 +104,19 @@ namespace OpenTKGUI
         public abstract Point Size { get; }
 
         /// <summary>
+        /// Gets the horizontal alignment of the text in the text sample.
+        /// </summary>
+        public abstract TextAlign HorizontalAlign { get; }
+
+        /// <summary>
+        /// Gets the vertical alignment of the text in the text sample.
+        /// </summary>
+        public abstract TextAlign VerticalAlign { get; }
+
+        /// <summary>
         /// Renders the text sample to the current graphics context with the specified color and offset.
         /// </summary>
         public abstract void Render(Color Color, Point Offset);
-
-        /// <summary>
-        /// Gets if the specified character is valid in text samples. 
-        /// </summary>
-        public static bool ValidChar(char C)
-        {
-            int i = (int)C;
-            if (i >= 32 && i <= 126)
-            {
-                return true;
-            }
-            if (i > 255)
-            {
-                return true;
-            }
-            return false;
-        }
 
         public void Dispose()
         {
@@ -132,9 +144,9 @@ namespace OpenTKGUI
             this._Antialias = Antialias;
         }
 
-        public override TextSample GetSample(string Text)
+        public override TextSample CreateSample(string Text, Point? MaxSize, TextAlign HorizontalAlign, TextAlign VerticalAlign, TextWrap Wrap)
         {
-            return new _TextSample(this, Text);
+            return new _TextSample(this, Text, MaxSize, HorizontalAlign, VerticalAlign, Wrap);
         }
 
         protected override void OnDispose()
@@ -164,16 +176,29 @@ namespace OpenTKGUI
             }
         }
 
+        public override Point EstimateCharacterSize
+        {
+            get
+            {
+                return new Point(this._Font.Size, this._Font.Size * 0.7);
+            }
+        }
+
         /// <summary>
         /// A text sample for this kind of font.
         /// </summary>
         private class _TextSample : TextSample
         {
-            public _TextSample(SystemFont Font, string Text)
+            public _TextSample(SystemFont Font, string Text, Point? MaxSize, TextAlign HorizontalAlign, TextAlign VerticalAlign, TextWrap Wrap)
             {
                 this._Font = Font;
                 this._Text = Text;
                 this._TextureID = -1;
+
+                this._MaxSize = MaxSize;
+                this._HorizontalAlign = HorizontalAlign;
+                this._VerticalAlign = VerticalAlign;
+                this._Wrap = Wrap;
             }
 
             public override Font Font
@@ -215,7 +240,16 @@ namespace OpenTKGUI
                         {
                             using (Graphics g = Graphics.FromImage(bm))
                             {
-                                SizeF sf = g.MeasureString(this._Text, this._Font.GDIFont, new PointF(0.0f, 0.0f), this._Format);
+                                SizeF sf;
+                                if(this._MaxSize == null)
+                                {
+                                    sf = g.MeasureString(this._Text, this._Font.GDIFont, new PointF(0.0f, 0.0f), this._Format);
+                                }
+                                else
+                                {
+                                    Point maxsize = this._MaxSize.Value;
+                                    sf = g.MeasureString(this._Text, this._Font.GDIFont, new SizeF((float)maxsize.X, (float)maxsize.Y), this._Format);
+                                }
                                 Point size = new Point(sf.Width, sf.Height);
                                 this._Size = size;
                                 return size;
@@ -276,7 +310,7 @@ namespace OpenTKGUI
 
 
                             StringFormat sf = this._Format;
-                            g.DrawString(text, this._Font.GDIFont, Brushes.White, new PointF(0.0f, 0.0f), sf);
+                            g.DrawString(text, this._Font.GDIFont, Brushes.White, new RectangleF(0f, 0f, (float)size.X, (float)size.Y), sf);
 
                             // Get character bounds (32 at a time) (and kind of a hacky way to do it).
                             this._CharacterBounds = new Rectangle[text.Length];
@@ -336,7 +370,46 @@ namespace OpenTKGUI
             {
                 get
                 {
-                    return new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
+                    StringFormat sf = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
+                    switch (this._VerticalAlign)
+                    {
+                        case TextAlign.Left:
+                            sf.LineAlignment = StringAlignment.Near;
+                            break;
+                        case TextAlign.Center:
+                            sf.LineAlignment = StringAlignment.Center;
+                            break;
+                        case TextAlign.Right:
+                            sf.LineAlignment = StringAlignment.Far;
+                            break;
+                    };
+                    switch (this._HorizontalAlign)
+                    {
+                        case TextAlign.Top:
+                            sf.Alignment = StringAlignment.Near;
+                            break;
+                        case TextAlign.Center:
+                            sf.Alignment = StringAlignment.Center;
+                            break;
+                        case TextAlign.Bottom:
+                            sf.Alignment = StringAlignment.Far;
+                            break;
+                    };
+                    switch (this._Wrap)
+                    {
+                        case TextWrap.Clip:
+                            sf.Trimming = StringTrimming.None;
+                            sf.FormatFlags |= StringFormatFlags.NoWrap;
+                            break;
+                        case TextWrap.Ellipsis:
+                            sf.Trimming = StringTrimming.EllipsisCharacter;
+                            sf.FormatFlags |= StringFormatFlags.NoWrap;
+                            break;
+                        case TextWrap.Wrap:
+                            sf.Trimming = StringTrimming.None;
+                            break;
+                    };
+                    return sf;
                 }
             }
 
@@ -348,10 +421,30 @@ namespace OpenTKGUI
                 }
             }
 
+            public override TextAlign HorizontalAlign
+            {
+                get
+                {
+                    return this._HorizontalAlign;
+                }
+            }
+
+            public override TextAlign VerticalAlign
+            {
+                get
+                {
+                    return this._VerticalAlign;
+                }
+            }
+
             private int _TextureID;
             private int _TextureWidth;
             private int _TextureHeight;
 
+            private TextAlign _VerticalAlign;
+            private TextAlign _HorizontalAlign;
+            private TextWrap _Wrap;
+            private Point? _MaxSize;
             private Rectangle[] _CharacterBounds;
             private Point? _Size;
             private SystemFont _Font;

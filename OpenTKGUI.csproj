@@ -56,6 +56,7 @@
     <Compile Include="GUIContext.cs" />
     <Compile Include="GUIRenderContext.cs" />
     <Compile Include="HostWindow.cs" />
+    <Compile Include="Label.cs" />
     <Compile Include="LayerContainer.cs" />
     <Compile Include="ManualContainer.cs" />
     <Compile Include="Rectangle.cs" />

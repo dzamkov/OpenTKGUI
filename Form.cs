@@ -123,7 +123,7 @@ namespace OpenTKGUI
             {
                 if (this._TextSample == null)
                 {
-                    this._TextSample = this._Style.TitleBarFont.GetSample(this._Text);
+                    this._TextSample = this._Style.TitleBarFont.CreateSample(this._Text);
                 }
                 Context.DrawText(
                     this._Style.TitleBarTextColor, 

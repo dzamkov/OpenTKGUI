@@ -38,6 +38,23 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Gets if the specified character is valid in a textbox.
+        /// </summary>
+        public static bool ValidChar(char C)
+        {
+            int i = (int)C;
+            if (i >= 32 && i <= 126)
+            {
+                return true;
+            }
+            if (i > 255)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             Skin s = this._Style.Skin;
@@ -163,7 +180,7 @@ namespace OpenTKGUI
                         continue;
                     }
 
-                    if (TextSample.ValidChar(c))
+                    if (ValidChar(c))
                     {
                         if (this._TryChangeText(this._Text.Substring(0, starti) + c + this._Text.Substring(endi, this._Text.Length - endi)))
                         {
@@ -218,7 +235,7 @@ namespace OpenTKGUI
 
         private void _MakeTextSample()
         {
-            this._TextSample = this._Style.Font.GetSample(this._Text);
+            this._TextSample = this._Style.Font.CreateSample(this._Text);
         }
 
         /// <summary>

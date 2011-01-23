@@ -99,11 +99,31 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Draws text to the specified location.
+        /// Draws text to the specified region, overriding its layout parameters.
         /// </summary>
-        public void DrawCenteredText(Color Color, TextSample Sample, Point Center)
+        public void DrawText(Color Color, TextSample Sample, Rectangle Region, TextAlign HorizontalAlign, TextAlign VerticalAlign)
         {
-            Sample.Render(Color, Center - Sample.Size * 0.5);
+            double x = Region.Location.X;
+            double y = Region.Location.Y;
+            switch (HorizontalAlign)
+            {
+                case TextAlign.Center: x += Region.Size.X / 2.0 - Sample.Size.X / 2.0; break;
+                case TextAlign.Right: x += Region.Size.X - Sample.Size.X; break;
+            }
+            switch (VerticalAlign)
+            {
+                case TextAlign.Center: y += Region.Size.Y / 2.0 - Sample.Size.Y / 2.0; break;
+                case TextAlign.Bottom: y += Region.Size.Y - Sample.Size.Y; break;
+            }
+            this.DrawText(Color, Sample, new Point(x, y));
+        }
+
+        /// <summary>
+        /// Draws text to the specified region using the layout parameters it was supplied with.
+        /// </summary>
+        public void DrawText(Color Color, TextSample Sample, Rectangle Region)
+        {
+            this.DrawText(Color, Sample, Region, Sample.HorizontalAlign, Sample.VerticalAlign);
         }
 
         /// <summary>
