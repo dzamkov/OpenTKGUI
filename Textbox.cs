@@ -345,15 +345,6 @@ namespace OpenTKGUI
         private TextboxStyle _Style;
     }
 
-    /// <summary>
-    /// Handler for a text changed event from a textbox.
-    /// </summary>
-    public delegate void TextChangedHandler(string Text);
-
-    /// <summary>
-    /// Handler for a text entered event from a textbox.
-    /// </summary>
-    public delegate void TextEnteredHandler(string Text);
 
     /// <summary>
     /// Represents a selection of text given by the user.

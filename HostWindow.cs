@@ -52,21 +52,25 @@ namespace OpenTKGUI
                 Textbox d;
                 Scrollbar e;
                 Label l = new Label(@"The quick brown fox jumped over the lazy tortise.");
+				Progressbar fp;
                 mc.AddChild(a = new Button("Jello?!?"), new Rectangle(20.0, 20.0, 300.0, 30.0));
                 mc.AddChild(b = new Button("Test"), new Rectangle(20.0, 60.0, 300.0, 30.0));
                 mc.AddChild(c = new Textbox(), new Rectangle(20.0, 100.0, 300.0, 30.0));
                 mc.AddChild(d = new Textbox(), new Rectangle(20.0, 140.0, 300.0, 30.0));
                 mc.AddChild(e = new Scrollbar(Axis.Horizontal), new Rectangle(20.0, 180.0, 300.0, 30.0));
-                mc.AddChild(l, new Rectangle(20.0, 220.0, 300.0, 110.0));
+                mc.AddChild(fp = new Progressbar(), new Rectangle(20.0, 220.0, 300.0, 30.0)); 
+                mc.AddChild(l, new Rectangle(20.0, 260.0, 300.0, 110.0));
                 mc.Color = Color.RGB(0.85, 0.85, 0.85);
-
-                
+				            
 
                 Form f = new Form(mc, "Test");
-                f.ResizeClient(new Point(340.0, 350.0));
+                f.ResizeClient(new Point(340.0, 390.0));
                 f.AddCloseButton();
-                lc.AddControl(f, new Point(400.0, 400.0));
-
+                lc.AddControl(f, new Point(200.0, 200.0));
+				e.ValueChanged += delegate(double Value)
+				{
+					fp.Value = Value;
+				};
                 c.TextEntered += delegate(string Text)
                 {
                     f.Text = Text;
@@ -84,7 +88,7 @@ namespace OpenTKGUI
 
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-
+			
             GUIRenderContext rc = new GUIRenderContext(this.ViewSize);
             rc.Setup();
             this._Control.Render(rc);
