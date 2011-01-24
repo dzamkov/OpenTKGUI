@@ -78,7 +78,7 @@ namespace OpenTKGUI
         /// </summary>
         public Button AddTitlebarButton(ButtonStyle Style)
         {
-            Button b = new Button(Style, "");
+            Button b = new Button(Style);
             b.Resize(this._Style.ButtonSize);
             this._Buttons.Add(b);
             return b;

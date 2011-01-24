@@ -10,34 +10,59 @@ namespace OpenTKGUI
     /// </summary>
     public class Button : Control
     {
-        public Button(string Text)
-            : this(new ButtonStyle(), Text)
+        public Button()
+            : this(new ButtonStyle())
         {
         }
 
-        public Button(ButtonStyle Style, string Text)
+        public Button(string Text)
+            : this(Text, new ButtonStyle())
+        {
+        }
+
+        public Button(string Text, ButtonStyle Style)
+            : this(Style)
+        {
+            this.Text = Text;
+        }
+
+        public Button(ButtonStyle Style)
         {
             this._Style = Style;
-            this._Text = Text;
         }
 
         /// <summary>
-        /// Gets or sets the text for the button.
+        /// Sets the text in the middle of the button. This will replace any client the button currently has.
         /// </summary>
         public string Text
         {
+            set
+            {
+                Label l = this._Client as Label;
+                if (l == null)
+                {
+                    this._Client = new Label(value, this._Style.TextColor, this._Style.TextStyle);
+                }
+                else
+                {
+                    l.Text = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the client control that appears in the middle of the button.
+        /// </summary>
+        public Control Client
+        {
             get
             {
-                return this._Text;
+                return this._Client;
             }
             set
             {
-                this._Text = value;
-                if (this._TextSample != null)
-                {
-                    this._TextSample.Dispose();
-                    this._TextSample = null;
-                }
+                this._Client = value;
+                this._ResizeClient();
             }
         }
 
@@ -62,14 +87,12 @@ namespace OpenTKGUI
             }
             Context.DrawSurface(sf);
 
-            if (this._Text != null && this._Text.Length != 0)
+            // Render client, if any
+            if (this._Client != null)
             {
-                if (this._TextSample == null)
-                {
-                    this._TextSample = this._Style.Font.CreateSample(this._Text, this.Size, TextAlign.Center, TextAlign.Center, TextWrap.Clip);
-                }
-
-                Context.DrawText(this._Style.TextColor, this._TextSample, new Rectangle(this.Size));
+                Context.PushTranslate(new Point(this._Style.ClientMargin, this._Style.ClientMargin));
+                this._Client.Render(Context);
+                Context.Pop();
             }
         }
 
@@ -98,6 +121,12 @@ namespace OpenTKGUI
                 this._MouseDown = false;
                 this._MouseOver = false;
             }
+
+            // Update client, if any
+            if (this._Client != null)
+            {
+                this._Client.Update(Context.CreateChildContext(this._Client, new Point(this._Style.ClientMargin, this._Style.ClientMargin)), Time);
+            }
         }
 
         private void _Click()
@@ -108,6 +137,19 @@ namespace OpenTKGUI
             }
         }
 
+        protected override void OnResize(Point OldSize, Point NewSize)
+        {
+            this._ResizeClient();
+        }
+
+        private void _ResizeClient()
+        {
+            if (this._Client != null)
+            {
+                this._Client.Resize(this.Size - new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0);
+            }
+        }
+
         /// <summary>
         /// An event fired whenever this button is clicked.
         /// </summary>
@@ -115,8 +157,7 @@ namespace OpenTKGUI
 
         private bool _MouseDown;
         private bool _MouseOver;
-        private TextSample _TextSample;
-        private string _Text;
+        private Control _Client;
         private ButtonStyle _Style;
     }
 
@@ -130,7 +171,13 @@ namespace OpenTKGUI
         public SkinArea Active = new SkinArea(32, 0, 32, 32);
         public SkinArea Pushed = new SkinArea(64, 0, 32, 32);
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
-        public Font Font = Font.Default;
+        public LabelStyle TextStyle = new LabelStyle()
+        {
+            HorizontalAlign = TextAlign.Center,
+            VerticalAlign = TextAlign.Center,
+            Wrap = TextWrap.Ellipsis
+        };
+        public double ClientMargin = 6.0;
     }
 
 }

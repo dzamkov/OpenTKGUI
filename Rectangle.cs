@@ -30,9 +30,9 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Creates a rectangle from this rectangle with padding applied.
+        /// Creates a rectangle from this rectangle with a margin applied.
         /// </summary>
-        public Rectangle Pad(double Amount)
+        public Rectangle Margin(double Amount)
         {
             return new Rectangle(
                 this.Location + new Point(Amount, Amount),

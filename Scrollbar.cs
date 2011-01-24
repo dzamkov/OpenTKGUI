@@ -33,8 +33,8 @@ namespace OpenTKGUI
                     Active = Style.RightButtonActive,
                     Pushed = Style.RightButtonPushed
                 };
-            this._TopLeftButton = new Button(tlstyle, "");
-            this._BottomRightButton = new Button(brstyle, "");
+            this._TopLeftButton = new Button(tlstyle);
+            this._BottomRightButton = new Button(brstyle);
 
 
             this._TopLeftButton.Click += delegate

@@ -75,7 +75,7 @@ namespace OpenTKGUI
 				};
                 c.TextEntered += delegate(string Text)
                 {
-                    f.Text = Text;
+                    a.Text = Text;
                 };
 
                 return lc;

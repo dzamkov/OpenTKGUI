@@ -60,7 +60,7 @@ namespace OpenTKGUI
             Skin s = this._Style.Skin;
             Context.DrawSurface(s.GetSurface(this._Style.Textbox, this.Size));
 
-            Rectangle inner = new Rectangle(this.Size).Pad(this._Style.InteriorMargin);
+            Rectangle inner = new Rectangle(this.Size).Margin(this._Style.InteriorMargin);
             Context.PushClip(inner);
 
             // Draw text
