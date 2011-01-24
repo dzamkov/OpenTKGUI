@@ -98,11 +98,6 @@ namespace OpenTKGUI
                 this._MouseDown = false;
             }
         }
-
-        protected override void OnResize(Point OldSize, Point NewSize)
-        {
-            
-        }
 		
 		private void _Click()
 		{

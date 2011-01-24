@@ -58,11 +58,6 @@ namespace OpenTKGUI
         {
         }
 
-        protected override void OnResize(Point OldSize, Point NewSize)
-        {
-            
-        }
-
         private double _Value;
         private ProgressbarStyle _Style;
     }

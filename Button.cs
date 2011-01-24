@@ -137,7 +137,7 @@ namespace OpenTKGUI
             }
         }
 
-        protected override void OnResize(Point OldSize, Point NewSize)
+        protected override void OnResize(Point Size)
         {
             this._ResizeClient();
         }

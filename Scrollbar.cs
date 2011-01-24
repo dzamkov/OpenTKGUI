@@ -226,7 +226,7 @@ namespace OpenTKGUI
             }
         }
 
-        protected override void OnResize(Point OldSize, Point NewSize)
+        protected override void OnResize(Point Size)
         {
             Point buttonsize = this._ButtonSize;
             this._TopLeftButton.Resize(buttonsize);

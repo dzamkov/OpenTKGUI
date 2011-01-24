@@ -48,15 +48,14 @@ namespace OpenTKGUI
         /// </summary>
         public void Resize(Point Size)
         {
-            Point oldsize = this._Size;
             this._Size = Size;
-            this.OnResize(oldsize, Size);
+            this.OnResize(Size);
         }
 
         /// <summary>
         /// Called when the size of the control is forcibly changed.
         /// </summary>
-        protected virtual void OnResize(Point OldSize, Point NewSize)
+        protected virtual void OnResize(Point Size)
         {
 
         }

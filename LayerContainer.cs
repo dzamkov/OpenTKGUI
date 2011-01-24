@@ -104,11 +104,11 @@ namespace OpenTKGUI
             }
         }
 
-        protected override void OnResize(Point OldSize, Point NewSize)
+        protected override void OnResize(Point Size)
         {
             if (this._Background != null)
             {
-                this._Background.Resize(NewSize);
+                this._Background.Resize(Size);
             }
         }
 
