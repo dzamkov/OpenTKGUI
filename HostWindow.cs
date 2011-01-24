@@ -53,6 +53,7 @@ namespace OpenTKGUI
                 Scrollbar e;
                 Label l = new Label(@"The quick brown fox jumped over the lazy tortise.");
 				Progressbar fp;
+				Checkbox g;
                 mc.AddChild(a = new Button("Jello?!?"), new Rectangle(20.0, 20.0, 300.0, 30.0));
                 mc.AddChild(b = new Button("Test"), new Rectangle(20.0, 60.0, 300.0, 30.0));
                 mc.AddChild(c = new Textbox(), new Rectangle(20.0, 100.0, 300.0, 30.0));
@@ -60,6 +61,7 @@ namespace OpenTKGUI
                 mc.AddChild(e = new Scrollbar(Axis.Horizontal), new Rectangle(20.0, 180.0, 300.0, 30.0));
                 mc.AddChild(fp = new Progressbar(), new Rectangle(20.0, 220.0, 300.0, 30.0)); 
                 mc.AddChild(l, new Rectangle(20.0, 260.0, 300.0, 110.0));
+				mc.AddChild(g = new Checkbox(true, "I am checkbox"), new Rectangle(20.0, 320.0, 300.0, 30.0));
                 mc.Color = Color.RGB(0.85, 0.85, 0.85);
 				            
 

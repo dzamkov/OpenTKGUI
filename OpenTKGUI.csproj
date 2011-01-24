@@ -74,6 +74,7 @@
     <Compile Include="Textbox.cs" />
     <Compile Include="Progressbar.cs" />
     <Compile Include="EventHandelers.cs" />
+    <Compile Include="Checkbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res.resx">

@@ -24,4 +24,10 @@ namespace OpenTKGUI
     /// Handles a click event from a button.
     /// </summary>
     public delegate void ClickHandler(Button Button);
+	
+	
+    /// <summary>
+    /// Handles a click event from a checkbox.
+    /// </summary>
+    public delegate void CheckboxClickHandler(bool Value);
 }
