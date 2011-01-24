@@ -40,18 +40,10 @@ namespace OpenTKGUI
             this._TopLeftButton.Click += delegate
             {
                 this.Value = this._Value - this._MinorIncrement;
-				if(this.ValueChanged != null)
-				{
-					this.ValueChanged(this._Value);
-				}
             };
             this._BottomRightButton.Click += delegate
             {
                 this.Value = this._Value + this._MinorIncrement;
-				if(this.ValueChanged != null)
-				{
-					this.ValueChanged(this._Value);
-				}
             };
 
             this._Value = 0.0;
@@ -73,6 +65,10 @@ namespace OpenTKGUI
             {
                 this._Value = value;
                 this._Value = Math.Max(0.0, Math.Min(1.0, this._Value));
+                if (this.ValueChanged != null)
+                {
+                    this.ValueChanged(this._Value);
+                }
             }
         }
 
@@ -149,9 +145,7 @@ namespace OpenTKGUI
         {
             this._TopLeftButton.Update(Context.CreateChildContext(this._TopLeftButton, new Point(0.0, 0.0)), Time);
             this._BottomRightButton.Update(Context.CreateChildContext(this._BottomRightButton, this._BottomRightButtonOffset), Time);
-			
-			double beforeval = this._Value;
-				
+
             // Handle mouse
             MouseState ms = Context.MouseState;
             if (ms != null)
@@ -199,13 +193,6 @@ namespace OpenTKGUI
                     }
                 }
             }
-			if(this._Value != beforeval)
-			{
-				if(this.ValueChanged != null)
-				{
-					this.ValueChanged(this._Value);
-				}
-			}
         }
 
         private void _GetScrollMeasurements(out double AreaStart, out double AreaEnd, out double AreaSize, out double SliderStart, out double SliderSize)
