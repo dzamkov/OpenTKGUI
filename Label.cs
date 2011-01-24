@@ -63,6 +63,26 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets or sets the text on the label.
+        /// </summary>
+        public string Text
+        {
+            get
+            {
+                return this._Text;
+            }
+            set
+            {
+                this._Text = value;
+                if (this._Sample != null)
+                {
+                    this._Sample.Dispose();
+                    this._Sample = null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the wrapping mode of this label.
         /// </summary>
         public TextWrap Wrap
@@ -70,6 +90,28 @@ namespace OpenTKGUI
             get
             {
                 return this._Style.Wrap;
+            }
+        }
+
+        /// <summary>
+        /// Gets the horizontal align mode on the label.
+        /// </summary>
+        public TextAlign HorizontalAlign
+        {
+            get
+            {
+                return this._Style.HorizontalAlign;
+            }
+        }
+
+        /// <summary>
+        /// Gets the vertical align mode on the label.
+        /// </summary>
+        public TextAlign VerticalAlign
+        {
+            get
+            {
+                return this._Style.VerticalAlign;
             }
         }
 
