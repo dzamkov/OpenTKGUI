@@ -98,8 +98,13 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
+            Rectangle clirect = this.ClientRectangle;
+
+            // Back
+            Context.DrawSolid(this._Style.BackColor, clirect);
+
             // Client
-            Context.PushTranslate(this.ClientRectangle.Location);
+            Context.PushTranslate(clirect.Location);
             this._Client.Render(Context);
             Context.Pop();
 
@@ -223,6 +228,7 @@ namespace OpenTKGUI
     {
         public Skin Skin = Skin.Default;
         public SkinArea Form = new SkinArea(0, 32, 64, 64);
+        public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
         public int FormVerticalStretchLine = 44;
         public double BorderSize = 6.0;
         public double TitleBarSize = 32.0;

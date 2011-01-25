@@ -27,29 +27,11 @@ namespace OpenTKGUI
             });
         }
 
-        /// <summary>
-        /// Gets or sets the background color for the container, or transparent for no background.
-        /// </summary>
-        public Color Color
-        {
-            get
-            {
-                return this._Color;
-            }
-            set
-            {
-                this._Color = value;
-            }
-        }
 
         public override void Render(GUIRenderContext Context)
         {
             Rectangle inner = new Rectangle(new Point(), this.Size);
             Context.PushClip(inner);
-            if (this._Color.A > 0.0)
-            {
-                Context.DrawSolid(this._Color, inner);
-            }
             foreach (_Child c in this._Children)
             {
                 Context.PushTranslate(c.Offset);
@@ -73,7 +55,6 @@ namespace OpenTKGUI
             public Point Offset;
         }
 
-        private Color _Color;
         private List<_Child> _Children;
     }
 }
