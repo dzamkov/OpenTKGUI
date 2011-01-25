@@ -1,0 +1,6 @@
+* Create IsButtonPushed and IsButtonReleased in MouseState
+* Create vertical scrollbar
+* Use FlowContainer for buttons in the titlebar of Forms
+* CheckboxStyle
+* (maybe) Change checkbox skin so it doesn't stand out
+* (maybe) Alternate integration method
