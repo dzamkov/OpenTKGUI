@@ -83,6 +83,36 @@ namespace OpenTKGUI
                     a.Text = Text;
                 };
 
+                Label lpoem = new Label(@"Wind und Sonne machten Wette,
+Wer die meisten Kräfte hätte,
+Einen armen Wandersmann
+Seiner Kleider zu berauben.
+
+Wind begann;
+Doch sein Schnauben
+That ihm nichts; der Wandersmann
+Zog den Mantel dichter an.
+
+Wind verzweifelt nun und ruht;
+Und ein lieber Sonnenschein
+Füllt mit holder, sanfter Gluth
+Wanderers Gebein.
+
+Hüllt er nun sich tiefer ein?
+Nein!
+Ab wirft er nun sein Gewand,
+Und die Sonne überwand.
+
+Übermacht, Vernunftgewalt
+Macht und läßt uns kalt;
+Warme Christusliebe –
+Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { HorizontalAlign = TextAlign.Center });
+                MarginContainer mcpoem = new MarginContainer(lpoem, 20.0);
+                Form fpoem = new Form(mcpoem, "Die Sonne und der Wind");
+                fpoem.ResizeClient(mcpoem.GetSize(new Point(300.0, 500.0)));
+                fpoem.AddCloseButton();
+                lc.AddControl(fpoem, new Point(600, 200.0));
+
                 return lc;
             }, "Test").Run();
         }

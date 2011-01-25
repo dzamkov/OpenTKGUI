@@ -61,6 +61,15 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Brings the specified control to the top level of the layer container (above all other controls).
+        /// </summary>
+        public void BringToTop(LayerControl Control)
+        {
+            this._LayerControls.Remove(Control);
+            this._LayerControls.AddLast(Control);
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             if (this._Background != null)
@@ -70,9 +79,6 @@ namespace OpenTKGUI
             foreach (LayerControl lc in this._LayerControls)
             {
                 lc.RenderShadow(lc._Position, Context);
-            }
-            foreach (LayerControl lc in this._LayerControls)
-            {
                 Context.PushTranslate(lc._Position);
                 lc.Render(Context);
                 Context.Pop();

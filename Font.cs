@@ -275,8 +275,8 @@ namespace OpenTKGUI
                     GL.Enable(EnableCap.Texture2D);
                     GL.BindTexture(TextureTarget.Texture2D, this._TextureID);
                     GL.Color4((Color4)Color);
-                    double x = Offset.X;
-                    double y = Offset.Y;
+                    double x = Math.Round(Offset.X);
+                    double y = Math.Round(Offset.Y);
                     double xx = x + this._TextureWidth;
                     double yy = y + this._TextureHeight;
                     GL.Begin(BeginMode.Quads);

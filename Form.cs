@@ -163,6 +163,7 @@ namespace OpenTKGUI
                         if (ms.IsButtonDown(MouseButton.Left))
                         {
                             Context.CaptureMouse();
+                            this.Container.BringToTop(this);
                             this._FormDragOffset = mousepos;
                         }
                     }
