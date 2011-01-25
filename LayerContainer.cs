@@ -91,8 +91,13 @@ namespace OpenTKGUI
             Point? mousepos = ms != null ? (Point?)ms.Position : null;
             LinkedList<LayerControl> oldlayercontrols = this._LayerControls;
             this._LayerControls = new LinkedList<LayerControl>(this._LayerControls);
-            foreach (LayerControl lc in oldlayercontrols)
+
+
+            // Go through control in reverse order (since the last control is the top-most).
+            LinkedListNode<LayerControl> cur = oldlayercontrols.Last;
+            while (cur != null) 
             {
+                LayerControl lc = cur.Value;
                 lc.Update(Context.CreateChildContext(lc, lc._Position, mousepos == null), Time);
                 if (mousepos != null)
                 {
@@ -101,6 +106,7 @@ namespace OpenTKGUI
                         mousepos = null;
                     }
                 }
+                cur = cur.Previous;
             }
 
 
