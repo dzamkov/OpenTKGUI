@@ -17,22 +17,8 @@ namespace OpenTKGUI
             : base(640, 480, GraphicsMode.Default, Title, GameWindowFlags.Default)
         {
             this.WindowState = WindowState.Maximized;
-
-            this._KeyEvents = new List<KeyEvent>();
-            this._KeyPresses = new List<char>();
-            this.Keyboard.KeyUp += delegate(object sender, KeyboardKeyEventArgs e)
-            {
-                this._KeyEvents.Add(new KeyEvent(e.Key, ButtonEventType.Up));
-            };
-            this.Keyboard.KeyDown += delegate(object sender, KeyboardKeyEventArgs e)
-            {
-                this._KeyEvents.Add(new KeyEvent(e.Key, ButtonEventType.Down));
-            };
-            this.KeyPress += delegate(object sender, KeyPressEventArgs e)
-            {
-                this._KeyPresses.Add(e.KeyChar);
-            };
-
+            this._KeyboardState = new WindowKeyboardState(this);
+            this._MouseState = new WindowMouseState(this);
             this._Control = BuildControl();
         }
 
@@ -135,9 +121,9 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            this._MouseState.Update();
             this._Control.Update(new _GUIContext(this), e.Time);
-            this._KeyEvents.Clear();
-            this._KeyPresses.Clear();
+            this._KeyboardState.PostUpdate();
         }
 
         /// <summary>
@@ -178,7 +164,7 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
             {
                 get
                 {
-                    return new _MouseState(this.Window.Mouse);
+                    return Window._MouseState;
                 }
             }
 
@@ -186,67 +172,11 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
             {
                 get
                 {
-                    return new _KeyboardState(this.Window, this.Window.Keyboard);
+                    return Window._KeyboardState;
                 }
             }
 
             public HostWindow Window;
-        }
-
-        private class _MouseState : MouseState
-        {
-            public _MouseState(MouseDevice Device)
-            {
-                this.Device = Device;
-            }
-
-            public override Point Position
-            {
-                get
-                {
-                    return new Point(this.Device.X, this.Device.Y);
-                }
-            }
-
-            public override bool IsButtonDown(MouseButton Button)
-            {
-                return this.Device[Button];
-            }
-
-            public MouseDevice Device;
-        }
-
-        private class _KeyboardState : KeyboardState
-        {
-            public _KeyboardState(HostWindow Window, KeyboardDevice Device)
-            {
-                this.Window = Window;
-                this.Device = Device;
-            }
-
-            public override bool IsKeyDown(Key Key)
-            {
-                return this.Device[Key];
-            }
-
-            public override IEnumerable<KeyEvent> Events
-            {
-                get
-                {
-                    return this.Window._KeyEvents;
-                }
-            }
-
-            public override IEnumerable<char> Presses
-            {
-                get
-                {
-                    return this.Window._KeyPresses;
-                }
-            }
-
-            public HostWindow Window;
-            public KeyboardDevice Device;
         }
 
         /// <summary>
@@ -269,8 +199,8 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
             }
         }
 
-        private List<KeyEvent> _KeyEvents;
-        private List<char> _KeyPresses;
+        private WindowKeyboardState _KeyboardState;
+        private WindowMouseState _MouseState;
         private Control _MouseFocus;
         private Control _KeyboardFocus;
         private Control _Control;

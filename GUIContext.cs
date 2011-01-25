@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using OpenTK;
 using OpenTK.Input;
 
 namespace OpenTKGUI
@@ -197,6 +198,16 @@ namespace OpenTKGUI
                 return this._Source.IsButtonDown(Button);
             }
 
+            public override bool HasPushedButton(MouseButton Button)
+            {
+                return this._Source.HasPushedButton(Button);
+            }
+
+            public override bool HasReleasedButton(MouseButton Button)
+            {
+                return this._Source.HasReleasedButton(Button);
+            }
+
             private Point _Position;
             private MouseState _Source;
         }
@@ -244,6 +255,16 @@ namespace OpenTKGUI
         /// Gets if the specified mouse button is down.
         /// </summary>
         public abstract bool IsButtonDown(MouseButton Button);
+
+        /// <summary>
+        /// Gets if the mouse button has been pushed since the last update.
+        /// </summary>
+        public abstract bool HasPushedButton(MouseButton Button);
+
+        /// <summary>
+        /// Gets if the mouse button has been released since the last update.
+        /// </summary>
+        public abstract bool HasReleasedButton(MouseButton Button);
     }
 
     /// <summary>
@@ -303,5 +324,121 @@ namespace OpenTKGUI
         /// The type of event this is.
         /// </summary>
         public ButtonEventType Type;
+    }
+
+    /// <summary>
+    /// A mouse state for a game window.
+    /// </summary>
+    public class WindowMouseState : MouseState
+    {
+        public WindowMouseState(GameWindow Window)
+        {
+            this._Device = Window.Mouse;
+            this._ButtonState = new bool[_ButtonAmount];
+            this._OldButtonState = new bool[_ButtonAmount];
+        }
+
+        /// <summary>
+        /// Updates the mouse state with new information produced by its associated device.
+        /// </summary>
+        public void Update()
+        {
+            bool[] nbuttonstate = this._OldButtonState;
+            this._OldButtonState = this._ButtonState;
+            for (int t = 0; t < _ButtonAmount; t++)
+            {
+                nbuttonstate[t] = this._Device[(MouseButton)t];
+            }
+            this._ButtonState = nbuttonstate;
+        }
+
+        public override Point Position
+        {
+            get
+            {
+                return new Point(this._Device.X, this._Device.Y);
+            }
+        }
+
+        public override bool IsButtonDown(MouseButton Button)
+        {
+            return this._ButtonState[(int)Button];
+        }
+
+        public override bool HasPushedButton(MouseButton Button)
+        {
+            return !this._OldButtonState[(int)Button] && this._ButtonState[(int)Button];
+        }
+
+        public override bool HasReleasedButton(MouseButton Button)
+        {
+            return this._OldButtonState[(int)Button] && !this._ButtonState[(int)Button];    
+        }
+
+        private const int _ButtonAmount = 12;
+
+        private MouseDevice _Device;
+        private bool[] _ButtonState;
+        private bool[] _OldButtonState;
+    }
+
+    /// <summary>
+    /// A keyboard state for a game window.
+    /// </summary>
+    public class WindowKeyboardState : KeyboardState
+    {
+        public WindowKeyboardState(GameWindow Window)
+        {
+            this._Device = Window.Keyboard;
+            this._KeyEvents = new List<KeyEvent>();
+            this._KeyPresses = new List<char>();
+
+            this._Device.KeyUp += delegate(object sender, KeyboardKeyEventArgs e)
+            {
+                this._KeyEvents.Add(new KeyEvent(e.Key, ButtonEventType.Up));
+            };
+            this._Device.KeyDown += delegate(object sender, KeyboardKeyEventArgs e)
+            {
+                this._KeyEvents.Add(new KeyEvent(e.Key, ButtonEventType.Down));
+            };
+            Window.KeyPress += delegate(object sender, KeyPressEventArgs e)
+            {
+                this._KeyPresses.Add(e.KeyChar);
+            };
+        }
+
+        /// <summary>
+        /// Updates the keyboard state by replacing old information used in an update.
+        /// </summary>
+        public void PostUpdate()
+        {
+            this._KeyEvents.Clear();
+            this._KeyPresses.Clear();
+        }
+
+        public override bool IsKeyDown(Key Key)
+        {
+            return this._Device[Key];
+        }
+
+        public override IEnumerable<KeyEvent> Events
+        {
+            get
+            {
+                return this._KeyEvents;
+            }
+        }
+
+        public override IEnumerable<char> Presses
+        {
+            get
+            {
+                return this._KeyPresses;
+            }
+        }
+
+        private List<KeyEvent> _KeyEvents;
+        private List<char> _KeyPresses;
+        private KeyboardDevice _Device;
     }
 }

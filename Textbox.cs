@@ -104,27 +104,24 @@ namespace OpenTKGUI
             MouseState ms = Context.MouseState;
             if (ms != null)
             {
-                if (ms.IsButtonDown(MouseButton.Left))
+                if (this._MouseDrag)
                 {
-                    if (!this._MouseDown)
-                    {
-                        Context.CaptureMouse();
-                        Context.CaptureKeyboard();
-                        this._Selection = new TextSelection(this._SelectedIndex(ms.Position));
-                        this._MouseDown = true;
-                    }
-                    else
+                    if(ms.IsButtonDown(MouseButton.Left))
                     {
                         this._Selection.End = this._SelectedIndex(ms.Position);
                     }
-                }
-                else
-                {
-                    if (this._MouseDown)
+                    else
                     {
                         Context.ReleaseMouse();
-                        this._MouseDown = false;
+                        this._MouseDrag = false;
                     }
+                }
+                if (ms.HasPushedButton(MouseButton.Left))
+                {
+                    Context.CaptureMouse();
+                    Context.CaptureKeyboard();
+                    this._Selection = new TextSelection(this._SelectedIndex(ms.Position));
+                    this._MouseDrag = true;
                 }
             }
             TextSelection ts = this._Selection;
@@ -338,7 +335,7 @@ namespace OpenTKGUI
         public event TextEnteredHandler TextEntered;
 
         private double _CursorFlashTime;
-        private bool _MouseDown;
+        private bool _MouseDrag;
         private TextSelection _Selection;
         private string _Text;
         private TextSample _TextSample;

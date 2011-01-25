@@ -160,7 +160,7 @@ namespace OpenTKGUI
                 {
                     if (new Rectangle(this._Style.TitleBarMargin, 0.0, lasttitlex - this._Style.TitleBarMargin, this._Style.TitleBarSize).In(mousepos))
                     {
-                        if (ms.IsButtonDown(MouseButton.Left))
+                        if (ms.HasPushedButton(MouseButton.Left))
                         {
                             Context.CaptureMouse();
                             this.Container.BringToTop(this);

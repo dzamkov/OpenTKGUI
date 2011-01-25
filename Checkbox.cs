@@ -80,22 +80,10 @@ namespace OpenTKGUI
 			MouseState ms = Context.MouseState;
             if (ms != null)
             {
-                if (ms.IsButtonDown(MouseButton.Left))
+                if (ms.HasReleasedButton(MouseButton.Left))
                 {
-                    this._MouseDown = true;
+                    this._Click();
                 }
-                else
-                {
-                    if (this._MouseDown)
-                    {
-                        this._Click();
-                        this._MouseDown = false;
-                    }
-                }
-            }
-            else
-            {
-                this._MouseDown = false;
             }
         }
 		
@@ -112,8 +100,6 @@ namespace OpenTKGUI
 		private Color _Color;
         private bool _Checked;
 		private string _Text;
-		
-		private bool _MouseDown = false;
 		
 		public CheckboxClickHandler Click;
 		
