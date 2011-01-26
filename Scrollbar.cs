@@ -229,8 +229,8 @@ namespace OpenTKGUI
         protected override void OnResize(Point Size)
         {
             Point buttonsize = this._ButtonSize;
-            this._TopLeftButton.Resize(buttonsize);
-            this._BottomRightButton.Resize(buttonsize);
+            this.ResizeChild(this._TopLeftButton, buttonsize);
+            this.ResizeChild(this._BottomRightButton, buttonsize);
         }
 
         private bool _MouseDown;

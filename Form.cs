@@ -36,7 +36,7 @@ namespace OpenTKGUI
             set
             {
                 this._Client = value;
-                this._Client.Resize(this.ClientRectangle.Size);
+                this.ResizeChild(this._Client, this.ClientSize);
             }
         }
 
@@ -50,6 +50,21 @@ namespace OpenTKGUI
                 double bs = this._Style.BorderSize;
                 double tbs = this._Style.TitleBarSize;
                 return new Rectangle(bs, tbs, this.Size.X - bs * 2.0, this.Size.Y - bs - tbs);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the client size of the form, which is the size allocated to the client.
+        /// </summary>
+        public Point ClientSize
+        {
+            get
+            {
+                return this.ClientRectangle.Size;
+            }
+            set
+            {
+                this.Size = new Point(value.X + this._Style.BorderSize * 2.0, value.Y + this._Style.BorderSize + this._Style.TitleBarSize);
             }
         }
 
@@ -79,7 +94,7 @@ namespace OpenTKGUI
         public Button AddTitlebarButton(ButtonStyle Style)
         {
             Button b = new Button(Style);
-            b.Resize(this._Style.ButtonSize);
+            this.ResizeChild(b, this._Style.ButtonSize);
             this._Buttons.Add(b);
             return b;
         }
@@ -182,19 +197,11 @@ namespace OpenTKGUI
 
         protected override void OnResize(Point Size)
         {
-            this._Client.Resize(this.ClientRectangle.Size);
+            this.ResizeChild(this._Client, this.ClientSize);
         }
 
         private const double _TitleBarSize = 32.0;
         private const double _BorderSize = 7.0;
-
-        /// <summary>
-        /// Resizes the form so that the client has the specified size.
-        /// </summary>
-        public void ResizeClient(Point Size)
-        {
-            this.Resize(new Point(Size.X + this._Style.BorderSize * 2.0, Size.Y + this._Style.BorderSize + this._Style.TitleBarSize));
-        }
 
         /// <summary>
         /// Gets the locations for the buttons in the form.

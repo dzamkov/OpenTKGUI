@@ -54,7 +54,7 @@ namespace OpenTKGUI
 
                 LayerContainer lc = new LayerContainer();
                 Form f = new Form(mc, "Test");
-                f.ResizeClient(mc.GetSize(new Point(300.0, fc.SuggestLength)));
+                f.ClientSize = mc.GetSize(new Point(300.0, fc.SuggestLength));
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(200.0, 200.0));
 
@@ -95,9 +95,17 @@ Warme Christusliebe –
 Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { HorizontalAlign = TextAlign.Center });
                 MarginContainer mcpoem = new MarginContainer(lpoem, 20.0);
                 Form fpoem = new Form(mcpoem, "Die Sonne und der Wind");
-                fpoem.ResizeClient(mcpoem.GetSize(new Point(300.0, 500.0)));
+                fpoem.ClientSize = mcpoem.GetSize(new Point(300.0, 500.0));
                 fpoem.AddCloseButton();
                 lc.AddControl(fpoem, new Point(600, 200.0));
+
+                Popup p = new Popup(new MenuItem[]
+                {
+                    new MenuItem("Test 1"),
+                    new MenuItem("Test 2"),
+                    new MenuItem("Test 3")
+                });
+                lc.AddControl(p, new Point(1000.0, 200.0));
 
                 return lc;
             }, "Test").Run();
@@ -195,7 +203,7 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
             if (this._Control != null)
             {
                 GL.Viewport(0, 0, this.Width, this.Height);
-                this._Control.Resize(this.ViewSize);
+                this._Control.ForceResize(this.ViewSize);
             }
         }
 

@@ -35,7 +35,7 @@ namespace OpenTKGUI
 
         protected override void OnResize(Point Size)
         {
-            this._Child.Resize(Size - new Point(this._Margin, this._Margin) * 2.0);
+            this.ResizeChild(this._Child, Size - new Point(this._Margin, this._Margin) * 2.0);
         }
 
         private Control _Child;

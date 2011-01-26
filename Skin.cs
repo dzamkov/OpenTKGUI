@@ -61,7 +61,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets a skin surface for the given region in the skin. No stretching or resizing is applied to the surface.
         /// </summary>
-        public SkinSurface GetSurface(SkinArea Rect, int Height)
+        public SkinSurface GetSurface(SkinArea Rect)
         {
             List<SkinSurface.Stop> xstops = new List<SkinSurface.Stop>();
             List<SkinSurface.Stop> ystops = new List<SkinSurface.Stop>();

@@ -120,7 +120,7 @@ namespace OpenTKGUI
         {
             if (this._Background != null)
             {
-                this._Background.Resize(Size);
+                this.ResizeChild(this._Background, Size);
             }
         }
 
@@ -136,7 +136,7 @@ namespace OpenTKGUI
             set
             {
                 this._Background = value;
-                this._Background.Resize(this.Size);
+                this.ResizeChild(this._Background, this.Size);
             }
         }
 
@@ -150,6 +150,21 @@ namespace OpenTKGUI
     /// </summary>
     public class LayerControl : Control
     {
+        /// <summary>
+        /// Gets or sets the size of the layer control. This size is independant of any other control.
+        /// </summary>
+        public new Point Size
+        {
+            get
+            {
+                return base.Size;
+            }
+            protected set
+            {
+                base.ForceResize(value);
+            }
+        }
+
         /// <summary>
         /// Gets the layer container this hovering control is in.
         /// </summary>

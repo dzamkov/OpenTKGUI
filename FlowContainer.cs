@@ -85,7 +85,7 @@ namespace OpenTKGUI
                 double height = Size.Y;
                 foreach (_Child c in this._Children)
                 {
-                    c.Control.Resize(new Point(c.Size, height));
+                    this.ResizeChild(c.Control, new Point(c.Size, height));
                 }
             }
             else
@@ -93,7 +93,7 @@ namespace OpenTKGUI
                 double width = Size.X;
                 foreach (_Child c in this._Children)
                 {
-                    c.Control.Resize(new Point(width, c.Size));
+                    this.ResizeChild(c.Control, new Point(width, c.Size));
                 }
             }
         }

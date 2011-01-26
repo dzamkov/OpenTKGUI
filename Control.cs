@@ -44,12 +44,22 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Resizes the control. Size must be specified in pixels.
+        /// Resizes this control in a not very nice way that may cause problems. Do not use the function unless
+        /// you know what you are doing.
         /// </summary>
-        public void Resize(Point Size)
+        public void ForceResize(Point Size)
         {
             this._Size = Size;
             this.OnResize(Size);
+        }
+
+        /// <summary>
+        /// Resizes a child control.
+        /// </summary>
+        protected void ResizeChild(Control Child, Point Size)
+        {
+            Child._Size = Size;
+            Child.OnResize(Size);
         }
 
         /// <summary>
@@ -60,6 +70,6 @@ namespace OpenTKGUI
 
         }
 
-        private Point _Size;
+        internal Point _Size;
     }
 }

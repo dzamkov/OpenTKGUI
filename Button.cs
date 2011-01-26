@@ -146,7 +146,7 @@ namespace OpenTKGUI
         {
             if (this._Client != null)
             {
-                this._Client.Resize(this.Size - new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0);
+                this.ResizeChild(this._Client, this.Size - new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0);
             }
         }
 

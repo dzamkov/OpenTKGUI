@@ -19,7 +19,7 @@ namespace OpenTKGUI
         /// </summary>
         public void AddChild(Control Child, Rectangle Area)
         {
-            Child.Resize(Area.Size);
+            this.ResizeChild(Child, Area.Size);
             this._Children.Add(new _Child()
             {
                 Control = Child,
