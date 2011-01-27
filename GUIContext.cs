@@ -130,6 +130,42 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Searches for the closest ancestor of the specified type. Returns true on sucsess and false on failure.
+        /// </summary>
+        /// <param name="Offset">The ancestor's offset from the current control. This will be negative.</param>
+        public bool FindAncestor<T>(out T Ancestor, out Point Offset)
+            where T : Control
+        {
+            GUIControlContext context;
+            if (this._FindAncestor<T>(out Ancestor, out context))
+            {
+                Offset = context._Offset - this._Offset;
+                return true;
+            }
+            Offset = new Point();
+            return false;
+        }
+
+        private bool _FindAncestor<T>(out T Ancestor, out GUIControlContext AncestorContext)
+            where T : Control
+        {
+            GUIControlContext parent = this._Parent;
+            if (parent == null)
+            {
+                Ancestor = null;
+                AncestorContext = null;
+                return false;
+            }
+            Ancestor = parent._Control as T;
+            if (Ancestor != null)
+            {
+                AncestorContext = parent;
+                return true;
+            }
+            return parent._FindAncestor<T>(out Ancestor, out AncestorContext);
+        }
+
+        /// <summary>
         /// Gets the mouse state for the control
         /// </summary>
         public MouseState MouseState
@@ -221,6 +257,7 @@ namespace OpenTKGUI
         {
             GUIControlContext cc = new GUIControlContext(this._Source, Control, this._Offset + Offset);
             cc._DisableMouse = this._DisableMouse;
+            cc._Parent = this;
             return cc;
         }
 
@@ -232,10 +269,12 @@ namespace OpenTKGUI
         {
             GUIControlContext cc = new GUIControlContext(this._Source, Control, this._Offset + Offset);
             cc._DisableMouse |= DisableMouse;
+            cc._Parent = this;
             return cc;
         }
 
         private GUIContext _Source;
+        private GUIControlContext _Parent;
         private bool _DisableMouse;
         private Point _Offset;
         private Control _Control;

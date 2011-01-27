@@ -12,13 +12,21 @@ namespace OpenTKGUI
     public class LayerContainer : Control
     {
         public LayerContainer()
+            : this(null)
         {
-            this._LayerControls = new LinkedList<LayerControl>();
+            
         }
 
         public LayerContainer(Control Background)
-            : this()
+            : this(new LayerContainerStyle(), Background)
         {
+
+        }
+
+        public LayerContainer(LayerContainerStyle Style, Control Background)
+        {
+            this._Style = Style;
+            this._LayerControls = new LinkedList<LayerControl>();
             this._Background = Background;
         }
 
@@ -38,17 +46,13 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Gets or sets the style default shadows are rendered with.
+        /// Gets the style for the layer container.
         /// </summary>
-        public ShadowStyle ShadowStyle
+        public LayerContainerStyle Style
         {
             get
             {
-                return this._ShadowStyle;
-            }
-            set
-            {
-                this._ShadowStyle = value;
+                return this._Style;
             }
         }
 
@@ -98,7 +102,7 @@ namespace OpenTKGUI
             {
                 if (lightbox && this._ModalOptions.LowestModal == lc)
                 {
-                    Context.DrawSolid(Color.RGBA(0.0, 0.0, 0.0, 0.3), new Rectangle(this.Size));
+                    this._DrawLightbox(Context);
                     lightbox = false;
                 }
                 lc.RenderShadow(lc._Position, Context);
@@ -106,6 +110,17 @@ namespace OpenTKGUI
                 lc.Render(Context);
                 Context.Pop();
             }
+            if (this._ModalOptions == null && this._LightboxTime > 0.0)
+            {
+                this._DrawLightbox(Context);
+            }
+        }
+
+        private void _DrawLightbox(GUIRenderContext Context)
+        {
+            Color c = this._Style.LightBoxColor;
+            c.A *= this._LightboxTime / this._Style.LightBoxFadeTime;
+            Context.DrawSolid(c, new Rectangle(this.Size));
         }
 
         public override void Update(GUIControlContext Context, double Time)
@@ -160,6 +175,16 @@ namespace OpenTKGUI
             {
                 this._Background.Update(Context.CreateChildContext(this._Background, new Point(), mousepos == null), Time);
             }
+
+            // Update lightbox (really low priority).
+            if (this._ModalOptions != null && this._ModalOptions.Lightbox)
+            {
+                this._LightboxTime = Math.Min(this._Style.LightBoxFadeTime, this._LightboxTime + Time);
+            }
+            else
+            {
+                this._LightboxTime = Math.Max(0.0, this._LightboxTime - Time);
+            }
         }
 
         protected override void OnResize(Point Size)
@@ -186,7 +211,8 @@ namespace OpenTKGUI
             }
         }
 
-        private ShadowStyle _ShadowStyle = new ShadowStyle();
+        private LayerContainerStyle _Style;
+        private double _LightboxTime;
         private Control _Background;
         private LinkedList<LayerControl> _LayerControls;
         private ModalOptions _ModalOptions;
@@ -278,13 +304,23 @@ namespace OpenTKGUI
         /// </summary>
         public virtual void RenderShadow(Point Position, GUIRenderContext Context)
         {
-            ShadowStyle ss = this._Container.ShadowStyle;
+            ShadowStyle ss = this._Container.Style.DefaultShadowStyle;
             double width = ss.Width;
             Context.DrawSurface(ss.Skin.GetSurface(ss.Image, this.Size + new Point(width * 2.0, width * 2.0)), Position - new Point(width, width));
         }
 
         internal LayerContainer _Container;
         internal Point _Position;
+    }
+
+    /// <summary>
+    /// Gives styling options for a layer container.
+    /// </summary>
+    public class LayerContainerStyle
+    {
+        public ShadowStyle DefaultShadowStyle = new ShadowStyle();
+        public Color LightBoxColor = Color.RGBA(0.8, 0.8, 0.7, 0.4);
+        public double LightBoxFadeTime = 0.1;
     }
 
     /// <summary>

@@ -22,7 +22,6 @@ namespace OpenTKGUI
             this._Control = BuildControl();
         }
 
-#if DEBUG
         /// <summary>
         /// Main entry point (for testing).
         /// </summary>
@@ -41,8 +40,9 @@ namespace OpenTKGUI
                 Label l = new Label(@"The quick brown fox jumped over the lazy tortise.");
 				Progressbar fp;
 				Checkbox g;
+                PopupContainer pc;
                 fc.AddChild(a = new Button("Jello?!?"), 30.0);
-                fc.AddChild(b = new Button("Test"), 30.0);
+                fc.AddChild(pc = new PopupContainer(b = new Button("Make a popup!")), 30.0);
                 fc.AddChild(c = new Textbox(), 30.0);
                 fc.AddChild(d = new Textbox(), 30.0);
                 fc.AddChild(e = new Scrollbar(Axis.Horizontal), 30.0);
@@ -58,6 +58,20 @@ namespace OpenTKGUI
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(200.0, 200.0));
 
+
+                pc.Items = new MenuItem[]
+                {
+                    new CommandMenuItem("Do nothing"),
+                    new CommandMenuItem("Stay the course!"),
+                    new CommandMenuItem("Don't do anything"),
+                    new CommandMenuItem("Avoid action"),
+                    new CommandMenuItem("Remain inert") 
+                };
+
+                b.Click += delegate
+                {
+                    pc.CallAtMouse();
+                };
 
 
 				e.ValueChanged += delegate(double Value)
@@ -99,25 +113,9 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
                 fpoem.AddCloseButton();
                 lc.AddControl(fpoem, new Point(600, 200.0));
 
-                Popup p = new Popup(new MenuItem[]
-                {
-                    new CommandMenuItem("Do nothing"),
-                    new CommandMenuItem("Do more nothing"),
-                    new CommandMenuItem("Don't do anything")
-                });
-                lc.AddControl(p, new Point(1000.0, 200.0));
-
-                lc.Modal = new ModalOptions()
-                {
-                    Lightbox = true,
-                    MouseFallthrough = true,
-                    LowestModal = p
-                };
-
                 return lc;
             }, "Test").Run();
         }
-#endif
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {

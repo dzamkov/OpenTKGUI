@@ -5,7 +5,7 @@ namespace OpenTKGUI
     /// <summary>
     /// The basic unit of TKGUI. Describes a gui component that can be drawn and receive events.
     /// </summary>
-    public abstract class Control
+    public abstract class Control : IDisposable
     {
         /// <summary>
         /// Gets the size (in pixels) of this panel when rendered.
@@ -70,6 +70,62 @@ namespace OpenTKGUI
 
         }
 
+        /// <summary>
+        /// Called when the control is cleaning up it's used resources. The control will not be used
+        /// after this. 
+        /// </summary>
+        protected virtual void OnDispose()
+        {
+
+        }
+
+        /// <summary>
+        /// Disposes of all resources this control is using along with all its current child controls.
+        /// </summary>
+        public void Dispose()
+        {
+            this.OnDispose();
+        }
+
         internal Point _Size;
+    }
+
+    /// <summary>
+    /// A container of a single control that produces some effect or modification on it.
+    /// </summary>
+    public class SingleContainer : Control
+    {
+        public SingleContainer(Control Client)
+        {
+            this._Client = Client;
+        }
+
+        /// <summary>
+        /// Gets the control that is affected or modified by this container.
+        /// </summary>
+        public Control Client
+        {
+            get
+            {
+                return this._Client;
+            }
+        }
+
+        public override void Render(GUIRenderContext Context)
+        {
+            this._Client.Render(Context);
+        }
+
+        public override void Update(GUIControlContext Context, double Time)
+        {
+            this._Client.Update(Context.CreateChildContext(this._Client, new Point(0.0, 0.0)), Time);
+        }
+
+        protected override void OnResize(Point Size)
+        {
+            this.ResizeChild(this._Client, Size);
+        }
+
+        private Control _Client;
     }
 }
