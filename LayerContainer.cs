@@ -211,6 +211,18 @@ namespace OpenTKGUI
             }
         }
 
+        protected override void OnDispose()
+        {
+            if (this._Background != null)
+            {
+                this._Background.Dispose();
+            }
+            foreach (LayerControl lc in this._LayerControls)
+            {
+                lc.Dispose();
+            }
+        }
+
         private LayerContainerStyle _Style;
         private double _LightboxTime;
         private Control _Background;
@@ -319,8 +331,8 @@ namespace OpenTKGUI
     public class LayerContainerStyle
     {
         public ShadowStyle DefaultShadowStyle = new ShadowStyle();
-        public Color LightBoxColor = Color.RGBA(0.8, 0.8, 0.7, 0.4);
-        public double LightBoxFadeTime = 0.1;
+        public Color LightBoxColor = Color.RGBA(0.9, 0.9, 0.9, 0.6);
+        public double LightBoxFadeTime = 0.3;
     }
 
     /// <summary>

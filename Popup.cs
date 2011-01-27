@@ -45,7 +45,7 @@ namespace OpenTKGUI
             ModalOptions mo = new ModalOptions()
             {
                 MouseFallthrough = true,
-                Lightbox = true,
+                Lightbox = false,
                 LowestModal = Popup
             };
             mo.BackgroundClick += delegate
@@ -123,6 +123,7 @@ namespace OpenTKGUI
                 container.Modal = null;
                 container.RemoveControl(this);
             }
+            this.Dispose();
         }
 
         /// <summary>
@@ -177,6 +178,17 @@ namespace OpenTKGUI
                 if (cmi != null)
                 {
                     Context.DrawText(Style.TextColor, this.Sample, Area);
+                }
+            }
+        }
+
+        protected override void OnDispose()
+        {
+            foreach (_Item i in this._Items)
+            {
+                if (i.Sample != null)
+                {
+                    i.Sample.Dispose();
                 }
             }
         }

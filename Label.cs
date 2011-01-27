@@ -139,6 +139,14 @@ namespace OpenTKGUI
             this._Sample = font.CreateSample(text, this.Size, this._Style.HorizontalAlign, this._Style.VerticalAlign, this._Style.Wrap);
         }
 
+        protected override void OnDispose()
+        {
+            if (this._Sample != null)
+            {
+                this._Sample.Dispose();
+            }
+        }
+
         private LabelStyle _Style;
         private Color _Color;
         private string _Text;

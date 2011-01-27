@@ -221,6 +221,19 @@ namespace OpenTKGUI
             }
         }
 
+        protected override void OnDispose()
+        {
+            if (this._TextSample != null)
+            {
+                this._TextSample.Dispose();
+            }
+            this._Client.Dispose();
+            foreach (Button b in this._Buttons)
+            {
+                b.Dispose();
+            }
+        }
+
         private TextSample _TextSample;
         private string _Text;
         private Point? _FormDragOffset;

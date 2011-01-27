@@ -126,6 +126,11 @@ namespace OpenTKGUI
             this.ResizeChild(this._Client, Size);
         }
 
+        protected override void OnDispose()
+        {
+            this._Client.Dispose();
+        }
+
         private Control _Client;
     }
 }

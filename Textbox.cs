@@ -309,6 +309,14 @@ namespace OpenTKGUI
             }
         }
 
+        protected override void OnDispose()
+        {
+            if (this._TextSample != null)
+            {
+                this._TextSample.Dispose();
+            }
+        }
+
         /// <summary>
         /// Tries changing the text to the specified new string. Returns true if sucsessful.
         /// </summary>

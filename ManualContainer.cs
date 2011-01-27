@@ -49,6 +49,14 @@ namespace OpenTKGUI
             }
         }
 
+        protected override void OnDispose()
+        {
+            foreach (_Child c in this._Children)
+            {
+                c.Control.Dispose();
+            }
+        }
+
         private struct _Child
         {
             public Control Control;
