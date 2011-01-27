@@ -67,6 +67,11 @@ namespace OpenTKGUI
             return new Rectangle(A.X, A.Y, A.Width, A.Height);
         }
 
+        public static Rectangle operator +(Rectangle A, Point B)
+        {
+            return new Rectangle(A.Location + B, A.Size);
+        }
+
         /// <summary>
         /// Gets or sets the position of the top-left corner of the rectangle.
         /// </summary>

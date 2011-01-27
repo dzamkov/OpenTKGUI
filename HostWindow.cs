@@ -101,11 +101,18 @@ Wer, der kalt ihr bliebe?", Color.RGB(0.0, 0.0, 0.0), new LabelStyle() { Horizon
 
                 Popup p = new Popup(new MenuItem[]
                 {
-                    new MenuItem("Test 1"),
-                    new MenuItem("Test 2"),
-                    new MenuItem("Test 3")
+                    new CommandMenuItem("Do nothing"),
+                    new CommandMenuItem("Do more nothing"),
+                    new CommandMenuItem("Don't do anything")
                 });
                 lc.AddControl(p, new Point(1000.0, 200.0));
+
+                lc.Modal = new ModalOptions()
+                {
+                    Lightbox = true,
+                    MouseFallthrough = true,
+                    LowestModal = p
+                };
 
                 return lc;
             }, "Test").Run();

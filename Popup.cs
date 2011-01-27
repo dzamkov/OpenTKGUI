@@ -18,65 +18,89 @@ namespace OpenTKGUI
         public Popup(PopupStyle Style, IEnumerable<MenuItem> Items)
         {
             this._Style = Style;
-            this._Items = new List<MenuItem>(Items);
-            this._CreateSamples();
-            this.Size = new Point(this._Width, this._Height) + new Point(this._Style.Margin, this._Style.Margin) * 2.0;
+            double y = 0.0;
+            double width = 0.0;
+            this._Items = new List<_Item>();
+            foreach (MenuItem mi in Items)
+            {
+                _Item i = new _Item(Style, mi, y);
+                Point size = i.Size;
+                y += size.Y;
+                width = Math.Max(width, size.X);
+                this._Items.Add(i);
+            }
+            this.Size = new Point(width, y) + new Point(this._Style.Margin, this._Style.Margin) * 2.0;
         }
 
         public override void Render(GUIRenderContext Context)
         {
             Context.DrawSurface(Skin.Default.GetSurface(new SkinArea(96, 80, 16, 16), this.Size));
             Rectangle inner = new Rectangle(this.Size).Margin(this._Style.Margin);
-            double y = inner.Location.Y;
-            for (int t = 0; t < this._Items.Count; t++)
+            PopupStyle style = this._Style;
+            foreach (_Item i in this._Items)
             {
-                double height = this._Style.ItemHeight;
-                Rectangle itemrect = new Rectangle(inner.Location.X, y, inner.Size.X, height);
-                Context.DrawText(this._Style.TextColor, this._Samples[t], itemrect);
-                y += height;
-            }
-        }
-
-        private void _CreateSamples()
-        {
-            this._Samples = new List<TextSample>(this._Items.Count);
-            foreach (MenuItem mi in this._Items)
-            {
-                this._Samples.Add(this._Style.Font.CreateSample(mi.Text, null, TextAlign.Left, TextAlign.Center, TextWrap.Ellipsis));
+                i.Render(Context, style, new Rectangle(0.0, i.Y, inner.Size.X, i.Size.Y) + inner.Location);
             }
         }
 
         /// <summary>
-        /// Gets the target width of the inner area of the popup.
+        /// Information about a item.
         /// </summary>
-        private double _Width
+        private class _Item
         {
-            get
+            public _Item(PopupStyle Style, MenuItem Source, double Y)
             {
-                double max = 0.0;
-                for (int t = 0; t < this._Items.Count; t++)
+                this.Source = Source;
+                this.Y = Y;
+
+                TextMenuItem tmi = Source as TextMenuItem;
+                if (tmi != null)
                 {
-                    TextSample samp = this._Samples[t];
-                    max = Math.Max(max, samp.Size.X);
+                    this.Sample = Style.Font.CreateSample(tmi.Text, null, TextAlign.Left, TextAlign.Center, TextWrap.Ellipsis);
                 }
-                return max;
-            }
-        }
 
-        /// <summary>
-        /// Gets the target height of the inner area of the popup.
-        /// </summary>
-        private double _Height
-        {
-            get
+                CommandMenuItem cmi = Source as CommandMenuItem;
+                if (cmi != null)
+                {
+                    this.Size = new Point(this.Sample.Size.X, Style.StandardItemHeight);
+                }
+            }
+
+            /// <summary>
+            /// The menuitem associated with this item.
+            /// </summary>
+            public MenuItem Source;
+
+            /// <summary>
+            /// The location of the top of the item not accounting for padding.
+            /// </summary>
+            public double Y;
+
+            /// <summary>
+            /// The size of the item.
+            /// </summary>
+            public Point Size;
+
+            /// <summary>
+            /// The text sample, if any, associated with this item.
+            /// </summary>
+            public TextSample Sample;
+
+            /// <summary>
+            /// Renders the item to the specified location.
+            /// </summary>
+            public void Render(GUIRenderContext Context, PopupStyle Style, Rectangle Area)
             {
-                return this._Style.ItemHeight * this._Items.Count;
+                CommandMenuItem cmi = Source as CommandMenuItem;
+                if (cmi != null)
+                {
+                    Context.DrawText(Style.TextColor, this.Sample, Area);
+                }
             }
         }
 
         private PopupStyle _Style;
-        private List<MenuItem> _Items;
-        private List<TextSample> _Samples;
+        private List<_Item> _Items;
     }
 
     /// <summary>
@@ -89,6 +113,6 @@ namespace OpenTKGUI
         public Font Font = Font.Default;
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public double Margin = 3.0;
-        public double ItemHeight = 20.0;
+        public double StandardItemHeight = 20.0;
     }
 }

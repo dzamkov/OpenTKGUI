@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using OpenTK.Input;
+
 namespace OpenTKGUI
 {
     /// <summary>
@@ -18,6 +20,21 @@ namespace OpenTKGUI
             : this()
         {
             this._Background = Background;
+        }
+
+        /// <summary>
+        /// Gets or sets the current modal mode. If set to null, there is no modal control.
+        /// </summary>
+        public ModalOptions Modal
+        {
+            get
+            {
+                return this._ModalOptions;
+            }
+            set
+            {
+                this._ModalOptions = value;
+            }
         }
 
         /// <summary>
@@ -76,8 +93,14 @@ namespace OpenTKGUI
             {
                 this._Background.Render(Context);
             }
+            bool lightbox = this._ModalOptions != null && this._ModalOptions.Lightbox;
             foreach (LayerControl lc in this._LayerControls)
             {
+                if (lightbox && this._ModalOptions.LowestModal == lc)
+                {
+                    Context.DrawSolid(Color.RGBA(0.0, 0.0, 0.0, 0.3), new Rectangle(this.Size));
+                    lightbox = false;
+                }
                 lc.RenderShadow(lc._Position, Context);
                 Context.PushTranslate(lc._Position);
                 lc.Render(Context);
@@ -91,21 +114,44 @@ namespace OpenTKGUI
             Point? mousepos = ms != null ? (Point?)ms.Position : null;
             LinkedList<LayerControl> oldlayercontrols = this._LayerControls;
             this._LayerControls = new LinkedList<LayerControl>(this._LayerControls);
-
+            ModalOptions mo = this._ModalOptions;
 
             // Go through control in reverse order (since the last control is the top-most).
             LinkedListNode<LayerControl> cur = oldlayercontrols.Last;
             while (cur != null) 
             {
                 LayerControl lc = cur.Value;
+
+                // Standard updating procedure
                 lc.Update(Context.CreateChildContext(lc, lc._Position, mousepos == null), Time);
                 if (mousepos != null)
                 {
+                    // If the mouse is over a hover control, do not let it fall through to lower controls.
                     if (new Rectangle(lc._Position, lc.Size).In(mousepos.Value))
                     {
                         mousepos = null;
                     }
                 }
+
+                // Handle modal options
+                if (mo != null)
+                {
+                    if (mo.LowestModal == lc)
+                    {
+                        // Background click?
+                        if (mousepos != null && ms.IsButtonDown(MouseButton.Left))
+                        {
+                            mo._BackgroundClick();
+                        }
+
+                        // Mouse blocked?
+                        if (!mo.MouseFallthrough)
+                        {
+                            mousepos = null;
+                        }
+                    }
+                }
+
                 cur = cur.Previous;
             }
 
@@ -143,6 +189,41 @@ namespace OpenTKGUI
         private ShadowStyle _ShadowStyle = new ShadowStyle();
         private Control _Background;
         private LinkedList<LayerControl> _LayerControls;
+        private ModalOptions _ModalOptions;
+    }
+
+    /// <summary>
+    /// Options given to a layer container when creating a modal mode (where higher level hovering controls are brought to the attention of the user).
+    /// </summary>
+    public class ModalOptions
+    {
+        /// <summary>
+        /// The lowest (or furthest to the back) control that is modal.
+        /// </summary>
+        public LayerControl LowestModal;
+
+        /// <summary>
+        /// Determines wether controls behind the modal hovering controls can still receive mouse input.
+        /// </summary>
+        public bool MouseFallthrough;
+
+        /// <summary>
+        /// Determines wether the space behind the modal hovering controls is darkened.
+        /// </summary>
+        public bool Lightbox;
+
+        /// <summary>
+        /// An event fired when the background area (behind the modal controls) is clicked.
+        /// </summary>
+        public event ClickHandler BackgroundClick;
+
+        internal void _BackgroundClick()
+        {
+            if (this.BackgroundClick != null)
+            {
+                this.BackgroundClick.Invoke();
+            }
+        }
     }
 
     /// <summary>

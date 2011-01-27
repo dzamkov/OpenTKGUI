@@ -23,7 +23,7 @@ namespace OpenTKGUI
     /// <summary>
     /// Handles a click event from a button.
     /// </summary>
-    public delegate void ClickHandler(Button Button);
+    public delegate void ClickHandler();
 	
 	
     /// <summary>

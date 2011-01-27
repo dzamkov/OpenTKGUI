@@ -8,15 +8,26 @@ namespace OpenTKGUI
     /// <summary>
     /// An item on a menu or popup.
     /// </summary>
-    public class MenuItem
+    public abstract class MenuItem
     {
-        public MenuItem(string Text)
+        public MenuItem()
+        {
+            
+        }
+    }
+
+    /// <summary>
+    /// A menu item that displays text.
+    /// </summary>
+    public abstract class TextMenuItem : MenuItem
+    {
+        public TextMenuItem(string Text)
         {
             this._Text = Text;
         }
 
         /// <summary>
-        /// Gets the text for this item.
+        /// Gets the text for this menu item.
         /// </summary>
         public string Text
         {
@@ -32,16 +43,15 @@ namespace OpenTKGUI
     /// <summary>
     /// A menu item that calls an event on click.
     /// </summary>
-    public class CommandMenuItem : MenuItem
+    public class CommandMenuItem : TextMenuItem
     {
-        public CommandMenuItem(string Text)
-            : base(Text)
+        public CommandMenuItem(string Text) : base(Text)
         {
 
         }
 
         public CommandMenuItem(string Text, ClickHandler OnClick)
-            : base(Text)
+            : this(Text)
         {
             this.Click += OnClick;
         }

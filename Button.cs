@@ -133,7 +133,7 @@ namespace OpenTKGUI
         {
             if (this.Click != null)
             {
-                this.Click.Invoke(this);
+                this.Click.Invoke();
             }
         }
 
