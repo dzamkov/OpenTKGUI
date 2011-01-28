@@ -521,6 +521,7 @@ namespace OpenTKGUI
             : base(Client)
         {
             this._Style = new PopupStyle();
+            this._ShowOnRightClick = true;
         }
 
         /// <summary>
@@ -554,6 +555,21 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets or sets wether the popup menu is shown on right click (as a context menu).
+        /// </summary>
+        public bool ShowOnRightClick
+        {
+            get
+            {
+                return this._ShowOnRightClick;
+            }
+            set
+            {
+                this._ShowOnRightClick = value;
+            }
+        }
+
+        /// <summary>
         /// Calls the popup described in the container at the given offset from the container.
         /// </summary>
         public void Call(Point Offset)
@@ -572,11 +588,17 @@ namespace OpenTKGUI
         public override void Update(GUIControlContext Context, double Time)
         {
             base.Update(Context, Time);
+            MouseState ms = Context.MouseState;
+
+            // Shown on right click.
+            if (this._ShowOnRightClick && ms != null && ms.HasReleasedButton(MouseButton.Right))
+            {
+                this._CallAtMouse = true;
+            }
 
             // Set up call on mouse
             if (this._CallAtMouse)
             {
-                MouseState ms = Context.MouseState;
                 if (ms != null)
                 {
                     this._Callpoint = ms.Position;
@@ -600,7 +622,9 @@ namespace OpenTKGUI
             }
         }
 
+        private bool _ShowOnRightClick;
         private bool _CallAtMouse;
+        private Popup _Current;
         private Point? _Callpoint;
         private IEnumerable<MenuItem> _Items;
         private PopupStyle _Style;

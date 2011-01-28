@@ -1,6 +1,5 @@
 * Create vertical scrollbar
 * Use FlowContainer for buttons in the titlebar of Forms
 * CheckboxStyle
-* Memory management for controls
 * (maybe) Change checkbox skin so it doesn't stand out
 * (maybe) Alternate integration method

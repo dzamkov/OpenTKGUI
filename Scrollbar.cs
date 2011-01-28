@@ -19,22 +19,15 @@ namespace OpenTKGUI
         {
             this._Style = Style;
             this._Direction = Direction;
-            ButtonStyle tlstyle =
+            ButtonStyle bstyle =
                 new ButtonStyle() 
                 {
-                    Normal = Style.LeftButtonNormal,
-                    Active = Style.LeftButtonActive,
-                    Pushed = Style.LeftButtonPushed
+                    Normal = Style.HorizontalButtonNormal,
+                    Active = Style.HorizontalButtonActive,
+                    Pushed = Style.HorizontalButtonPushed
                 };
-            ButtonStyle brstyle =
-                new ButtonStyle()
-                {
-                    Normal = Style.RightButtonNormal,
-                    Active = Style.RightButtonActive,
-                    Pushed = Style.RightButtonPushed
-                };
-            this._TopLeftButton = new Button(tlstyle);
-            this._BottomRightButton = new Button(brstyle);
+            this._TopLeftButton = new Button(bstyle);
+            this._BottomRightButton = new Button(bstyle);
 
 
             this._TopLeftButton.Click += delegate
@@ -255,12 +248,9 @@ namespace OpenTKGUI
         public Skin Skin = Skin.Default;
         public SkinArea HorizontalBackground = new SkinArea(0, 96, 16, 16);
         public SkinArea HorizontalSlider = new SkinArea(16, 96, 16, 16);
-        public SkinArea LeftButtonNormal = new SkinArea(32, 96, 16, 16);
-        public SkinArea RightButtonNormal = new SkinArea(48, 96, 16, 16);
-        public SkinArea LeftButtonActive = new SkinArea(32, 112, 16, 16);
-        public SkinArea RightButtonActive = new SkinArea(48, 112, 16, 16);
-        public SkinArea LeftButtonPushed = new SkinArea(0, 112, 16, 16);
-        public SkinArea RightButtonPushed = new SkinArea(16, 112, 16, 16);
+        public SkinArea HorizontalButtonNormal = new SkinArea(32, 96, 16, 16);
+        public SkinArea HorizontalButtonActive = new SkinArea(48, 96, 16, 16);
+        public SkinArea HorizontalButtonPushed = new SkinArea(0, 112, 16, 16);
         public double ButtonSize = 16.0;
     }
 }

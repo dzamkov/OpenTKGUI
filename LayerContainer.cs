@@ -154,7 +154,7 @@ namespace OpenTKGUI
                     if (mo.LowestModal == lc)
                     {
                         // Background click?
-                        if (mousepos != null && ms.IsButtonDown(MouseButton.Left))
+                        if (mousepos != null && (ms.IsButtonDown(MouseButton.Left) || ms.IsButtonDown(MouseButton.Right)))
                         {
                             mo._BackgroundClick();
                         }
