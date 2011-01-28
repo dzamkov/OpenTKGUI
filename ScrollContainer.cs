@@ -15,15 +15,22 @@ namespace OpenTKGUI
 
         }
 
-        public ScrollContainer(ScrollContainerStyle Style, Control Client)
-            : this(Style, new WindowContainer(Client))
+        public ScrollContainer(WindowContainer Window, Control WindowContainer)
+            : this(new ScrollContainerStyle(), Window, WindowContainer)
         {
 
         }
 
-        public ScrollContainer(ScrollContainerStyle Style, WindowContainer Window)
+        public ScrollContainer(ScrollContainerStyle Style, Control Client)
         {
             this._Style = Style;
+            this._WindowContainer = this._Window = new WindowContainer(Client);
+        }
+
+        public ScrollContainer(ScrollContainerStyle Style, WindowContainer Window, Control WindowContainer)
+        {
+            this._Style = Style;
+            this._WindowContainer = WindowContainer;
             this._Window = Window;
         }
 
@@ -68,7 +75,7 @@ namespace OpenTKGUI
                 this._UpdateControls();
             }
 
-            this._Window.Render(Context);
+            this._WindowContainer.Render(Context);
             if (this._VScroll != null)
             {
                 Context.PushTranslate(new Point(this.Size.X - this._VScroll.Size.X, 0.0));
@@ -90,7 +97,7 @@ namespace OpenTKGUI
                 this._UpdateControls();
             }
 
-            this._Window.Update(Context.CreateChildContext(this._Window, new Point(0.0, 0.0)), Time);
+            this._WindowContainer.Update(Context.CreateChildContext(this._WindowContainer, new Point(0.0, 0.0)), Time);
             if (this._VScroll != null)
             {
                 this._VScroll.Update(Context.CreateChildContext(this._VScroll, new Point(this.Size.X - this._VScroll.Size.X, 0.0)), Time);
@@ -131,7 +138,7 @@ namespace OpenTKGUI
             Point winoffset = this._Window.Offset;
             this._UpdateScrollbar(ref this._HScroll, Axis.Horizontal, hscroll, vscroll, winwidth, winoffset.X, cliwidth);
             this._UpdateScrollbar(ref this._VScroll, Axis.Vertical, vscroll, hscroll, winheight, winoffset.Y, cliheight);
-            this.ResizeChild(this._Window, new Point(winwidth, winheight));
+            this.ResizeChild(this._WindowContainer, new Point(winwidth, winheight));
             this._Window.FullSize = new Point(cliwidth, cliheight);
             this._NeedUpdate = false;
         }
@@ -148,7 +155,7 @@ namespace OpenTKGUI
                         this._ScrollbarSet(Direction, Value);
                     };
                 }
-                Point size = new Point(WinSize, this._Style.ScrollbarSize);
+                Point size = new Point(WinSize, this._Style.ScrollbarSize + 1);
                 if (OppositeExists)
                 {
                     size.X += 1;
@@ -192,7 +199,7 @@ namespace OpenTKGUI
 
         protected override void OnDispose()
         {
-            this._Window.Dispose();
+            this._WindowContainer.Dispose();
         }
 
         private bool _NeedUpdate;
@@ -200,6 +207,7 @@ namespace OpenTKGUI
         private double? _ClientHeight;
         private Scrollbar _HScroll;
         private Scrollbar _VScroll;
+        private Control _WindowContainer;
         private WindowContainer _Window;
         private ScrollContainerStyle _Style;
     }

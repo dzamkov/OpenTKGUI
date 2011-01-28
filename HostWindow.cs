@@ -53,7 +53,8 @@ namespace OpenTKGUI
                 MarginContainer mc = new MarginContainer(fc, 20.0);
                 Point mcsize = mc.GetSize(new Point(300.0, fc.SuggestLength));
 
-                ScrollContainer sc = new ScrollContainer(mc);
+                WindowContainer wc = new WindowContainer(mc);
+                ScrollContainer sc = new ScrollContainer(wc, new SunkenContainer(wc));
                 sc.ClientHeight = mcsize.Y;
                 sc.ClientWidth = null;
 
