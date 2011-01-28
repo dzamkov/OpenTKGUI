@@ -19,16 +19,17 @@ namespace OpenTKGUI
         {
             this._Style = Style;
             this._Direction = Direction;
-            ButtonStyle bstyle =
-                new ButtonStyle() 
-                {
-                    Normal = Style.HorizontalButtonNormal,
-                    Active = Style.HorizontalButtonActive,
-                    Pushed = Style.HorizontalButtonPushed
-                };
-            this._TopLeftButton = new Button(bstyle);
-            this._BottomRightButton = new Button(bstyle);
 
+            if (Direction == Axis.Horizontal)
+            {
+                this._TopLeftButton = new Button(Style.LeftButtonStyle);
+                this._BottomRightButton = new Button(Style.RightButtonStyle);
+            }
+            else
+            {
+                this._TopLeftButton = new Button(Style.UpButtonStyle);
+                this._BottomRightButton = new Button(Style.DownButtonStyle);
+            }
 
             this._TopLeftButton.Click += delegate
             {
@@ -125,6 +126,11 @@ namespace OpenTKGUI
             {
                 Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point(Math.Round(areastart), 0.0));
                 Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(Math.Round(sliderstart), 0.0));
+            }
+            else
+            {
+                Context.DrawSurface(s.GetSurface(this._Style.VerticalBackground, new Point(this.Size.X, areasize)), new Point(0.0, Math.Round(areastart)));
+                Context.DrawSurface(s.GetSurface(this._Style.VerticalSlider, new Point(this.Size.X, slidersize)), new Point(0.0, Math.Round(sliderstart)));
             }
 
 
@@ -245,12 +251,29 @@ namespace OpenTKGUI
     /// </summary>
     public sealed class ScrollbarStyle
     {
+        private static readonly ButtonStyle _LeftRightButtonStyle = new ButtonStyle()
+        {
+            Normal = new SkinArea(32, 96, 16, 16),
+            Active = new SkinArea(48, 96, 16, 16),
+            Pushed = new SkinArea(0, 112, 16, 16)
+        };
+
+        private static readonly ButtonStyle _UpDownButtonStyle = new ButtonStyle()
+        {
+            Normal = new SkinArea(64, 112, 16, 16),
+            Active = new SkinArea(16, 112, 16, 16),
+            Pushed = new SkinArea(80, 112, 16, 16)
+        };
+
         public Skin Skin = Skin.Default;
         public SkinArea HorizontalBackground = new SkinArea(0, 96, 16, 16);
         public SkinArea HorizontalSlider = new SkinArea(16, 96, 16, 16);
-        public SkinArea HorizontalButtonNormal = new SkinArea(32, 96, 16, 16);
-        public SkinArea HorizontalButtonActive = new SkinArea(48, 96, 16, 16);
-        public SkinArea HorizontalButtonPushed = new SkinArea(0, 112, 16, 16);
+        public ButtonStyle LeftButtonStyle = _LeftRightButtonStyle;
+        public ButtonStyle RightButtonStyle = _LeftRightButtonStyle;
+        public SkinArea VerticalBackground = new SkinArea(48, 112, 16, 16);
+        public SkinArea VerticalSlider = new SkinArea(32, 112, 16, 16);
+        public ButtonStyle UpButtonStyle = _UpDownButtonStyle;
+        public ButtonStyle DownButtonStyle = _UpDownButtonStyle;
         public double ButtonSize = 16.0;
     }
 }
