@@ -19,7 +19,6 @@ namespace OpenTKGUI
         public Progressbar(ProgressbarStyle Style)
         {
             this._Style = Style;
-            this._Value = 0.01;
         }
 
         /// <summary>

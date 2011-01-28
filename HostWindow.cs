@@ -64,6 +64,7 @@ namespace OpenTKGUI
                 {
                     new CommandMenuItem("Do nothing"),
                     cmi,
+                    MenuItem.Seperator,
                     new CommandMenuItem("Stay the course!"),
                     new CommandMenuItem("Don't do anything"),
                     new CommandMenuItem("Avoid action"),

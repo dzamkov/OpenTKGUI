@@ -45,7 +45,7 @@ namespace OpenTKGUI
             ModalOptions mo = new ModalOptions()
             {
                 MouseFallthrough = true,
-                Lightbox = true,
+                Lightbox = false,
                 LowestModal = Popup
             };
             mo.BackgroundClick += delegate
@@ -401,6 +401,12 @@ namespace OpenTKGUI
                 {
                     this.Size = new Point(this.Sample.Size.X + Style.CompoundArrowSize.X, Style.StandardItemHeight);
                 }
+
+                SeperatorMenuItem smi = Source as SeperatorMenuItem;
+                if (smi != null)
+                {
+                    this.Size = new Point(0.0, Style.SeperatorHeight + Style.SeperatorPadding * 2.0);
+                }
             }
 
             /// <summary>
@@ -430,7 +436,7 @@ namespace OpenTKGUI
             {
                 get
                 {
-                    return true;
+                    return !(this.Source is SeperatorMenuItem);
                 }
             }
 
@@ -454,6 +460,14 @@ namespace OpenTKGUI
                     Context.DrawSurface(
                         Style.Skin.GetSurface(Style.CompoundArrow, arrowsize), 
                         new Point(Area.Location.X + Area.Size.X - arrowsize.X, Area.Location.Y + Area.Size.Y * 0.5 - arrowsize.Y * 0.5));
+                }
+
+                SeperatorMenuItem smi = Source as SeperatorMenuItem;
+                if (smi != null)
+                {
+                    Context.DrawSurface(
+                        Style.Skin.GetSurface(Style.Seperator, new Point(Area.Size.X, Style.SeperatorHeight)),
+                        Area.Location + new Point(0.0, Style.SeperatorPadding));
                 }
             }
         }
@@ -487,11 +501,14 @@ namespace OpenTKGUI
         public SkinArea Back = new SkinArea(96, 80, 16, 16);
         public SkinArea ActiveItem = new SkinArea(112, 80, 16, 16);
         public SkinArea PushedItem = new SkinArea(80, 96, 16, 16);
+        public SkinArea Seperator = new SkinArea(96, 96, 16, 2);
         public SkinArea CompoundArrow = new SkinArea(64, 96, 16, 16);
         public Point CompoundArrowSize = new Point(16.0, 16.0);
         public Font Font = Font.Default;
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public double Margin = 3.0;
+        public double SeperatorHeight = 2.0;
+        public double SeperatorPadding = 2.0;
         public double StandardItemHeight = 30.0;
     }
 
