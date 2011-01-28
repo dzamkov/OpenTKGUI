@@ -51,10 +51,15 @@ namespace OpenTKGUI
 				fc.AddChild(g = new Checkbox(true, "I am checkbox"), 30.0);
 
                 MarginContainer mc = new MarginContainer(fc, 20.0);
+                Point mcsize = mc.GetSize(new Point(300.0, fc.SuggestLength));
+
+                ScrollContainer sc = new ScrollContainer(mc);
+                sc.ClientHeight = mcsize.Y;
+                sc.ClientWidth = null;
 
                 LayerContainer lc = new LayerContainer();
-                Form f = new Form(mc, "Test");
-                f.ClientSize = mc.GetSize(new Point(300.0, fc.SuggestLength));
+                Form f = new Form(sc, "Test");
+                f.ClientSize = new Point(mcsize.X, 300.0);
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(200.0, 200.0));
 

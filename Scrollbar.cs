@@ -44,6 +44,7 @@ namespace OpenTKGUI
             this._SliderSize = 0.1;
             this._MinorIncrement = 0.1;
             this._MajorIncrement = 0.3;
+            this._Enabled = true;
         }
 
         /// <summary>
@@ -57,11 +58,14 @@ namespace OpenTKGUI
             }
             set
             {
-                this._Value = value;
-                this._Value = Math.Max(0.0, Math.Min(1.0, this._Value));
-                if (this.ValueChanged != null)
+                if (this._Enabled)
                 {
-                    this.ValueChanged(this._Value);
+                    this._Value = value;
+                    this._Value = Math.Max(0.0, Math.Min(1.0, this._Value));
+                    if (this.ValueChanged != null)
+                    {
+                        this.ValueChanged(this._Value);
+                    }
                 }
             }
         }
@@ -111,6 +115,21 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Gets or sets if the scrollbar is enabled and can be used.
+        /// </summary>
+        public bool Enabled
+        {
+            get
+            {
+                return this._Enabled;
+            }
+            set
+            {
+                this._Enabled = value;
+            }
+        }
+
 
         public override void Render(GUIRenderContext Context)
         {
@@ -125,12 +144,18 @@ namespace OpenTKGUI
             if (this._Direction == Axis.Horizontal)
             {
                 Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point(Math.Round(areastart), 0.0));
-                Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(Math.Round(sliderstart), 0.0));
+                if (this._Enabled)
+                {
+                    Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(Math.Round(sliderstart), 0.0));
+                }
             }
             else
             {
                 Context.DrawSurface(s.GetSurface(this._Style.VerticalBackground, new Point(this.Size.X, areasize)), new Point(0.0, Math.Round(areastart)));
-                Context.DrawSurface(s.GetSurface(this._Style.VerticalSlider, new Point(this.Size.X, slidersize)), new Point(0.0, Math.Round(sliderstart)));
+                if (this._Enabled)
+                {
+                    Context.DrawSurface(s.GetSurface(this._Style.VerticalSlider, new Point(this.Size.X, slidersize)), new Point(0.0, Math.Round(sliderstart)));
+                }
             }
 
 
@@ -147,7 +172,7 @@ namespace OpenTKGUI
 
             // Handle mouse
             MouseState ms = Context.MouseState;
-            if (ms != null)
+            if (this._Enabled && ms != null)
             {
                 bool oldmousedown = this._MouseDown;
                 this._MouseDown = ms.IsButtonDown(MouseButton.Left);
@@ -232,6 +257,7 @@ namespace OpenTKGUI
             this.ResizeChild(this._BottomRightButton, buttonsize);
         }
 
+        private bool _Enabled;
         private bool _MouseDown;
         private double? _DragOffset;
         private double _MajorIncrement;

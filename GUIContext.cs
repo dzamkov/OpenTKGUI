@@ -183,8 +183,7 @@ namespace OpenTKGUI
                     }
                     if (!this._DisableMouse && focus == null)
                     {
-                        Point size = this._Control.Size;
-                        if (pos.X >= 0.0 && pos.Y >= 0.0 && pos.X < size.X && pos.Y < size.Y)
+                        if (this._Inside(ms.Position))
                         {
                             return new _OffsetMouseState(this._Source.MouseState, pos);
                         }
@@ -192,6 +191,25 @@ namespace OpenTKGUI
                 }
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Gets if the specified absolute point is inside the control.
+        /// </summary>
+        internal bool _Inside(Point Point)
+        {
+            if (new Rectangle(this._Control.Size).In(Point - this._Offset))
+            {
+                if (this._Parent != null)
+                {
+                    return this._Parent._Inside(Point);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

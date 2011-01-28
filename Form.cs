@@ -252,7 +252,7 @@ namespace OpenTKGUI
         public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
         public int FormVerticalStretchLine = 44;
         public double BorderSize = 6.0;
-        public double TitleBarSize = 32.0;
+        public double TitleBarSize = 31.0;
         public double TitleBarMidline = 15.0;
         public double TitleBarMargin = 7.0;
         public Font TitleBarFont = Font.Default;
