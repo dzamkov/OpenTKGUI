@@ -85,7 +85,8 @@ namespace OpenTKGUI
             {
                 if (this._Active == i)
                 {
-                    Context.DrawSurface(s.GetSurface(style.ActiveItem, new Point(this.Size.X, i.Size.Y)), new Point(0.0, i.Y + inner.Location.Y));
+                    SkinArea sa = this._MouseDown ? style.PushedItem : style.ActiveItem;
+                    Context.DrawSurface(s.GetSurface(sa, new Point(this.Size.X, i.Size.Y)), new Point(0.0, i.Y + inner.Location.Y));
                 }
                 i.Render(Context, style, new Rectangle(0.0, i.Y, inner.Size.X, i.Size.Y) + inner.Location);
             }
@@ -93,8 +94,10 @@ namespace OpenTKGUI
 
         public override void Update(GUIControlContext Context, double Time)
         {
+            // Mouse navigation.
             Rectangle inner = new Rectangle(this.Size).Margin(this._Style.Margin);
             MouseState ms = Context.MouseState;
+            this._MouseDown = false;
             if (ms != null)
             {
                 Point mousepos = ms.Position;
@@ -103,7 +106,11 @@ namespace OpenTKGUI
                     Rectangle irect = this._ItemRect(inner, i);
                     if (irect.In(mousepos))
                     {
-                        if ((mousepos - this._LastMouse).SquareLength > 1.0)
+                        if (ms.IsButtonDown(MouseButton.Left))
+                        {
+                            this._MouseDown = true;
+                        }
+                        if ((mousepos - this._LastMouse).SquareLength > 1.0 || this._MouseDown)
                         {
                             if (this._Select(i))
                             {
@@ -122,7 +129,7 @@ namespace OpenTKGUI
 
             // Keyboard navigation
             KeyboardState ks = Context.KeyboardState;
-            if (ks != null)
+            if (ks != null && !this._MouseDown)
             {
                 foreach (KeyEvent ke in ks.Events)
                 {
@@ -264,7 +271,7 @@ namespace OpenTKGUI
         /// </summary>
         private bool _Select(_Item Item)
         {
-            if (this._Active != Item)
+            if (Item.Selectable && this._Active != Item)
             {
                 this._Active = Item;
                 return true;
@@ -462,6 +469,7 @@ namespace OpenTKGUI
             }
         }
 
+        private bool _MouseDown;
         private Point _LastMouse;
         private _Item _Active;
         private Popup _Parent;
@@ -478,6 +486,7 @@ namespace OpenTKGUI
         public Skin Skin = Skin.Default;
         public SkinArea Back = new SkinArea(96, 80, 16, 16);
         public SkinArea ActiveItem = new SkinArea(112, 80, 16, 16);
+        public SkinArea PushedItem = new SkinArea(80, 96, 16, 16);
         public SkinArea CompoundArrow = new SkinArea(64, 96, 16, 16);
         public Point CompoundArrowSize = new Point(16.0, 16.0);
         public Font Font = Font.Default;
