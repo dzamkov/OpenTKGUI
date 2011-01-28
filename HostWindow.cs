@@ -59,13 +59,15 @@ namespace OpenTKGUI
                 lc.AddControl(f, new Point(200.0, 200.0));
 
 
-                pc.Items = new MenuItem[]
+                CompoundMenuItem cmi = new CompoundMenuItem("Recurse");
+                pc.Items = cmi.Items = new MenuItem[]
                 {
                     new CommandMenuItem("Do nothing"),
+                    cmi,
                     new CommandMenuItem("Stay the course!"),
                     new CommandMenuItem("Don't do anything"),
                     new CommandMenuItem("Avoid action"),
-                    new CommandMenuItem("Remain inert") 
+                    new CommandMenuItem("Remain inert"),
                 };
 
                 b.Click += delegate

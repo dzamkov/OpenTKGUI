@@ -45,7 +45,7 @@ namespace OpenTKGUI
             ModalOptions mo = new ModalOptions()
             {
                 MouseFallthrough = true,
-                Lightbox = false,
+                Lightbox = true,
                 LowestModal = Popup
             };
             mo.BackgroundClick += delegate
@@ -93,22 +93,256 @@ namespace OpenTKGUI
 
         public override void Update(GUIControlContext Context, double Time)
         {
+            Rectangle inner = new Rectangle(this.Size).Margin(this._Style.Margin);
             MouseState ms = Context.MouseState;
             if (ms != null)
             {
-                Rectangle inner = new Rectangle(this.Size).Margin(this._Style.Margin);
+                Point mousepos = ms.Position;
                 foreach (_Item i in this._Items)
                 {
-                    Rectangle irect = new Rectangle(0.0, i.Y + inner.Location.Y, this.Size.X, i.Size.Y);
-                    if (irect.In(ms.Position))
+                    Rectangle irect = this._ItemRect(inner, i);
+                    if (irect.In(mousepos))
                     {
-                        this._Active = i;
+                        if ((mousepos - this._LastMouse).SquareLength > 1.0)
+                        {
+                            if (this._Select(i))
+                            {
+                                this._UpdateSubmenu(irect);
+                            }
+                        }
+                        if (ms.HasReleasedButton(MouseButton.Left))
+                        {
+                            this._Click();
+                        }
+                    }
+                }
+                this._LastMouse = mousepos;
+            }
+            
+
+            // Keyboard navigation
+            KeyboardState ks = Context.KeyboardState;
+            if (ks != null)
+            {
+                foreach (KeyEvent ke in ks.Events)
+                {
+                    _Item nitem = this._Active;
+                    if (ke.Type == ButtonEventType.Down)
+                    {
+                        if (ke.Key == Key.Down)
+                        {
+                            // Navigate down
+                            if (this._Active == null)
+                            {
+                                nitem = this._Items[0];
+                            }
+                            else
+                            {
+                                nitem = this._ItemAtOffsetIndex(this._Active, 1);
+                            }
+                        }
+                        if (ke.Key == Key.Up)
+                        {
+                            // Navigate up
+                            if (this._Active == null)
+                            {
+                                nitem = this._Items[this._Items.Count - 1];
+                            }
+                            else
+                            {
+                                nitem = this._ItemAtOffsetIndex(this._Active, -1);
+                            }
+                        }
+                        if (ke.Key == Key.Left)
+                        {
+                            if (this._Parent != null)
+                            {
+                                this._Parent._Submenu = null;
+                            }
+                            this.Dismiss();
+                            return;
+                        }
+                        if (ke.Key == Key.Right)
+                        {
+                            if (this._Active != null)
+                            {
+                                this._UpdateSubmenu(_ItemRect(inner, this._Active));
+                                return;
+                            }
+                        }
+                        if (ke.Key == Key.Enter)
+                        {
+                            this._Click();
+                            return;
+                        }
+                    }
+                    if (nitem != this._Active)
+                    {
+                        this._Select(nitem);
+                    }
+                }
+
+                // Super quick number navigation
+                foreach (char c in ks.Presses)
+                {
+                    int n = (int)c - 49;
+                    if (n >= 0 && n < 9)
+                    {
+                        if (n < this._Items.Count)
+                        {
+                            _Item item = this._Items[n];
+                            if (this._Select(item))
+                            {
+                                this._UpdateSubmenu(this._ItemRect(inner, item));
+                                this._Click();
+                            }
+                        }
                     }
                 }
             }
+            if (this._Submenu == null && !Context.HasKeyboard)
+            {
+                Context.CaptureKeyboard();
+            }
+
+        }
+
+        private _Item _ItemAtOffsetIndex(_Item Current, int Offset)
+        {
+            int curindex = 0;
+            _Item cur = Current;
+            for (int t = 0; t < this._Items.Count; t++)
+            {
+                if (this._Items[t] == Current)
+                {
+                    curindex = t;
+                    break;
+                }
+            }
+
+            while (Offset > 0)
+            {
+                curindex += 1;
+                if (curindex >= this._Items.Count)
+                {
+                    curindex -= this._Items.Count;
+                }
+                cur = this._Items[curindex];
+                if (cur.Selectable)
+                {
+                    Offset--;
+                }
+            }
+
+            while (Offset < 0)
+            {
+                curindex -= 1;
+                if (curindex < 0)
+                {
+                    curindex += this._Items.Count;
+                }
+                cur = this._Items[curindex];
+                if (cur.Selectable)
+                {
+                    Offset++;
+                }
+            }
+
+            return cur;
+        }
+
+        /// <summary>
+        /// Gets the item rectangle for an item, given the inner rectangle.
+        /// </summary>
+        private Rectangle _ItemRect(Rectangle Inner, _Item Item)
+        {
+            return new Rectangle(0.0, Item.Y + Inner.Location.Y, this.Size.X, Item.Size.Y);
+        }
+
+        /// <summary>
+        /// Sets the specified item as active. Returns if the selection is new.
+        /// </summary>
+        private bool _Select(_Item Item)
+        {
+            if (this._Active != Item)
+            {
+                this._Active = Item;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Creates a submenu, if needed
+        /// </summary>
+        private void _UpdateSubmenu(Rectangle ActiveItemRect)
+        {
+            // Remove current submenu if any
+            if (this._Submenu != null)
+            {
+                this._Submenu.Dismiss();
+                this._Submenu = null;
+            }
+
+            // Perhaps a submenu is needed?
+            MenuItem source = this._Active.Source;
+            CompoundMenuItem cpmi = source as CompoundMenuItem;
+            if (cpmi != null)
+            {
+                this._CreateSubmenu(cpmi.Items, ActiveItemRect + this.Position);
+            }
+        }
+
+        /// <summary>
+        /// Creates a submenu with the specified items.
+        /// </summary>
+        private void _CreateSubmenu(IEnumerable<MenuItem> Items, Rectangle SourceRect)
+        {
+            PopupStyle style = this._Style;
+            LayerContainer container = this.Container;
+            Popup subpopup = new Popup(style, Items);
+            Point size = subpopup.Size;
+            Point offset = new Point(SourceRect.Location.X + SourceRect.Size.X - 1, SourceRect.Location.Y - style.Margin);
+            if (offset.Y + size.Y > container.Size.Y)
+            {
+                offset.Y = SourceRect.Location.Y + SourceRect.Size.Y - size.Y + style.Margin;
+            }
+            if (offset.X + size.X > container.Size.X)
+            {
+                offset.X = SourceRect.Location.X - size.X + 1;
+            }
+            this._Submenu = subpopup;
+            subpopup._Parent = this;
+            container.AddControl(subpopup, offset);
+        }
+
+        /// <summary>
+        /// Clicks on the active item.
+        /// </summary>
+        private void _Click()
+        {
+            MenuItem item = this._Active.Source;
+            CommandMenuItem cmi = item as CommandMenuItem;
+            if (cmi != null)
+            {
+                cmi._Click();
+                this._DismissFull();
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Dismisses this popup and all ancestors.
+        /// </summary>
+        private void _DismissFull()
+        {
+            if (this._Parent == null)
+            {
+                this.Dismiss();
+            }
             else
             {
-                this._Active = null;
+                this._Parent._DismissFull();
             }
         }
 
@@ -120,8 +354,15 @@ namespace OpenTKGUI
             LayerContainer container = this.Container;
             if (container != null)
             {
-                container.Modal = null;
+                if (this._Parent == null)
+                {
+                    container.Modal = null;
+                }
                 container.RemoveControl(this);
+            }
+            if (this._Submenu != null)
+            {
+                this._Submenu.Dismiss();
             }
             this.Dispose();
         }
@@ -147,6 +388,12 @@ namespace OpenTKGUI
                 {
                     this.Size = new Point(this.Sample.Size.X, Style.StandardItemHeight);
                 }
+
+                CompoundMenuItem cpmi = Source as CompoundMenuItem;
+                if (cpmi != null)
+                {
+                    this.Size = new Point(this.Sample.Size.X + Style.CompoundArrowSize.X, Style.StandardItemHeight);
+                }
             }
 
             /// <summary>
@@ -170,6 +417,17 @@ namespace OpenTKGUI
             public TextSample Sample;
 
             /// <summary>
+            /// Gets if this item can be selected.
+            /// </summary>
+            public bool Selectable
+            {
+                get
+                {
+                    return true;
+                }
+            }
+
+            /// <summary>
             /// Renders the item to the specified location.
             /// </summary>
             public void Render(GUIRenderContext Context, PopupStyle Style, Rectangle Area)
@@ -178,6 +436,17 @@ namespace OpenTKGUI
                 if (cmi != null)
                 {
                     Context.DrawText(Style.TextColor, this.Sample, Area);
+                }
+
+                CompoundMenuItem cpmi = Source as CompoundMenuItem;
+                if (cpmi != null)
+                {
+                    Context.DrawText(Style.TextColor, this.Sample, Area);
+
+                    Point arrowsize = Style.CompoundArrowSize;
+                    Context.DrawSurface(
+                        Style.Skin.GetSurface(Style.CompoundArrow, arrowsize), 
+                        new Point(Area.Location.X + Area.Size.X - arrowsize.X, Area.Location.Y + Area.Size.Y * 0.5 - arrowsize.Y * 0.5));
                 }
             }
         }
@@ -193,7 +462,10 @@ namespace OpenTKGUI
             }
         }
 
+        private Point _LastMouse;
         private _Item _Active;
+        private Popup _Parent;
+        private Popup _Submenu;
         private PopupStyle _Style;
         private List<_Item> _Items;
     }
@@ -206,6 +478,8 @@ namespace OpenTKGUI
         public Skin Skin = Skin.Default;
         public SkinArea Back = new SkinArea(96, 80, 16, 16);
         public SkinArea ActiveItem = new SkinArea(112, 80, 16, 16);
+        public SkinArea CompoundArrow = new SkinArea(64, 96, 16, 16);
+        public Point CompoundArrowSize = new Point(16.0, 16.0);
         public Font Font = Font.Default;
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public double Margin = 3.0;

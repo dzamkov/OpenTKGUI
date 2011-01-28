@@ -56,6 +56,49 @@ namespace OpenTKGUI
             this.Click += OnClick;
         }
 
+        internal void _Click()
+        {
+            if (this.Click != null)
+            {
+                this.Click.Invoke();
+            }
+        }
+
         public event ClickHandler Click;
+    }
+
+    /// <summary>
+    /// A menu item that when selected, opens a submenu with a new set of items.
+    /// </summary>
+    public class CompoundMenuItem : TextMenuItem
+    {
+        public CompoundMenuItem(string Text)
+            : this(Text, null)
+        {
+
+        }
+
+        public CompoundMenuItem(string Text, IEnumerable<MenuItem> Items)
+            : base(Text)
+        {
+            this._Items = Items;
+        }
+
+        /// <summary>
+        /// Gets or sets the subordinate items in the compound menu item.
+        /// </summary>
+        public IEnumerable<MenuItem> Items
+        {
+            get
+            {
+                return this._Items;
+            }
+            set
+            {
+                this._Items = value;
+            }
+        }
+
+        private IEnumerable<MenuItem> _Items;
     }
 }
