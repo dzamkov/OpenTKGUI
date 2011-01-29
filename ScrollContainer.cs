@@ -125,12 +125,14 @@ namespace OpenTKGUI
             {
                 cliwidth = this._ClientWidth.Value;
                 winheight -= this._Style.ScrollbarSize;
+                winheight += 1;
                 hscroll = true;
             }
             if (this._ClientHeight != null)
             {
                 cliheight = this._ClientHeight.Value;
                 winwidth -= this._Style.ScrollbarSize;
+                winwidth += 1;
                 vscroll = true;
             }
             if (!hscroll) cliwidth = winwidth;
@@ -155,7 +157,7 @@ namespace OpenTKGUI
                         this._ScrollbarSet(Direction, Value);
                     };
                 }
-                Point size = new Point(WinSize, this._Style.ScrollbarSize + 1);
+                Point size = new Point(WinSize, this._Style.ScrollbarSize);
                 if (OppositeExists)
                 {
                     size.X += 1;
@@ -218,7 +220,7 @@ namespace OpenTKGUI
     public class ScrollContainerStyle
     {
         public ScrollbarStyle ScrollbarStyle = new ScrollbarStyle();
-        public double ScrollbarSize = 30.0;
-        public double MinorIncrement = 10.0;
+        public double ScrollbarSize = 26.0;
+        public double MinorIncrement = 20.0;
     }
 }

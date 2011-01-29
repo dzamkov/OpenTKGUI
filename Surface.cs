@@ -10,10 +10,15 @@ using OpenTK.Graphics.OpenGL;
 namespace OpenTKGUI
 {
     /// <summary>
-    /// A 2D image that can be rendered with a render context without causing interference to future render calls.
+    /// A static 2D image that can be rendered with a render context without causing interference to future render calls.
     /// </summary>
     public abstract class Surface
     {
+        /// <summary>
+        /// Gets the size of the surface.
+        /// </summary>
+        public abstract Point Size { get; }
+
         /// <summary>
         /// Renders the surface with the given context and offset.
         /// </summary>

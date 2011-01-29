@@ -75,6 +75,7 @@
     <Compile Include="Scrollbar.cs" />
     <Compile Include="ScrollContainer.cs" />
     <Compile Include="Skin.cs" />
+    <Compile Include="SplitContainer.cs" />
     <Compile Include="SunkenContainer.cs" />
     <Compile Include="Surface.cs" />
     <Compile Include="Textbox.cs" />

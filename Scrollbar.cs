@@ -141,20 +141,23 @@ namespace OpenTKGUI
             double sliderstart;
             double slidersize;
             this._GetScrollMeasurements(out areastart, out areaend, out areasize, out sliderstart, out slidersize);
+            slidersize = Math.Round(slidersize);
+            areastart = Math.Round(areastart);
+            sliderstart = Math.Round(sliderstart);
             if (this._Direction == Axis.Horizontal)
             {
-                Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point(Math.Round(areastart), 0.0));
+                Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point(areastart, 0.0));
                 if (this._Enabled)
                 {
-                    Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(Math.Round(sliderstart), 0.0));
+                    Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(sliderstart, 0.0));
                 }
             }
             else
             {
-                Context.DrawSurface(s.GetSurface(this._Style.VerticalBackground, new Point(this.Size.X, areasize)), new Point(0.0, Math.Round(areastart)));
+                Context.DrawSurface(s.GetSurface(this._Style.VerticalBackground, new Point(this.Size.X, areasize)), new Point(0.0, areastart));
                 if (this._Enabled)
                 {
-                    Context.DrawSurface(s.GetSurface(this._Style.VerticalSlider, new Point(this.Size.X, slidersize)), new Point(0.0, Math.Round(sliderstart)));
+                    Context.DrawSurface(s.GetSurface(this._Style.VerticalSlider, new Point(this.Size.X, slidersize)), new Point(0.0, sliderstart));
                 }
             }
 

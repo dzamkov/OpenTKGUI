@@ -222,6 +222,11 @@ namespace OpenTKGUI
 
             public void Apply(double ViewHeight)
             {
+                if (this.Rectangle.Size.X < 0.0 || this.Rectangle.Size.Y < 0.0)
+                {
+                    this.Rectangle.Size = new Point(0.0, 0.0);
+                }
+
                 GL.Scissor(
                     (int)this.Rectangle.Location.X,
                     (int)(ViewHeight - this.Rectangle.Location.Y - this.Rectangle.Size.Y),

@@ -254,6 +254,16 @@ namespace OpenTKGUI
             public double RenderOffset;
         }
 
+        public override Point Size
+        {
+            get
+            {
+                return new Point(
+                    this._XStops[this._XStops.Count - 1].RenderOffset,
+                    this._YStops[this._XStops.Count - 1].RenderOffset);
+            }
+        }
+
         private Skin _Skin;
         private List<Stop> _XStops;
         private List<Stop> _YStops;

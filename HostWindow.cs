@@ -29,8 +29,6 @@ namespace OpenTKGUI
         {
             new HostWindow(delegate
             {
-                
-
                 FlowContainer fc = new FlowContainer(10.0, Axis.Vertical);
                 Button a;
                 Button b;
@@ -58,8 +56,11 @@ namespace OpenTKGUI
                 sc.ClientHeight = mcsize.Y;
                 sc.ClientWidth = null;
 
+                SplitContainer spc = new SplitContainer(Axis.Vertical, new Blank(Color.RGB(1.0, 0.0, 0.0)), sc);
+                spc.NearSize = 40.0;
+
                 LayerContainer lc = new LayerContainer();
-                Form f = new Form(sc, "Test");
+                Form f = new Form(spc, "Test");
                 f.ClientSize = new Point(mcsize.X, 300.0);
                 f.AddCloseButton();
                 lc.AddControl(f, new Point(200.0, 200.0));
