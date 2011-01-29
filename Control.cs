@@ -8,6 +8,33 @@ namespace OpenTKGUI
     public abstract class Control : IDisposable
     {
         /// <summary>
+        /// A convenience function for wrapping the control in a BorderContainer with a uniformly-sized black border.
+        /// </summary>
+        public BorderContainer WithBorder(double Size)
+        {
+            return this.WithBorder(Size, Size, Size, Size);
+        }
+
+        /// <summary>
+        /// A convenience function for wrapping the control in a BorderContainer and applying a black border.
+        /// </summary>
+        public BorderContainer WithBorder(double Left, double Top, double Right, double Bottom)
+        {
+            return this.WithBorder(Color.RGB(0.0, 0.0, 0.0), Left, Top, Right, Bottom);
+        }
+
+        /// <summary>
+        /// A convenience function for wrapping the control in a BorderContainer and applying a border.
+        /// </summary>
+        public BorderContainer WithBorder(Color Color, double Left, double Top, double Right, double Bottom)
+        {
+            BorderContainer bc = new BorderContainer(this);
+            bc.Color = Color;
+            bc.Set(Left, Top, Right, Bottom);
+            return bc;
+        }
+
+        /// <summary>
         /// Gets the size (in pixels) of this panel when rendered.
         /// </summary>
         public Point Size

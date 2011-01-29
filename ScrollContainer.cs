@@ -5,7 +5,8 @@ namespace OpenTKGUI
 {
     /// <summary>
     /// A container that uses scrollbars to allow a limited area of a larger control to be shown by controlling a window container. The window container can
-    /// be created automatically or specified manually.
+    /// be created automatically or specified manually. Note that the window (the window container that shows the targer content) and the view (the control in the
+    /// center of the scroll container) need not be the same size, or even in the same area.
     /// </summary>
     public class ScrollContainer : Control
     {
@@ -15,8 +16,8 @@ namespace OpenTKGUI
 
         }
 
-        public ScrollContainer(WindowContainer Window, Control WindowContainer)
-            : this(new ScrollContainerStyle(), Window, WindowContainer)
+        public ScrollContainer(WindowContainer Window, Control View)
+            : this(new ScrollContainerStyle(), Window, View)
         {
 
         }
@@ -24,13 +25,13 @@ namespace OpenTKGUI
         public ScrollContainer(ScrollContainerStyle Style, Control Client)
         {
             this._Style = Style;
-            this._WindowContainer = this._Window = new WindowContainer(Client);
+            this._View = this._Window = new WindowContainer(Client);
         }
 
-        public ScrollContainer(ScrollContainerStyle Style, WindowContainer Window, Control WindowContainer)
+        public ScrollContainer(ScrollContainerStyle Style, WindowContainer Window, Control View)
         {
             this._Style = Style;
-            this._WindowContainer = WindowContainer;
+            this._View = View;
             this._Window = Window;
         }
 
@@ -47,7 +48,7 @@ namespace OpenTKGUI
             set
             {
                 this._ClientWidth = value;
-                this._NeedUpdate = true;
+                this.OnResize(this.Size);
             }
         }
 
@@ -64,18 +65,23 @@ namespace OpenTKGUI
             set
             {
                 this._ClientHeight = value;
-                this._NeedUpdate = true;
+                this.OnResize(this.Size);
             }
+        }
+
+        /// <summary>
+        /// Sets the ClientWidth and ClientHeight properties at the same time to avoid excessive size updating.
+        /// </summary>
+        public void SetClientSize(double? Width, double? Height)
+        {
+            this._ClientWidth = Width;
+            this._ClientHeight = Height;
+            this.OnResize(this.Size);
         }
 
         public override void Render(GUIRenderContext Context)
         {
-            if (this._NeedUpdate)
-            {
-                this._UpdateControls();
-            }
-
-            this._WindowContainer.Render(Context);
+            this._View.Render(Context);
             if (this._VScroll != null)
             {
                 Context.PushTranslate(new Point(this.Size.X - this._VScroll.Size.X, 0.0));
@@ -92,12 +98,7 @@ namespace OpenTKGUI
 
         public override void Update(GUIControlContext Context, double Time)
         {
-            if (this._NeedUpdate)
-            {
-                this._UpdateControls();
-            }
-
-            this._WindowContainer.Update(Context.CreateChildContext(this._WindowContainer, new Point(0.0, 0.0)), Time);
+            this._View.Update(Context.CreateChildContext(this._View, new Point(0.0, 0.0)), Time);
             if (this._VScroll != null)
             {
                 this._VScroll.Update(Context.CreateChildContext(this._VScroll, new Point(this.Size.X - this._VScroll.Size.X, 0.0)), Time);
@@ -110,42 +111,38 @@ namespace OpenTKGUI
 
         protected override void OnResize(Point Size)
         {
-            this._NeedUpdate = true;
-        }
-
-        private void _UpdateControls()
-        {
             double cliwidth = this.Size.X;
             double cliheight = this.Size.Y;
-            double winwidth = cliwidth;
-            double winheight = cliheight;
+            double viewwidth = cliwidth;
+            double viewheight = cliheight;
             bool hscroll = false;
             bool vscroll = false;
             if (this._ClientWidth != null)
             {
                 cliwidth = this._ClientWidth.Value;
-                winheight -= this._Style.ScrollbarSize;
-                winheight += 1;
+                viewheight -= this._Style.ScrollbarSize;
                 hscroll = true;
             }
             if (this._ClientHeight != null)
             {
                 cliheight = this._ClientHeight.Value;
-                winwidth -= this._Style.ScrollbarSize;
-                winwidth += 1;
+                viewwidth -= this._Style.ScrollbarSize;
                 vscroll = true;
             }
-            if (!hscroll) cliwidth = winwidth;
-            if (!vscroll) cliheight = winheight;
-            Point winoffset = this._Window.Offset;
-            this._UpdateScrollbar(ref this._HScroll, Axis.Horizontal, hscroll, vscroll, winwidth, winoffset.X, cliwidth);
-            this._UpdateScrollbar(ref this._VScroll, Axis.Vertical, vscroll, hscroll, winheight, winoffset.Y, cliheight);
-            this.ResizeChild(this._WindowContainer, new Point(winwidth, winheight));
+            
+            this.ResizeChild(this._View, new Point(viewwidth, viewheight));
+            Point winactualsize = this._Window.Size;
+            if (!hscroll) cliwidth = winactualsize.X;
+            if (!vscroll) cliheight = winactualsize.Y;
+
             this._Window.FullSize = new Point(cliwidth, cliheight);
-            this._NeedUpdate = false;
+            Point winoffset = this._Window.Offset;
+            
+            this._UpdateScrollbar(ref this._HScroll, Axis.Horizontal, hscroll, vscroll, viewwidth, winactualsize.X, winoffset.X, cliwidth);
+            this._UpdateScrollbar(ref this._VScroll, Axis.Vertical, vscroll, hscroll, viewheight, winactualsize.Y, winoffset.Y, cliheight);
         }
 
-        private void _UpdateScrollbar(ref Scrollbar Scrollbar, Axis Direction, bool Exists, bool OppositeExists, double WinSize, double WinOffset, double CliSize)
+        private void _UpdateScrollbar(ref Scrollbar Scrollbar, Axis Direction, bool Exists, bool OppositeExists, double ViewSize, double WinSize, double WinOffset, double CliSize)
         {
             if (Exists)
             {
@@ -157,7 +154,7 @@ namespace OpenTKGUI
                         this._ScrollbarSet(Direction, Value);
                     };
                 }
-                Point size = new Point(WinSize, this._Style.ScrollbarSize);
+                Point size = new Point(ViewSize, this._Style.ScrollbarSize);
                 if (OppositeExists)
                 {
                     size.X += 1;
@@ -201,15 +198,14 @@ namespace OpenTKGUI
 
         protected override void OnDispose()
         {
-            this._WindowContainer.Dispose();
+            this._View.Dispose();
         }
 
-        private bool _NeedUpdate;
         private double? _ClientWidth;
         private double? _ClientHeight;
         private Scrollbar _HScroll;
         private Scrollbar _VScroll;
-        private Control _WindowContainer;
+        private Control _View;
         private WindowContainer _Window;
         private ScrollContainerStyle _Style;
     }

@@ -52,11 +52,10 @@ namespace OpenTKGUI
                 Point mcsize = mc.GetSize(new Point(300.0, fc.SuggestLength));
 
                 WindowContainer wc = new WindowContainer(mc);
-                ScrollContainer sc = new ScrollContainer(wc, new SunkenContainer(wc));
+                ScrollContainer sc = new ScrollContainer(wc, new SunkenContainer(wc).WithBorder(1.0, 1.0, 0.0, 1.0));
                 sc.ClientHeight = mcsize.Y;
-                sc.ClientWidth = null;
 
-                SplitContainer spc = new SplitContainer(Axis.Vertical, new Blank(Color.RGB(1.0, 0.0, 0.0)), sc);
+                SplitContainer spc = new SplitContainer(Axis.Vertical, new Blank(Color.RGB(1.0, 0.0, 0.0)).WithBorder(1.0, 1.0, 1.0, 0.0), sc);
                 spc.NearSize = 40.0;
 
                 LayerContainer lc = new LayerContainer();
