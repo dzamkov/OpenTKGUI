@@ -10,19 +10,24 @@ namespace OpenTKGUI
     /// </summary>
     public class Checkbox : Control
     {
-        public Checkbox() : this(false, "Checkbox")
+        public Checkbox() 
+            : this(new CheckboxStyle(), false, "Checkbox")
         {
         }
 
-		public Checkbox(bool chcked, string text)
+        public Checkbox(bool Checked, string Text)
+            : this(new CheckboxStyle(), Checked, Text)
         {
-            this._Checked = chcked;
-			this.Text = text;
-			this._Color = Color.RGB(255,255,255);
-			this._Box = new SkinArea(80, 80, this._BoxSize, this._BoxSize);
-			this._Tick = new SkinArea(64, 80, this._BoxSize, this._BoxSize);
+
         }
-		
+
+        public Checkbox(CheckboxStyle Style, bool Checked, string Text)
+        {
+            this._Style = Style;
+            this._Checked = Checked;
+            this._Text = Text;
+        }
+
         /// <summary>
         /// Gets or sets the value of the checkbox
         /// </summary>
@@ -58,20 +63,23 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-			Skin skin = Skin.Default;
+			CheckboxStyle style = this._Style;
+            Skin s = style.Skin;
 			
-			Surface surfbox = skin.GetSurface(this._Box, new Point(this._BoxSize, this._BoxSize));
+			Surface surfbox = s.GetSurface(style.Box, style.BoxSize);
 			Context.DrawSurface(surfbox);
 			
 			if(this.Checked)
 			{
-				Surface surftick = skin.GetSurface(this._Tick, new Point(this._BoxSize, this._BoxSize));
+				Surface surftick = s.GetSurface(style.Tick, style.BoxSize);
 				Context.DrawSurface(surftick);
 			}
 			
+
+            Rectangle textrect = new Rectangle(style.BoxSize.X + style.Padding, 0, this.Size.X - style.BoxSize.X, this.Size.Y);
 			if(this._Sample == null)
-				this._Sample = Font.Default.CreateSample(this._Text);
-			Context.DrawText(this._Color, this._Sample, new Rectangle(this._BoxSize + this._Padding, 0, this.Size.X - this._BoxSize, this.Size.Y));
+				this._Sample = style.TextFont.CreateSample(this._Text, textrect.Size, TextAlign.Left, TextAlign.Top, TextWrap.Wrap);
+			Context.DrawText(style.TextColor, this._Sample, textrect);
         }
 		
         public override void Update(GUIControlContext Context, double Time)
@@ -85,6 +93,23 @@ namespace OpenTKGUI
                 }
             }
         }
+
+        protected override void OnResize(Point Size)
+        {
+            if (this._Sample != null)
+            {
+                this._Sample.Dispose();
+                this._Sample = null;
+            }
+        }
+
+        protected override void OnDispose()
+        {
+            if (this._Sample != null)
+            {
+                this._Sample.Dispose();
+            }
+        }
 		
 		private void _Click()
 		{
@@ -96,16 +121,25 @@ namespace OpenTKGUI
 		}
 		
 		private TextSample _Sample;
-		private Color _Color;
         private bool _Checked;
 		private string _Text;
 		
 		public CheckboxClickHandler Click;
-		
-		private int _BoxSize = 16;
-		private int _Padding = 5;
-		
-		private SkinArea _Tick;
-    	private SkinArea _Box;
+
+        private CheckboxStyle _Style;
+    }
+
+    /// <summary>
+    /// Gives styling options for a checkbox.
+    /// </summary>
+    public class CheckboxStyle
+    {
+        public Skin Skin = Skin.Default;
+        public SkinArea Tick = new SkinArea(64, 80, 16, 16);
+        public SkinArea Box = new SkinArea(80, 80, 16, 16);
+        public Point BoxSize = new Point(16.0, 16.0);
+        public double Padding = 5.0;
+        public Font TextFont = Font.Default;
+        public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
     }
 }
