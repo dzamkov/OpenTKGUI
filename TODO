@@ -1,6 +1,4 @@
-* Use FlowContainer for buttons in the titlebar of Forms
 * CheckboxStyle
-* Resize button and textbox textures
 * Allow contents of buttons to be specified in ScrollbarStyle
 * MessageBox
 * (maybe) Change checkbox skin so it doesn't stand out

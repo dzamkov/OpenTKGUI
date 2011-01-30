@@ -91,6 +91,10 @@ namespace OpenTKGUI
                 {
                     a.Text = Text;
                 };
+                d.TextChanged += delegate(string Text)
+                {
+                    f.Text = Text;
+                };
 
 
 

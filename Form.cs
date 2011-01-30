@@ -18,7 +18,7 @@ namespace OpenTKGUI
 
         public Form(FormStyle Style, Control Client, string Text)
         {
-            this._Buttons = new List<Button>();
+            this._RightTitleBar = new FlowContainer(Style.TitleBarItemSeperation, Axis.Horizontal);
             this._Client = Client;
             this._Style = Style;
             this._Text = Text;
@@ -89,13 +89,25 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Adds an item to the right of the titlebar of the form.
+        /// </summary>
+        public void AddTitlebarItem(Control Item, double Width)
+        {
+            this._RightTitleBar.AddChild(Item, Width);
+            this.OnResize(this.Size);
+        }
+
+        /// <summary>
         /// Adds a button the the right of the titlebar of the form. Buttons will have no text on them and will be distinguishable only by style.
         /// </summary>
-        public Button AddTitlebarButton(ButtonStyle Style)
+        public Button AddTitlebarButton(ButtonStyle Style, Control Client)
         {
             Button b = new Button(Style);
-            this.ResizeChild(b, this._Style.ButtonSize);
-            this._Buttons.Add(b);
+            if (Client != null)
+            {
+                b.Client = Client;
+            }
+            this.AddTitlebarItem(b, this._Style.TitleBarButtonWidth);
             return b;
         }
 
@@ -104,7 +116,7 @@ namespace OpenTKGUI
         /// </summary>
         public void AddCloseButton()
         {
-            Button b = this.AddTitlebarButton(this._Style.CloseButtonStyle);
+            Button b = this.AddTitlebarButton(this._Style.CloseButtonStyle, null);
             b.Click += delegate
             {
                 this.Container.RemoveControl(this);
@@ -127,44 +139,31 @@ namespace OpenTKGUI
             Skin s = this._Style.Skin;
             Context.DrawSurface(s.GetSurface(this._Style.Form, this._Style.Form.Width / 2, this._Style.FormVerticalStretchLine, this.Size));
 
-
-            // Buttons
-            int i = 0;
-            foreach (Point loc in this._ButtonLocations)
-            {
-                Context.PushTranslate(loc);
-                this._Buttons[i].Render(Context);
-                Context.Pop();
-                i++;
-            }
+            // Right of the title bar.
+            Context.PushTranslate(this._RightTitleBarOffset);
+            this._RightTitleBar.Render(Context);
+            Context.Pop();
 
             // Text
             if (this._Text != null && this._Text != "")
             {
+                Rectangle textrect = new Rectangle(
+                        this._Style.TitleBarLeftRightMargin,
+                        this._Style.TitleBarTopMargin,
+                        this.Size.X - this._Style.TitleBarLeftRightMargin - this._RightTitleBar.Size.X - this._Style.TitleBarItemSeperation,
+                        this._Style.TitleBarSize - this._Style.TitleBarTopMargin - this._Style.TitleBarBottomMargin);
                 if (this._TextSample == null)
                 {
-                    this._TextSample = this._Style.TitleBarFont.CreateSample(this._Text);
+                    this._TextSample = this._Style.TitleBarFont.CreateSample(this._Text, textrect.Size, TextAlign.Left, TextAlign.Center, TextWrap.Ellipsis);
                 }
-                Context.DrawText(
-                    this._Style.TitleBarTextColor, 
-                    this._TextSample, 
-                    new Point(this._Style.TitleBarMargin, this._Style.TitleBarMidline - this._TextSample.Size.Y / 2.0));
+                Context.DrawText(this._Style.TitleBarTextColor, this._TextSample, textrect);
             }
         }
 
         public override void Update(GUIControlContext Context, double Time)
         {
-            int i = 0;
-            double lasttitlex = this.Size.X - this._Style.TitleBarMargin;
-            foreach (Point loc in this._ButtonLocations)
-            {
-                Button button = this._Buttons[i];
-                button.Update(Context.CreateChildContext(button, loc), Time);
-                lasttitlex = loc.X;
-                i++;
-            }
-
             this._Client.Update(Context.CreateChildContext(this._Client, this.ClientRectangle.Location), Time);
+            this._RightTitleBar.Update(Context.CreateChildContext(this._RightTitleBar, this._RightTitleBarOffset), Time);
 
             // Form needs to be dragged?
             MouseState ms = Context.MouseState;
@@ -173,7 +172,11 @@ namespace OpenTKGUI
                 Point mousepos = ms.Position;
                 if (this._FormDragOffset == null)
                 {
-                    if (new Rectangle(this._Style.TitleBarMargin, 0.0, lasttitlex - this._Style.TitleBarMargin, this._Style.TitleBarSize).In(mousepos))
+                    if (new Rectangle(
+                        this._Style.TitleBarLeftRightMargin, 
+                        0.0, 
+                        this.Size.X - this._RightTitleBar.Size.X - this._Style.TitleBarLeftRightMargin, 
+                        this._Style.TitleBarSize).In(mousepos))
                     {
                         if (ms.HasPushedButton(MouseButton.Left))
                         {
@@ -195,31 +198,28 @@ namespace OpenTKGUI
             }
         }
 
+        private Point _RightTitleBarOffset
+        {
+            get
+            {
+                return new Point(this.Size.X - this._Style.TitleBarLeftRightMargin - this._RightTitleBar.Size.X, this._Style.TitleBarTopMargin);
+            }
+        }
+
         protected override void OnResize(Point Size)
         {
             this.ResizeChild(this._Client, this.ClientSize);
+            this.ResizeChild(this._RightTitleBar, new Point(
+                this._RightTitleBar.SuggestLength,
+                this._Style.TitleBarSize - this._Style.TitleBarTopMargin - this._Style.TitleBarBottomMargin));
+            if (this._TextSample != null)
+            {
+                this._TextSample.Dispose();
+            }
         }
 
         private const double _TitleBarSize = 32.0;
         private const double _BorderSize = 7.0;
-
-        /// <summary>
-        /// Gets the locations for the buttons in the form.
-        /// </summary>
-        private IEnumerable<Point> _ButtonLocations
-        {
-            get
-            {
-                double x = this.Size.X - this._Style.TitleBarMargin;
-                double y = this._Style.TitleBarMidline - this._Style.ButtonSize.Y / 2.0;
-                for (int t = 0; t < this._Buttons.Count; t++)
-                {
-                    x -= this._Style.ButtonSize.X;
-                    yield return new Point(x, y);
-                    x -= this._Style.ButtonSeperation;
-                }
-            }
-        }
 
         protected override void OnDispose()
         {
@@ -228,16 +228,13 @@ namespace OpenTKGUI
                 this._TextSample.Dispose();
             }
             this._Client.Dispose();
-            foreach (Button b in this._Buttons)
-            {
-                b.Dispose();
-            }
+            this._RightTitleBar.Dispose();
         }
 
         private TextSample _TextSample;
         private string _Text;
         private Point? _FormDragOffset;
-        private List<Button> _Buttons;
+        private FlowContainer _RightTitleBar;
         private FormStyle _Style;
         private Control _Client;
     }
@@ -251,14 +248,17 @@ namespace OpenTKGUI
         public SkinArea Form = new SkinArea(0, 32, 64, 64);
         public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
         public int FormVerticalStretchLine = 44;
-        public double BorderSize = 6.0;
+        public double BorderSize = 8.0;
         public double TitleBarSize = 31.0;
-        public double TitleBarMidline = 15.0;
-        public double TitleBarMargin = 7.0;
+        public double TitleBarLeftRightMargin = 7.0;
+        public double TitleBarTopMargin = 6.0;
+        public double TitleBarBottomMargin = 4.0;
         public Font TitleBarFont = Font.Default;
         public Color TitleBarTextColor = Color.RGB(0.3, 0.3, 0.3);
-        public Point ButtonSize = new Point(20.0, 16.0);
-        public double ButtonSeperation = 4.0;
+
+        public double TitleBarItemSeperation = 4.0;
+        public double TitleBarButtonWidth = 20.0;
+        
         public ButtonStyle CloseButtonStyle = new ButtonStyle()
         {
             Skin = Skin.Default,
