@@ -406,7 +406,7 @@ namespace OpenTKGUI
     public sealed class TextboxStyle
     {
         public Skin Skin = Skin.Default;
-        public SkinArea Textbox = new SkinArea(96, 0, 32, 32);
+        public SkinArea Textbox = new SkinArea(48, 0, 16, 16);
         public double CursorFlashRate = 0.5;
         public double InteriorMargin = 4.0;
         public Color CursorColor = Color.RGB(0.0, 0.0, 0.0);
