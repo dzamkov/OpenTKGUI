@@ -332,8 +332,8 @@ namespace OpenTKGUI
             CommandMenuItem cmi = item as CommandMenuItem;
             if (cmi != null)
             {
-                cmi._Click();
                 this._DismissFull();
+                cmi._Click();
                 return;
             }
         }
