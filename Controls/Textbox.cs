@@ -77,8 +77,8 @@ namespace OpenTKGUI
                 Rectangle[] charbounds = this._TextSample.CharacterBounds;
                 if (endi - starti > 0)
                 {
-                    double startx = inner.Location.X + _SelectionX(charbounds, starti);
-                    double endx = inner.Location.X + _SelectionX(charbounds, endi);
+                    double startx = inner.Location.X + SelectionX(charbounds, starti);
+                    double endx = inner.Location.X + SelectionX(charbounds, endi);
                     Rectangle clip = new Rectangle(startx, inner.Location.Y, endx - startx, inner.Size.Y);
                     Context.PushClip(clip);
                     Context.DrawSolid(this._Style.SelectionBackgroundColor, clip);
@@ -90,7 +90,7 @@ namespace OpenTKGUI
                 if (_CursorFlashTime > 0.0)
                 {
                     int curi = this._Selection.Start;
-                    double cursx = inner.Location.X + _SelectionX(charbounds, curi);
+                    double cursx = inner.Location.X + SelectionX(charbounds, curi);
                     Context.DrawSolid(this._Style.CursorColor, new Rectangle(cursx, inner.Location.Y, 1.0, inner.Size.Y));
                 }
             }
@@ -289,7 +289,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets the x coordinate of the selection when its at the specified index.
         /// </summary>
-        private static double _SelectionX(Rectangle[] CharacterBounds, int Index)
+        public static double SelectionX(Rectangle[] CharacterBounds, int Index)
         {
             if (Index < CharacterBounds.Length)
             {
