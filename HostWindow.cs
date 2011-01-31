@@ -14,9 +14,14 @@ namespace OpenTKGUI
     public class HostWindow : GameWindow
     {
         public HostWindow(BuildControlHandler BuildControl, string Title)
-            : base(640, 480, GraphicsMode.Default, Title, GameWindowFlags.Default)
+            : this(BuildControl, Title, 640, 480)
         {
-            this.WindowState = WindowState.Maximized;
+            
+        }
+
+        public HostWindow(BuildControlHandler BuildControl, string Title, int Width, int Height)
+            : base(Width, Height, GraphicsMode.Default, Title, GameWindowFlags.Default)
+        {
             this._KeyboardState = new WindowKeyboardState(this);
             this._MouseState = new WindowMouseState(this);
             this._Control = BuildControl();
@@ -27,7 +32,7 @@ namespace OpenTKGUI
         /// </summary>
         public static void Main(string[] Args)
         {
-            new HostWindow(delegate
+            HostWindow hw = new HostWindow(delegate
             {
                 FlowContainer fc = new FlowContainer(10.0, Axis.Vertical);
                 Button a;
@@ -36,8 +41,8 @@ namespace OpenTKGUI
                 Textbox d;
                 Scrollbar e;
                 Label l = new Label(@"The quick brown fox jumped over the lazy tortise.");
-				Progressbar fp;
-				Checkbox g;
+                Progressbar fp;
+                Checkbox g;
                 PopupContainer pc;
                 fc.AddChild(a = new Button("Make a messagebox!"), 30.0);
                 fc.AddChild(pc = new PopupContainer(b = new Button("Make a popup!")), 30.0);
@@ -46,7 +51,7 @@ namespace OpenTKGUI
                 fc.AddChild(e = new Scrollbar(Axis.Horizontal), 30.0);
                 fc.AddChild(fp = new Progressbar(), 30.0);
                 fc.AddChild(l, 110.0);
-				fc.AddChild(g = new Checkbox(true, "I am checkbox"), 30.0);
+                fc.AddChild(g = new Checkbox(true, "I am checkbox"), 30.0);
 
                 MarginContainer mc = new MarginContainer(fc, 20.0);
                 Point mcsize = mc.GetSize(new Point(300.0, fc.SuggestLength));
@@ -88,10 +93,10 @@ namespace OpenTKGUI
                 };
 
 
-				e.ValueChanged += delegate(double Value)
-				{
-					fp.Value = Value;
-				};
+                e.ValueChanged += delegate(double Value)
+                {
+                    fp.Value = Value;
+                };
                 c.TextEntered += delegate(string Text)
                 {
                     a.Text = Text;
@@ -102,11 +107,10 @@ namespace OpenTKGUI
                 };
 
 
-
-
-
                 return lc;
-            }, "Test").Run();
+            }, "Test");
+            hw.WindowState = WindowState.Maximized;
+            hw.Run();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

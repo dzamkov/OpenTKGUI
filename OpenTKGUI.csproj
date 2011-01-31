@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -49,8 +49,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlignContainer.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="Container\AlignContainer.cs" />
     <Compile Include="Control.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUIContext.cs" />
@@ -72,7 +72,6 @@
     <Compile Include="Controls\Label.cs" />
     <Compile Include="Controls\Form.cs" />
     <Compile Include="Controls\Progressbar.cs" />
-    <Compile Include="Controls\SelectableLable.cs" />
     <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Menu.cs" />
     <Compile Include="Container\BorderContainer.cs" />
@@ -97,10 +96,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SkinDefault.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-    <Folder Include="Container\" />
-    <Folder Include="Controls\" />
   </ItemGroup>
 </Project>
