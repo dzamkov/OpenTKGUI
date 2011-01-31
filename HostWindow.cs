@@ -41,8 +41,9 @@ namespace OpenTKGUI
                 Textbox d;
                 Scrollbar e;
                 Label l = new Label(@"The quick brown fox jumped over the lazy tortise.");
-                Progressbar fp;
-                Checkbox g;
+				SelectableLabel l2 = new SelectableLabel(@"The quick brown torise...");
+				Progressbar fp;
+				Checkbox g;
                 PopupContainer pc;
                 fc.AddChild(a = new Button("Make a messagebox!"), 30.0);
                 fc.AddChild(pc = new PopupContainer(b = new Button("Make a popup!")), 30.0);
@@ -50,8 +51,9 @@ namespace OpenTKGUI
                 fc.AddChild(d = new Textbox(), 30.0);
                 fc.AddChild(e = new Scrollbar(Axis.Horizontal), 30.0);
                 fc.AddChild(fp = new Progressbar(), 30.0);
-                fc.AddChild(l, 110.0);
-                fc.AddChild(g = new Checkbox(true, "I am checkbox"), 30.0);
+                fc.AddChild(l,30.0);
+				fc.AddChild(l2,30.0);
+				fc.AddChild(g = new Checkbox(true, "I am checkbox"), 30.0);
 
                 MarginContainer mc = new MarginContainer(fc, 20.0);
                 Point mcsize = mc.GetSize(new Point(300.0, fc.SuggestLength));
