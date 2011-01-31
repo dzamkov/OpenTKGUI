@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlignContainer.cs" />
     <Compile Include="Blank.cs" />
     <Compile Include="BorderContainer.cs" />
     <Compile Include="Button.cs" />

@@ -250,7 +250,7 @@ namespace OpenTKGUI
                                     Point maxsize = this._MaxSize.Value;
                                     sf = g.MeasureString(this._Text, this._Font.GDIFont, new SizeF((float)maxsize.X, (float)maxsize.Y), this._Format);
                                 }
-                                Point size = new Point(sf.Width, sf.Height);
+                                Point size = new Point(sf.Width, sf.Height).Ceiling;
                                 this._Size = size;
                                 return size;
                             }
