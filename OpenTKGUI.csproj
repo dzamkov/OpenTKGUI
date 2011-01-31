@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -49,24 +49,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Blank.cs" />
-    <Compile Include="BorderContainer.cs" />
-    <Compile Include="Button.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Control.cs" />
-    <Compile Include="FlowContainer.cs" />
     <Compile Include="Font.cs" />
-    <Compile Include="Form.cs" />
     <Compile Include="GUIContext.cs" />
     <Compile Include="GUIRenderContext.cs" />
     <Compile Include="HostWindow.cs" />
-    <Compile Include="Label.cs" />
-    <Compile Include="LayerContainer.cs" />
-    <Compile Include="ManualContainer.cs" />
-    <Compile Include="MarginContainer.cs" />
-    <Compile Include="Menu.cs" />
     <Compile Include="MessageBox.cs" />
-    <Compile Include="Popup.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Res.Designer.cs">
@@ -74,17 +63,29 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Res.resx</DependentUpon>
     </Compile>
-    <Compile Include="Scrollbar.cs" />
-    <Compile Include="ScrollContainer.cs" />
     <Compile Include="Skin.cs" />
-    <Compile Include="SplitContainer.cs" />
-    <Compile Include="SunkenContainer.cs" />
     <Compile Include="Surface.cs" />
-    <Compile Include="Textbox.cs" />
-    <Compile Include="Progressbar.cs" />
     <Compile Include="EventHandelers.cs" />
-    <Compile Include="Checkbox.cs" />
-    <Compile Include="WindowContainer.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\Checkbox.cs" />
+    <Compile Include="Controls\Label.cs" />
+    <Compile Include="Controls\Form.cs" />
+    <Compile Include="Controls\Progressbar.cs" />
+    <Compile Include="Controls\SelectableLable.cs" />
+    <Compile Include="Controls\Popup.cs" />
+    <Compile Include="Controls\Menu.cs" />
+    <Compile Include="Container\BorderContainer.cs" />
+    <Compile Include="Container\ManualContainer.cs" />
+    <Compile Include="Container\MarginContainer.cs" />
+    <Compile Include="Container\LayerContainer.cs" />
+    <Compile Include="Controls\Scrollbar.cs" />
+    <Compile Include="Controls\Blank.cs" />
+    <Compile Include="Container\FlowContainer.cs" />
+    <Compile Include="Container\SunkenContainer.cs" />
+    <Compile Include="Container\SplitContainer.cs" />
+    <Compile Include="Container\ScrollContainer.cs" />
+    <Compile Include="Container\WindowContainer.cs" />
+    <Compile Include="Controls\Textbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res.resx">
@@ -95,5 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SkinDefault.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controls\" />
+    <Folder Include="Container\" />
+    <Folder Include="Controls\" />
   </ItemGroup>
 </Project>
