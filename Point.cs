@@ -75,6 +75,28 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Rounds the point to the nearest integer components.
+        /// </summary>
+        public Point Round
+        {
+            get
+            {
+                return new Point(Math.Round(this.X), Math.Round(this.Y));
+            }
+        }
+
+        /// <summary>
+        /// Rounds the point to the next highest integer components. Useful for sizes.
+        /// </summary>
+        public Point Ceiling 
+        {
+            get
+            {
+                return new Point(Math.Ceiling(this.X), Math.Ceiling(this.Y));
+            }
+        }
+
+        /// <summary>
         /// Gets the angle of this point (representing an offset).
         /// </summary>
         public double Angle

@@ -122,11 +122,10 @@ namespace OpenTKGUI
         {
             get
             {
-                if (this._Sample == null)
-                {
-                    this._CreateSample();
-                }
-                return this._Sample.Size;
+                TextSample test = this._Style.Font.CreateSample(this.Text);
+                Point size = test.Size;
+                test.Dispose();
+                return size;
             }
         }
 

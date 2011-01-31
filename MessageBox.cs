@@ -37,10 +37,10 @@ namespace OpenTKGUI
             // Main flow container
             FlowContainer mainflow = new FlowContainer(style.MessageButtonSeperation, Axis.Vertical);
             mainflow.AddChild(message, message.GetHeight(style.ContentWidth));
-            mainflow.AddChild(buttonflow, style.ButtonHeight);
+            mainflow.AddChild(buttonflow.WithCenterAlign(new Point(buttonflow.SuggestLength, style.ButtonHeight)), style.ButtonHeight);
 
             // Margin and border
-            MarginContainer margin = new MarginContainer(mainflow, style.Margin);
+            MarginContainer margin = mainflow.WithMargin(style.Margin);
             Point finalsize = margin.GetSize(new Point(style.ContentWidth, mainflow.SuggestLength));
             Control final = margin;
             if (style.BorderSize > 0.0)

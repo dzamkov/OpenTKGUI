@@ -35,6 +35,32 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// A convenience function for wrapping the control in a MarginContainer, applying a uniform margin to the control.
+        /// </summary>
+        public MarginContainer WithMargin(double Margin)
+        {
+            return new MarginContainer(this, Margin);
+        }
+
+        /// <summary>
+        /// A convenience function for wrapping the control in an AlignContainer, giving it a target size and aligning it in
+        /// its container.
+        /// </summary>
+        public AlignContainer WithAlign(Point TargetSize, Align HorizontalAlign, Align VerticalAlign)
+        {
+            return new AlignContainer(this, TargetSize, HorizontalAlign, VerticalAlign);
+        }
+
+        /// <summary>
+        /// A convenience function for wrapping the control in an AlignContainer, giving it a target size and aligning it in the center of
+        /// its container.
+        /// </summary>
+        public AlignContainer WithCenterAlign(Point TargetSize)
+        {
+            return new AlignContainer(this, TargetSize, Align.Center, Align.Center);
+        }
+
+        /// <summary>
         /// Gets the size (in pixels) of this panel when rendered.
         /// </summary>
         public Point Size

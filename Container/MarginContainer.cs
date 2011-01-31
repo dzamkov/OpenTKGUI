@@ -10,7 +10,8 @@ namespace OpenTKGUI
     {
         public MarginContainer(Control Child, double Margin)
         {
-            this._Child = Child; this._Margin = Margin;
+            this._Child = Child; 
+            this._Margin = Margin;
         }
 
         /// <summary>
@@ -36,6 +37,11 @@ namespace OpenTKGUI
         protected override void OnResize(Point Size)
         {
             this.ResizeChild(this._Child, Size - new Point(this._Margin, this._Margin) * 2.0);
+        }
+
+        protected override void OnDispose()
+        {
+            this._Child.Dispose();
         }
 
         private Control _Child;

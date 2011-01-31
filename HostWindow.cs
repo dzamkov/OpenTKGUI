@@ -79,7 +79,7 @@ namespace OpenTKGUI
 
                 a.Click += delegate
                 {
-                    MessageBox.ShowOKCancel(lc, "Test", "You have clicked a button that has created this message box. \r\n Nothing will happen if you click either of" +
+                    MessageBox.ShowOKCancel(lc, "Test", "You have clicked a button that has created this message box. Nothing will happen if you click either of" +
                         " the buttons below. Choose wisely.", null);
                 };
                 b.Click += delegate
