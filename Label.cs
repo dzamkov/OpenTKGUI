@@ -115,6 +115,32 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Suggests the size of the label so that no text overflows.
+        /// </summary>
+        public Point SuggestSize
+        {
+            get
+            {
+                if (this._Sample == null)
+                {
+                    this._CreateSample();
+                }
+                return this._Sample.Size;
+            }
+        }
+
+        /// <summary>
+        /// Gets the height required for the label if the width is known.
+        /// </summary>
+        public double GetHeight(double Width)
+        {
+            TextSample test = this._Style.Font.CreateSample(this.Text, new Point(Width, 4096.0), this._Style.HorizontalAlign, this._Style.VerticalAlign, this._Style.Wrap);
+            double height = test.Size.Y;
+            test.Dispose();
+            return Math.Ceiling(height);
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             if (this._Text != null && this._Text != "")

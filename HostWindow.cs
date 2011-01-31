@@ -39,7 +39,7 @@ namespace OpenTKGUI
 				Progressbar fp;
 				Checkbox g;
                 PopupContainer pc;
-                fc.AddChild(a = new Button("Jello?!?"), 30.0);
+                fc.AddChild(a = new Button("Make a messagebox!"), 30.0);
                 fc.AddChild(pc = new PopupContainer(b = new Button("Make a popup!")), 30.0);
                 fc.AddChild(c = new Textbox(), 30.0);
                 fc.AddChild(d = new Textbox(), 30.0);
@@ -77,6 +77,11 @@ namespace OpenTKGUI
                     new CommandMenuItem("Remain inert"),
                 };
 
+                a.Click += delegate
+                {
+                    MessageBox.ShowOKCancel(lc, "Test", "You have clicked a button that has created this message box. \r\n Nothing will happen if you click either of" +
+                        " the buttons below. Choose wisely.", null);
+                };
                 b.Click += delegate
                 {
                     pc.CallAtMouse();

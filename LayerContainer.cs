@@ -65,7 +65,7 @@ namespace OpenTKGUI
             if (Control._Container == null)
             {
                 Control._Container = this;
-                Control._Position = Position;
+                Control.Position = Position;
                 this._LayerControls.AddLast(Control);
             }
         }
@@ -307,6 +307,8 @@ namespace OpenTKGUI
             set
             {
                 this._Position = value;
+                this._Position.X = Math.Round(this._Position.X);
+                this._Position.Y = Math.Round(this._Position.Y);
             }
         }
 

@@ -66,6 +66,25 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Gets the size of the client in the middle of the button.
+        /// </summary>
+        public Point ClientSize
+        {
+            get
+            {
+                return this.Size - new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the full size of the button needed to have the specified client size.
+        /// </summary>
+        public Point GetFullSize(Point ClientSize)
+        {
+            return ClientSize + new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0;
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             Skin s = this._Style.Skin;
@@ -146,7 +165,7 @@ namespace OpenTKGUI
         {
             if (this._Client != null)
             {
-                this.ResizeChild(this._Client, this.Size - new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0);
+                this.ResizeChild(this._Client, this.ClientSize);
             }
         }
 

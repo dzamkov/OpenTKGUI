@@ -65,6 +65,7 @@
     <Compile Include="ManualContainer.cs" />
     <Compile Include="MarginContainer.cs" />
     <Compile Include="Menu.cs" />
+    <Compile Include="MessageBox.cs" />
     <Compile Include="Popup.cs" />
     <Compile Include="Rectangle.cs" />
     <Compile Include="Point.cs" />

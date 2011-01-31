@@ -112,6 +112,15 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Makes the form go away and be disposed.
+        /// </summary>
+        public void Dismiss()
+        {
+            this.Container.RemoveControl(this);
+            this.Dispose();
+        }
+
+        /// <summary>
         /// Adds a close button on the titlebar of the form.
         /// </summary>
         public void AddCloseButton()
@@ -248,7 +257,7 @@ namespace OpenTKGUI
         public SkinArea Form = new SkinArea(0, 32, 64, 64);
         public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
         public int FormVerticalStretchLine = 44;
-        public double BorderSize = 8.0;
+        public double BorderSize = 6.0;
         public double TitleBarSize = 31.0;
         public double TitleBarLeftRightMargin = 7.0;
         public double TitleBarTopMargin = 6.0;
