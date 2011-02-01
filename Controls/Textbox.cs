@@ -37,6 +37,22 @@ namespace OpenTKGUI
                 this._TryChangeText(value);
             }
         }
+		
+		/// <summary>
+		/// Gets or sets the password mask for this textbox.
+		/// </summary>
+		public string PasswordMask
+		{
+			get
+			{
+				return this._PasswordMask;
+			}
+			set
+			{
+				this._PasswordMask = value;
+			}
+		}
+				
 
         /// <summary>
         /// Gets if the specified character is valid in a textbox.
@@ -232,7 +248,14 @@ namespace OpenTKGUI
 
         private void _MakeTextSample()
         {
-            this._TextSample = this._Style.Font.CreateSample(this._Text);
+			string text = this._Text;
+			if(this._PasswordMask != null && this._PasswordMask.Length != 0)
+			{
+				text = "";
+				for(int i = 0; i < this._Text.Length; i++)
+					text += this._PasswordMask;
+			}
+			this._TextSample = this._Style.Font.CreateSample(text);
         }
 
         /// <summary>
@@ -346,6 +369,7 @@ namespace OpenTKGUI
         private bool _MouseDrag;
         private TextSelection _Selection;
         private string _Text;
+		private string _PasswordMask;
         private TextSample _TextSample;
         private TextboxStyle _Style;
     }
