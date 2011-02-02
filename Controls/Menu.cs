@@ -20,75 +20,204 @@ namespace OpenTKGUI
         public Menu(MenuStyle Style, IEnumerable<MenuItem> Items)
         {
             this._Style = Style;
-            this._Flow = new FlowContainer(this._Style.ButtonSeperation, Axis.Horizontal);
-
-            // Add buttons
-            foreach (MenuItem mi in Items)
+            this._Items = new List<_Item>();
+            double x = Style.ItemMargin;
+            foreach (MenuItem item in Items)
             {
+                _Item i = new _Item(Style, item, x);
+                x += i.Width;
+                x += Style.ItemSeperation;
+                this._Items.Add(i);
+            }
+        }
+
+        public override void Render(GUIRenderContext Context)
+        {
+            MenuStyle style = this._Style;
+            Skin s = style.Skin;
+            Context.DrawSurface(s.GetSurface(style.Backing, this.Size), new Point(0.0, 0.0));
+            double height = this.Size.Y;
+            foreach (_Item i in this._Items)
+            {
+                Rectangle irect = new Rectangle(i.X, 0.0, i.Width, height);
+                if (this._Selected == i)
+                {
+                    if (this._MouseDown)
+                    {
+                        Context.DrawSurface(s.GetSurface(style.Pushed, irect.Size), irect.Location);
+                    }
+                    else
+                    {
+                        Context.DrawSurface(s.GetSurface(style.Active, irect.Size), irect.Location);
+                    }
+                }
+                i.Render(Context, style, irect);
+            }
+        }
+
+        public override void Update(GUIControlContext Context, double Time)
+        {
+            MouseState ms = Context.MouseState;
+            if (ms != null)
+            {
+                this._MouseDown = ms.IsButtonDown(MouseButton.Left);
+
+                double height = this.Size.Y;
+                bool mouseclick = ms.HasReleasedButton(MouseButton.Left);
+                foreach (_Item i in this._Items)
+                {
+                    Rectangle irect = new Rectangle(i.X, 0.0, i.Width, height);
+                    if (i.Item.Selectable && irect.In(ms.Position))
+                    {
+                        this._Select(irect, i, Context);
+                        if (mouseclick)
+                        {
+                            this._Click(irect, i, Context);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (this._CurPopup == null)
+                {
+                    this._Selected = null;
+                }
+            }
+        }
+
+        protected override void OnDispose()
+        {
+
+        }
+
+        /// <summary>
+        /// Called when an item is clicked.
+        /// </summary>
+        private void _Click(Rectangle ItemRect, _Item Item, GUIControlContext Context)
+        {
+            if (this._Selected != null)
+            {
+                MenuItem mi = Item.Item;
+
                 CommandMenuItem cmi = mi as CommandMenuItem;
                 if (cmi != null)
                 {
-                    Button button; double size;
-                    this._MakeButton(cmi.Text, out button, out size);
-                    button.Click += delegate { cmi._Click(); };
-                    this._Flow.AddChild(button, size);
+                    cmi._Click();
                 }
 
                 CompoundMenuItem cpmi = mi as CompoundMenuItem;
                 if (cpmi != null)
                 {
-                    Button button; double size;
-                    IEnumerable<MenuItem> subitems = cpmi.Items;
-                    this._MakeButton(cpmi.Text, out button, out size);
-                    PopupContainer pc = new PopupContainer(button);
-                    pc.ShowOnRightClick = true;
-                    pc.Style = this._Style.PopupStyle;
-                    pc.Items = subitems;
-                    button.Click += delegate 
-                    {
-                        pc.Call(new Point(0.0, pc.Size.Y - 1.0));
-                    };
-                    this._Flow.AddChild(pc, size);
+                    // Oh no, now we have to make a popup.
+                    this._MakePopup(ItemRect, cpmi.Items, Context);
                 }
             }
         }
 
         /// <summary>
-        /// Creates a button in the style of the menu.
+        /// Selects an item.
         /// </summary>
-        private void _MakeButton(string Text, out Button Button, out double Size)
+        private void _Select(Rectangle ItemRect, _Item Item, GUIControlContext Context)
         {
-            ButtonStyle bs = this._Style.ButtonStyle;
-            Label lbl = new Label(Text, bs.TextColor, bs.TextStyle);
-            Button = new Button(bs, lbl);
-            Size = Button.GetFullSize(lbl.SuggestSize).X;
+            if (Item != this._Selected)
+            {
+                this._Selected = Item;
+                if (this._CurPopup != null)
+                {
+                    this._CurPopup.Dismiss();
+
+                    // We're in popup mode, apparently. So we can popup other compound items when they are moused over
+                    CompoundMenuItem cpmi = Item.Item as CompoundMenuItem;
+                    if (cpmi != null)
+                    {
+                        this._MakePopup(ItemRect, cpmi.Items, Context);
+                    }
+                }
+            }
         }
 
-        public override void Render(GUIRenderContext Context)
+        /// <summary>
+        /// Creates a popup for an item.
+        /// </summary>
+        private void _MakePopup(Rectangle ItemRect, IEnumerable<MenuItem> Items, GUIControlContext Context)
         {
-            Context.DrawSurface(this._Style.Skin.GetSurface(this._Style.Backing, this.Size), new Point(0.0, 0.0));
-            Context.PushTranslate(new Point(this._Style.ButtonLeftRightMargin, this._Style.ButtonUpDownMargin));
-            this._Flow.Render(Context);
-            Context.Pop();
+            LayerContainer container;
+            Point offset;
+            if (Context.FindAncestor<LayerContainer>(out container, out offset))
+            {
+                offset = new Point(ItemRect.Location.X, ItemRect.Location.Y + ItemRect.Size.Y) - offset;
+                Popup popup = Popup.Call(container, offset, Items, this._Style.PopupStyle);
+                popup.MinWidth = ItemRect.Size.X;
+                this._CurPopup = popup;
+                popup.Dismissed += delegate
+                {
+                    if (this._CurPopup == popup)
+                    {
+                        this._CurPopup = null;
+                    }
+                };
+            }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        /// <summary>
+        /// An item in the menu.
+        /// </summary>
+        private class _Item
         {
-            this._Flow.Update(Context.CreateChildContext(this._Flow, new Point(this._Style.ButtonLeftRightMargin, this._Style.ButtonUpDownMargin)), Time);
+            public _Item(MenuStyle Style, MenuItem Item, double X)
+            {
+                this.X = X;
+                this.Item = Item;
+
+                TextMenuItem tmi = Item as TextMenuItem;
+                if (tmi != null)
+                {
+                    this.Sample = Style.TextFont.CreateSample(tmi.Text, null, TextAlign.Center, TextAlign.Center, TextWrap.Ellipsis);
+                    this.Width = this.Sample.Size.X + Style.TextMargin * 2.0;
+                }
+            }
+
+            /// <summary>
+            /// The x location of the item in relation to the menu.
+            /// </summary>
+            public double X;
+
+            /// <summary>
+            /// The width of the item.
+            /// </summary>
+            public double Width;
+
+            /// <summary>
+            /// The text sample, if any, for the item.
+            /// </summary>
+            public TextSample Sample;
+
+            /// <summary>
+            /// The item.
+            /// </summary>
+            public MenuItem Item;
+
+            /// <summary>
+            /// Renders the contents of the item to the specified rectangle.
+            /// </summary>
+            public void Render(GUIRenderContext Context, MenuStyle Style, Rectangle Area)
+            {
+                if (this.Sample != null)
+                {
+                    Context.DrawText(Style.TextColor, this.Sample, 
+                        new Rectangle(
+                            Area.Location.X + Style.TextMargin, Area.Location.Y, 
+                            Area.Size.X - Style.TextMargin * 2.0, Area.Size.Y));
+                }
+            }
         }
 
-        protected override void OnResize(Point Size)
-        {
-            this.ResizeChild(this._Flow, Size - new Point(this._Style.ButtonLeftRightMargin, this._Style.ButtonUpDownMargin) * 2.0);
-        }
-
-        protected override void OnDispose()
-        {
-            this._Flow.Dispose();
-        }
-
+        private bool _MouseDown;
+        private Popup _CurPopup;
+        private _Item _Selected;
+        private List<_Item> _Items;
         private MenuStyle _Style;
-        private FlowContainer _Flow;
     }
 
     /// <summary>
@@ -98,16 +227,14 @@ namespace OpenTKGUI
     {
         public Skin Skin = Skin.Default;
         public SkinArea Backing = new SkinArea(64, 0, 16, 16);
-        public double ButtonSeperation = 5.0;
-        public double ButtonLeftRightMargin = 10.0;
-        public double ButtonUpDownMargin = 4.0;
+        public SkinArea Active = new SkinArea(80, 0, 16, 16);
+        public SkinArea Pushed = new SkinArea(96, 0, 16, 16);
+        public double ItemMargin = 20.0;
+        public double ItemSeperation = 5.0;
+        public double TextMargin = 3.0;
+        public Font TextFont = Font.Default;
+        public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public PopupStyle PopupStyle = new PopupStyle();
-        public ButtonStyle ButtonStyle = new ButtonStyle()
-        {
-            Normal = new SkinArea(112, 96, 16, 16),
-            Active = new SkinArea(112, 80, 16, 16),
-            Pushed = new SkinArea(80, 96, 16, 16)
-        };
     }
 
 
@@ -119,6 +246,17 @@ namespace OpenTKGUI
         public MenuItem()
         {
             
+        }
+
+        /// <summary>
+        /// Gets if the menu item can be selected.
+        /// </summary>
+        public bool Selectable
+        {
+            get
+            {
+                return !(this is SeperatorMenuItem);
+            }
         }
 
         /// <summary>

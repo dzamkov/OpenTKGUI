@@ -132,7 +132,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Searches for the closest ancestor of the specified type. Returns true on sucsess and false on failure.
         /// </summary>
-        /// <param name="Offset">The ancestor's offset from the current control. This will be negative.</param>
+        /// <param name="Offset">The ancestor's offset from the current control. This will (usually) be negative.</param>
         public bool FindAncestor<T>(out T Ancestor, out Point Offset)
             where T : Control
         {

@@ -25,9 +25,18 @@ namespace OpenTKGUI
     /// </summary>
     public delegate void ClickHandler();
 	
-	
     /// <summary>
     /// Handles a click event from a checkbox.
     /// </summary>
     public delegate void CheckboxClickHandler(bool Value);
+
+    /// <summary>
+    /// Handles a popup created event from a popup container.
+    /// </summary>
+    public delegate void PopupCreatedHandler(Popup Popup);
+
+    /// <summary>
+    /// Handles a dismissed event from a form or other layer control.
+    /// </summary>
+    public delegate void DismissedHandler();
 }

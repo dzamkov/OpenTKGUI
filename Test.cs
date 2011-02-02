@@ -11,17 +11,26 @@ public static class Program
         HostWindow window = new HostWindow(delegate
         {
             // Create a background, with a menu
-            Menu menu = new Menu(new MenuItem[]
+            CompoundMenuItem cpmi = new CompoundMenuItem("Popup");
+            IEnumerable<MenuItem> menuitems = new MenuItem[]
             {
                 MenuItem.Create("Simple"),
                 MenuItem.Create("Compound", new MenuItem[]
                 {
                     MenuItem.Create("Normal"),
                     MenuItem.Create("Popup")
+                }),
+                MenuItem.Create("Test", new MenuItem[]
+                {
+                    MenuItem.Create("Recursive"),
+                    cpmi
                 })
-            });
+            };
+            cpmi.Items = menuitems;
+
+            Menu menu = new Menu(menuitems);
             SplitContainer sc = new SplitContainer(Axis.Vertical, menu.WithBorder(0.0, 0.0, 0.0, 1.0), new Blank(Color.Transparent));
-            sc.NearSize = 35.0;
+            sc.NearSize = 30.0;
 
             // Create a layer container
             LayerContainer lc = new LayerContainer(sc);

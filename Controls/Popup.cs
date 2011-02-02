@@ -73,6 +73,21 @@ namespace OpenTKGUI
             return Call(Container, Offset, Items, new PopupStyle());
         }
 
+        /// <summary>
+        /// Sets the minimum width this popup can have.
+        /// </summary>
+        public double MinWidth
+        {
+            set
+            {
+                Point size = this.Size;
+                if (size.X < value)
+                {
+                    this.Size = new Point(value, size.Y);
+                }
+            }
+        }
+
         public override void Render(GUIRenderContext Context)
         {
             PopupStyle style = this._Style;
@@ -372,6 +387,10 @@ namespace OpenTKGUI
                 this._Submenu.Dismiss();
             }
             this.Dispose();
+            if (this.Dismissed != null)
+            {
+                this.Dismissed.Invoke();
+            }
         }
 
         /// <summary>
@@ -436,7 +455,7 @@ namespace OpenTKGUI
             {
                 get
                 {
-                    return !(this.Source is SeperatorMenuItem);
+                    return this.Source.Selectable;
                 }
             }
 
@@ -482,6 +501,8 @@ namespace OpenTKGUI
                 }
             }
         }
+
+        public event DismissedHandler Dismissed;
 
         private bool _MouseDown;
         private Point _LastMouse;
@@ -615,12 +636,18 @@ namespace OpenTKGUI
                 Point layeroffset;
                 if (Context.FindAncestor<LayerContainer>(out container, out layeroffset))
                 {
-                    Popup.Call(container, cp - layeroffset, this._Items, this._Style);
+                    Popup popup = Popup.Call(container, cp - layeroffset, this._Items, this._Style);
+                    if (this.PopupCreated != null)
+                    {
+                        this.PopupCreated.Invoke(popup);
+                    }
                 }
 
                 this._Callpoint = null;
             }
         }
+
+        public event PopupCreatedHandler PopupCreated;
 
         private bool _ShowOnRightClick;
         private bool _CallAtMouse;
