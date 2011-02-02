@@ -16,14 +16,26 @@ namespace OpenTKGUI
         }
 
         public Button(string Text)
-            : this(Text, new ButtonStyle())
+            : this(new ButtonStyle(), Text)
         {
         }
 
-        public Button(string Text, ButtonStyle Style)
+        public Button(ButtonStyle Style, string Text)
             : this(Style)
         {
             this.Text = Text;
+        }
+
+        public Button(Control Client)
+            : this(new ButtonStyle(), Client)
+        {
+
+        }
+
+        public Button(ButtonStyle Style, Control Client)
+            : this(Style)
+        {
+            this._Client = Client;
         }
 
         public Button(ButtonStyle Style)

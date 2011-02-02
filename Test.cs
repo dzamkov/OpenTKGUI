@@ -10,8 +10,21 @@ public static class Program
     {
         HostWindow window = new HostWindow(delegate
         {
+            // Create a background, with a menu
+            Menu menu = new Menu(new MenuItem[]
+            {
+                MenuItem.Create("Simple"),
+                MenuItem.Create("Compound", new MenuItem[]
+                {
+                    MenuItem.Create("Normal"),
+                    MenuItem.Create("Popup")
+                })
+            });
+            SplitContainer sc = new SplitContainer(Axis.Vertical, menu.WithBorder(0.0, 0.0, 0.0, 1.0), new Blank(Color.Transparent));
+            sc.NearSize = 35.0;
+
             // Create a layer container
-            LayerContainer lc = new LayerContainer();
+            LayerContainer lc = new LayerContainer(sc);
 
             // Create a form with many buttons
             {
@@ -36,7 +49,7 @@ public static class Program
 
                 Form form = new Form(scroll, "Lots of buttons");
                 form.ClientSize = new Point(targetmarginsize.X + 20.0, 200.0);
-                lc.AddControl(form, new Point(30.0, 30.0));
+                lc.AddControl(form, new Point(30.0, 45.0));
             }
 
             // Popup test
@@ -74,7 +87,7 @@ public static class Program
 
                 Form form = new Form(pc.WithAlign(label.SuggestSize, Align.Center, Align.Center).WithBorder(1.0), "Popup Test");
                 form.ClientSize = new Point(200.0, 50.0);
-                lc.AddControl(form, new Point(230.0, 30.0));
+                lc.AddControl(form, new Point(230.0, 45.0));
                 form.AddCloseButton();
             }
 
