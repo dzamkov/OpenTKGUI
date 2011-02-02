@@ -34,7 +34,11 @@ namespace OpenTKGUI
             }
             set
             {
-                this._TryChangeText(value);
+                if (this._TryChangeText(value))
+                {
+                    this._TextSample.Dispose();
+                    this._MakeTextSample();
+                }
             }
         }
 
@@ -151,7 +155,7 @@ namespace OpenTKGUI
                 {
                     int starti;
                     int endi;
-                    ts.Order(out starti, out endi);
+                    this._Selection.Order(out starti, out endi);
 
                     if (c == '\b')
                     {
@@ -323,8 +327,6 @@ namespace OpenTKGUI
         private bool _TryChangeText(string New)
         {
             this._Text = New;
-            this._TextSample.Dispose();
-            this._MakeTextSample();
             if (this.TextChanged != null)
             {
                 this.TextChanged.Invoke(New);
