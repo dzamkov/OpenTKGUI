@@ -25,6 +25,7 @@ namespace OpenTKGUI
             this._KeyboardState = new WindowKeyboardState(this);
             this._MouseState = new WindowMouseState(this);
             this._Control = BuildControl();
+			
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -121,12 +122,14 @@ namespace OpenTKGUI
                 this._Control.ForceResize(this.ViewSize);
             }
         }
+		
 
         private WindowKeyboardState _KeyboardState;
         private WindowMouseState _MouseState;
         private Control _MouseFocus;
         private Control _KeyboardFocus;
         private Control _Control;
+		
     }
 
     /// <summary>

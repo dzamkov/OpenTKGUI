@@ -14,6 +14,9 @@ Global
 		{D78F7DC8-1193-483A-8530-C373A3D99422}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D78F7DC8-1193-483A-8530-C373A3D99422}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = OpenTKGUI.csproj
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
