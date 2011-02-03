@@ -20,11 +20,31 @@ namespace OpenTKGUI
         }
 
         public HostWindow(BuildControlHandler BuildControl, string Title, int Width, int Height)
+            : this(Title, Width, Height)
+        {
+            this._Control = BuildControl();
+        }
+
+        public HostWindow(string Title, int Width, int Height)
             : base(Width, Height, GraphicsMode.Default, Title, GameWindowFlags.Default)
         {
             this._KeyboardState = new WindowKeyboardState(this);
             this._MouseState = new WindowMouseState(this);
-            this._Control = BuildControl();
+        }
+
+        /// <summary>
+        /// Gets or sets the control displayed by the host window. This can not be null during an update or render.
+        /// </summary>
+        public Control Control
+        {
+            get
+            {
+                return this._Control;
+            }
+            set
+            {
+                this._Control = value;
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
