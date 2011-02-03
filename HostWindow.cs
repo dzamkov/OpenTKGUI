@@ -142,6 +142,28 @@ namespace OpenTKGUI
             }
         }
 
+        /// <summary>
+        /// Gets the keyboard state for the window.
+        /// </summary>
+        public KeyboardState KeyboardState
+        {
+            get
+            {
+                return this._KeyboardState;
+            }
+        }
+
+        /// <summary>
+        /// Gets the mouse state for the window.
+        /// </summary>
+        public MouseState MouseState
+        {
+            get
+            {
+                return this._MouseState;
+            }
+        }
+
         private WindowKeyboardState _KeyboardState;
         private WindowMouseState _MouseState;
         private Control _MouseFocus;
