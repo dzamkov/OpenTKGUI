@@ -18,7 +18,7 @@ namespace OpenTKGUI
         }
 
         public LayerContainer(Control Background)
-            : this(new LayerContainerStyle(), Background)
+            : this(LayerContainerStyle.Default, Background)
         {
 
         }
@@ -320,7 +320,7 @@ namespace OpenTKGUI
         {
             ShadowStyle ss = this._Container.Style.DefaultShadowStyle;
             double width = ss.Width;
-            Context.DrawSurface(ss.Skin.GetSurface(ss.Image, this.Size + new Point(width * 2.0, width * 2.0)), Position - new Point(width, width));
+            Context.DrawSurface(ss.Image, new Rectangle(Position - new Point(width, width), this.Size + new Point(width * 2.0, width * 2.0)));
         }
 
         internal LayerContainer _Container;
@@ -332,7 +332,19 @@ namespace OpenTKGUI
     /// </summary>
     public class LayerContainerStyle
     {
-        public ShadowStyle DefaultShadowStyle = new ShadowStyle();
+        public LayerContainerStyle()
+        {
+
+        }
+
+        public LayerContainerStyle(Skin Skin)
+        {
+            this.DefaultShadowStyle = new ShadowStyle(Skin);
+        }
+
+        public static readonly LayerContainerStyle Default = new LayerContainerStyle(Skin.Default);
+
+        public ShadowStyle DefaultShadowStyle;
         public Color LightBoxColor = Color.RGBA(0.9, 0.9, 0.9, 0.6);
         public double LightBoxFadeTime = 0.3;
     }
@@ -342,8 +354,19 @@ namespace OpenTKGUI
     /// </summary>
     public class ShadowStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Image = new SkinArea(112, 32, 16, 16);
+        public ShadowStyle()
+        {
+
+        }
+
+        public ShadowStyle(Skin Skin)
+        {
+            this.Image = Skin.GetStretchableSurface(new SkinArea(112, 32, 16, 16));
+        }
+
+        public static readonly ShadowStyle Default = new ShadowStyle(Skin.Default);
+
+        public Surface Image;
         public double Width = 6.0;
     }
 }

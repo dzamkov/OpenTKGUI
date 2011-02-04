@@ -11,7 +11,7 @@ namespace OpenTKGUI
     public class Form : LayerControl
     { 
         public Form(Control Client, string Text)
-            : this(new FormStyle(), Client, Text)
+            : this(FormStyle.Default, Client, Text)
         {
 
         }
@@ -145,8 +145,8 @@ namespace OpenTKGUI
             Context.Pop();
 
             // Form
-            Skin s = this._Style.Skin;
-            Context.DrawSurface(s.GetSurface(this._Style.Form, this._Style.Form.Width / 2, this._Style.FormVerticalStretchLine, this.Size));
+            FormStyle style = this._Style;
+            Context.DrawSurface(style.Form, new Rectangle(this.Size));
 
             // Right of the title bar.
             Context.PushTranslate(this._RightTitleBarOffset);
@@ -253,10 +253,26 @@ namespace OpenTKGUI
     /// </summary>
     public sealed class FormStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Form = new SkinArea(0, 32, 64, 64);
+        public FormStyle()
+        {
+
+        }
+
+        public FormStyle(Skin Skin)
+        {
+            this.Form = Skin.GetStretchableSurface(new SkinArea(0, 32, 64, 64), 32, 44);
+            this.CloseButtonStyle = new ButtonStyle()
+            {
+                Normal = Skin.GetStretchableSurface(new SkinArea(64, 32, 16, 16)),
+                Active = Skin.GetStretchableSurface(new SkinArea(80, 32, 16, 16)),
+                Pushed = Skin.GetStretchableSurface(new SkinArea(96, 32, 16, 16)),
+            };
+        }
+
+        public static readonly FormStyle Default = new FormStyle(Skin.Default);
+
+        public Surface Form;
         public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
-        public int FormVerticalStretchLine = 44;
         public double BorderSize = 6.0;
         public double TitleBarSize = 31.0;
         public double TitleBarLeftRightMargin = 7.0;
@@ -267,13 +283,7 @@ namespace OpenTKGUI
 
         public double TitleBarItemSeperation = 4.0;
         public double TitleBarButtonWidth = 20.0;
-        
-        public ButtonStyle CloseButtonStyle = new ButtonStyle()
-        {
-            Skin = Skin.Default,
-            Normal = new SkinArea(64, 32, 16, 16),
-            Active = new SkinArea(80, 32, 16, 16),
-            Pushed = new SkinArea(96, 32, 16, 16)
-        };
+
+        public ButtonStyle CloseButtonStyle;
     }
 }

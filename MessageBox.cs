@@ -91,7 +91,7 @@ namespace OpenTKGUI
         /// </summary>
         public static void ShowOKCancel(LayerContainer Container, string Title, string Message, ClickHandler OnOKClick)
         {
-            ShowOKCancel(Container, Title, Message, OnOKClick, new MessageBoxStyle());
+            ShowOKCancel(Container, Title, Message, OnOKClick, MessageBoxStyle.Default);
         }
     }
 
@@ -103,7 +103,7 @@ namespace OpenTKGUI
         public MessageBoxOptions()
         {
             this._Buttons = new List<_Button>();
-            this._Style = new MessageBoxStyle();
+            this._Style = MessageBoxStyle.Default;
         }
 
         /// <summary>
@@ -180,8 +180,21 @@ namespace OpenTKGUI
     /// </summary>
     public class MessageBoxStyle
     {
-        public ButtonStyle ButtonStyle = new ButtonStyle();
-        public FormStyle FormStyle = new FormStyle();
+        public MessageBoxStyle()
+        {
+
+        }
+
+        public MessageBoxStyle(Skin Skin)
+        {
+            this.ButtonStyle = new ButtonStyle(Skin);
+            this.FormStyle = new FormStyle(Skin);
+        }
+
+        public static readonly MessageBoxStyle Default = new MessageBoxStyle(Skin.Default);
+
+        public ButtonStyle ButtonStyle;
+        public FormStyle FormStyle;
         public LabelStyle MessageLabelStyle = new LabelStyle()
         {
             HorizontalAlign = TextAlign.Center,

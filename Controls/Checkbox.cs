@@ -11,12 +11,12 @@ namespace OpenTKGUI
     public class Checkbox : Control
     {
         public Checkbox() 
-            : this(new CheckboxStyle(), false, "Checkbox")
+            : this(false, "Checkbox")
         {
         }
 
         public Checkbox(bool Checked, string Text)
-            : this(new CheckboxStyle(), Checked, Text)
+            : this(CheckboxStyle.Default, Checked, Text)
         {
 
         }
@@ -64,15 +64,11 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
 			CheckboxStyle style = this._Style;
-            Skin s = style.Skin;
-			
-			Surface surfbox = s.GetSurface(style.Box, style.BoxSize);
-			Context.DrawSurface(surfbox);
+			Context.DrawSurface(style.Box, new Rectangle(style.BoxSize));
 			
 			if(this.Checked)
 			{
-				Surface surftick = s.GetSurface(style.Tick, style.BoxSize);
-				Context.DrawSurface(surftick);
+                Context.DrawSurface(style.Tick, new Rectangle(style.BoxSize));
 			}
 			
 
@@ -134,9 +130,21 @@ namespace OpenTKGUI
     /// </summary>
     public class CheckboxStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Tick = new SkinArea(64, 80, 16, 16);
-        public SkinArea Box = new SkinArea(80, 80, 16, 16);
+        public CheckboxStyle()
+        {
+
+        }
+
+        public CheckboxStyle(Skin Skin)
+        {
+            this.Tick = Skin.GetStretchableSurface(new SkinArea(64, 80, 16, 16));
+            this.Box = Skin.GetStretchableSurface(new SkinArea(80, 80, 16, 16));
+        }
+
+        public static readonly CheckboxStyle Default = new CheckboxStyle(Skin.Default);
+
+        public Surface Tick;
+        public Surface Box;
         public Point BoxSize = new Point(16.0, 16.0);
         public double Padding = 5.0;
         public Font TextFont = Font.Default;

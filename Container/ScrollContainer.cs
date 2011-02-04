@@ -11,13 +11,13 @@ namespace OpenTKGUI
     public class ScrollContainer : Control
     {
         public ScrollContainer(Control Client)
-            : this(new ScrollContainerStyle(), Client)
+            : this(ScrollContainerStyle.Default, Client)
         {
 
         }
 
         public ScrollContainer(WindowContainer Window, Control View)
-            : this(new ScrollContainerStyle(), Window, View)
+            : this(ScrollContainerStyle.Default, Window, View)
         {
 
         }
@@ -215,7 +215,19 @@ namespace OpenTKGUI
     /// </summary>
     public class ScrollContainerStyle
     {
-        public ScrollbarStyle ScrollbarStyle = new ScrollbarStyle();
+        public ScrollContainerStyle()
+        {
+
+        }
+
+        public ScrollContainerStyle(Skin Skin)
+        {
+            this.ScrollbarStyle = new ScrollbarStyle(Skin);
+        }
+
+        public static readonly ScrollContainerStyle Default = new ScrollContainerStyle(Skin.Default);
+
+        public ScrollbarStyle ScrollbarStyle;
         public double ScrollbarSize = 26.0;
         public double MinorIncrement = 20.0;
     }

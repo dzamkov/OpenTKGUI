@@ -11,7 +11,7 @@ namespace OpenTKGUI
     public class Progressbar : Control
     {
         public Progressbar()
-            : this(new ProgressbarStyle())
+            : this(ProgressbarStyle.Default)
         {
 
         }
@@ -40,15 +40,13 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Skin skin = this._Style.Skin;
-			Surface surfback = skin.GetSurface(this._Style.Backing, this.Size);
-			Context.DrawSurface(surfback);
+            ProgressbarStyle style = this._Style;
+			Context.DrawSurface(style.Backing, new Rectangle(this.Size));
 			
 			double width = this.Size.X * this._Value;
 			Rectangle clip = new Rectangle(0, 0, width, this.Size.Y);
 			Context.PushClip(clip);
-			Surface surfprog = skin.GetSurface(this._Style.Progress, this.Size);
-            Context.DrawSurface(surfprog);
+            Context.DrawSurface(style.Progress, new Rectangle(this.Size));
 			Context.Pop();
             
         }
@@ -66,8 +64,20 @@ namespace OpenTKGUI
     /// </summary>
     public class ProgressbarStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Backing = new SkinArea(64, 48, 32, 32);
-        public SkinArea Progress = new SkinArea(96, 48, 32, 32);
+        public ProgressbarStyle()
+        {
+
+        }
+
+        public ProgressbarStyle(Skin Skin)
+        {
+            this.Backing = Skin.GetStretchableSurface(new SkinArea(64, 48, 32, 32));
+            this.Progress = Skin.GetStretchableSurface(new SkinArea(96, 48, 32, 32));
+        }
+
+        public static readonly ProgressbarStyle Default = new ProgressbarStyle(Skin.Default);
+
+        public Surface Backing;
+        public Surface Progress;
     }
 }

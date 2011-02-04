@@ -15,21 +15,40 @@ namespace OpenTKGUI
     public abstract class Surface
     {
         /// <summary>
+        /// Renders the surface to an area on the given context.
+        /// </summary>
+        public abstract void Render(Rectangle Area, GUIRenderContext Context);
+    }
+
+    /// <summary>
+    /// A surface with a fixed a size.
+    /// </summary>
+    public abstract class FixedSurface : Surface
+    {
+        public override void Render(Rectangle Area, GUIRenderContext Context)
+        {
+            Point tsize = Area.Size;
+            Point csize = this.Size;
+            if (tsize.X > csize.X || tsize.Y > csize.Y)
+            {
+                Context.PushClip(Area);
+                this.Render(Area.Location, Context);
+                Context.Pop();
+            }
+            else
+            {
+                this.Render(Area.Location, Context);
+            }
+        }
+
+        /// <summary>
         /// Gets the size of the surface.
         /// </summary>
         public abstract Point Size { get; }
 
         /// <summary>
-        /// Renders the surface with the given context and offset.
+        /// Renders the surface to a context with the given point at the upper-left corner of the rendered surface.
         /// </summary>
-        public abstract void Render(Point Offset, GUIRenderContext Context);
-
-        /// <summary>
-        /// Renders the surface with the given context with no additional translation.
-        /// </summary>
-        public void Render(GUIRenderContext Context)
-        {
-            this.Render(new Point(0.0, 0.0), Context);
-        }
+        public abstract void Render(Point Point, GUIRenderContext Context);
     }
 }

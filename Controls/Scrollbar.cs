@@ -10,7 +10,7 @@ namespace OpenTKGUI
     /// </summary>
     public class Scrollbar : Control
     {
-        public Scrollbar(Axis Direction) : this(new ScrollbarStyle(), Direction)
+        public Scrollbar(Axis Direction) : this(ScrollbarStyle.Default, Direction)
         {
             
         }
@@ -133,8 +133,7 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Skin s = this._Style.Skin;
-
+            ScrollbarStyle style = this._Style;
             double areastart;
             double areaend;
             double areasize;
@@ -146,18 +145,18 @@ namespace OpenTKGUI
             sliderstart = Math.Round(sliderstart);
             if (this._Direction == Axis.Horizontal)
             {
-                Context.DrawSurface(s.GetSurface(this._Style.HorizontalBackground, new Point(areasize, this.Size.Y)), new Point(areastart, 0.0));
+                Context.DrawSurface(style.HorizontalBackground, new Rectangle(areastart, 0.0, areasize, this.Size.Y));
                 if (this._Enabled)
                 {
-                    Context.DrawSurface(s.GetSurface(this._Style.HorizontalSlider, new Point(slidersize, this.Size.Y)), new Point(sliderstart, 0.0));
+                    Context.DrawSurface(style.HorizontalSlider, new Rectangle(sliderstart, 0.0, slidersize, this.Size.Y));
                 }
             }
             else
             {
-                Context.DrawSurface(s.GetSurface(this._Style.VerticalBackground, new Point(this.Size.X, areasize)), new Point(0.0, areastart));
+                Context.DrawSurface(style.VerticalBackground, new Rectangle(0.0, areastart, this.Size.X, areasize));
                 if (this._Enabled)
                 {
-                    Context.DrawSurface(s.GetSurface(this._Style.VerticalSlider, new Point(this.Size.X, slidersize)), new Point(0.0, sliderstart));
+                    Context.DrawSurface(style.VerticalSlider, new Rectangle(0.0, sliderstart, this.Size.X, slidersize));
                 }
             }
 
@@ -280,29 +279,41 @@ namespace OpenTKGUI
     /// </summary>
     public sealed class ScrollbarStyle
     {
-        private static readonly ButtonStyle _LeftRightButtonStyle = new ButtonStyle()
+        public ScrollbarStyle()
         {
-            Normal = new SkinArea(32, 96, 16, 16),
-            Active = new SkinArea(48, 96, 16, 16),
-            Pushed = new SkinArea(0, 112, 16, 16)
-        };
 
-        private static readonly ButtonStyle _UpDownButtonStyle = new ButtonStyle()
+        }
+
+        public ScrollbarStyle(Skin Skin)
         {
-            Normal = new SkinArea(64, 112, 16, 16),
-            Active = new SkinArea(16, 112, 16, 16),
-            Pushed = new SkinArea(80, 112, 16, 16)
-        };
+            this.LeftButtonStyle = this.RightButtonStyle = new ButtonStyle()
+            {
+                Normal = Skin.GetStretchableSurface(new SkinArea(32, 96, 16, 16)),
+                Active = Skin.GetStretchableSurface(new SkinArea(48, 96, 16, 16)),
+                Pushed = Skin.GetStretchableSurface(new SkinArea(0, 112, 16, 16)),
+            };
+            this.UpButtonStyle = this.DownButtonStyle = new ButtonStyle()
+            {
+                Normal = Skin.GetStretchableSurface(new SkinArea(64, 112, 16, 16)),
+                Active = Skin.GetStretchableSurface(new SkinArea(16, 112, 16, 16)),
+                Pushed = Skin.GetStretchableSurface(new SkinArea(80, 112, 16, 16)),
+            };
+            this.HorizontalBackground = Skin.GetStretchableSurface(new SkinArea(0, 96, 16, 16));
+            this.HorizontalSlider = Skin.GetStretchableSurface(new SkinArea(16, 96, 16, 16));
+            this.VerticalBackground = Skin.GetStretchableSurface(new SkinArea(48, 112, 16, 16));
+            this.VerticalSlider = Skin.GetStretchableSurface(new SkinArea(32, 112, 16, 16));
+        }
 
-        public Skin Skin = Skin.Default;
-        public SkinArea HorizontalBackground = new SkinArea(0, 96, 16, 16);
-        public SkinArea HorizontalSlider = new SkinArea(16, 96, 16, 16);
-        public ButtonStyle LeftButtonStyle = _LeftRightButtonStyle;
-        public ButtonStyle RightButtonStyle = _LeftRightButtonStyle;
-        public SkinArea VerticalBackground = new SkinArea(48, 112, 16, 16);
-        public SkinArea VerticalSlider = new SkinArea(32, 112, 16, 16);
-        public ButtonStyle UpButtonStyle = _UpDownButtonStyle;
-        public ButtonStyle DownButtonStyle = _UpDownButtonStyle;
+        public static readonly ScrollbarStyle Default = new ScrollbarStyle(Skin.Default);
+
+        public Surface HorizontalBackground;
+        public Surface HorizontalSlider;
+        public ButtonStyle LeftButtonStyle;
+        public ButtonStyle RightButtonStyle;
+        public Surface VerticalBackground;
+        public Surface VerticalSlider;
+        public ButtonStyle UpButtonStyle;
+        public ButtonStyle DownButtonStyle;
         public double ButtonSize = 16.0;
     }
 }

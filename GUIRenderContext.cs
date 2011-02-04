@@ -78,16 +78,40 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Draws a surface with the specified offset.
+        /// Draws a surface at the specified area.
         /// </summary>
-        public void DrawSurface(Surface Surface, Point Offset)
+        public void DrawSurface(Surface Surface, Rectangle Area)
+        {
+            Surface.Render(Area, this);
+        }
+
+        /// <summary>
+        /// Draws a fixed surface to the specified point.
+        /// </summary>
+        public void DrawSurface(FixedSurface Surface, Point Offset)
         {
             Surface.Render(Offset, this);
         }
 
-        public void DrawSurface(Surface Surface)
+        /// <summary>
+        /// Draws a fixed surface to an area with the given alignment.
+        /// </summary>
+        public void DrawSurface(FixedSurface Surface, Align Horizontal, Align Vertical, Rectangle Area)
         {
-            Surface.Render(this);
+            Point surfsize = Surface.Size;
+            double x = 0.0;
+            double y = 0.0;
+            switch (Horizontal)
+            {
+                case Align.Center: x = Area.Size.X * 0.5 - surfsize.X * 0.5; break;
+                case Align.Right: x = Area.Size.X - surfsize.X; break;
+            }
+            switch (Vertical)
+            {
+                case Align.Center: y = Area.Size.Y * 0.5 - surfsize.Y * 0.5; break;
+                case Align.Bottom: y = Area.Size.Y - surfsize.Y; break;
+            }
+            Surface.Render(new Point(x, y) + Area.Location, this);
         }
 
         /// <summary>

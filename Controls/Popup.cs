@@ -12,7 +12,7 @@ namespace OpenTKGUI
     public class Popup : LayerControl
     {
         public Popup(IEnumerable<MenuItem> Items)
-            : this(new PopupStyle(), Items)
+            : this(PopupStyle.Default, Items)
         {
         }
 
@@ -91,17 +91,16 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             PopupStyle style = this._Style;
-            Skin s = style.Skin;
 
-            Context.DrawSurface(s.GetSurface(style.Back, this.Size));
+            Context.DrawSurface(style.Back, new Rectangle(this.Size));
             Rectangle inner = new Rectangle(this.Size).Margin(this._Style.Margin);
             
             foreach (_Item i in this._Items)
             {
                 if (this._Active == i)
                 {
-                    SkinArea sa = this._MouseDown ? style.PushedItem : style.ActiveItem;
-                    Context.DrawSurface(s.GetSurface(sa, new Point(this.Size.X, i.Size.Y)), new Point(0.0, i.Y + inner.Location.Y));
+                    Surface sa = this._MouseDown ? style.PushedItem : style.ActiveItem;
+                    Context.DrawSurface(sa, new Rectangle(0.0, i.Y + inner.Location.Y, this.Size.X, i.Size.Y));
                 }
                 i.Render(Context, style, new Rectangle(0.0, i.Y, inner.Size.X, i.Size.Y) + inner.Location);
             }
@@ -418,7 +417,7 @@ namespace OpenTKGUI
                 CompoundMenuItem cpmi = Source as CompoundMenuItem;
                 if (cpmi != null)
                 {
-                    this.Size = new Point(this.Sample.Size.X + Style.CompoundArrowSize.X, Style.StandardItemHeight);
+                    this.Size = new Point(this.Sample.Size.X + Style.CompoundArrow.Size.X, Style.StandardItemHeight);
                 }
 
                 SeperatorMenuItem smi = Source as SeperatorMenuItem;
@@ -474,19 +473,15 @@ namespace OpenTKGUI
                 if (cpmi != null)
                 {
                     Context.DrawText(Style.TextColor, this.Sample, Area);
-
-                    Point arrowsize = Style.CompoundArrowSize;
-                    Context.DrawSurface(
-                        Style.Skin.GetSurface(Style.CompoundArrow, arrowsize), 
-                        new Point(Area.Location.X + Area.Size.X - arrowsize.X, Area.Location.Y + Area.Size.Y * 0.5 - arrowsize.Y * 0.5));
+                    FixedSurface arrow = Style.CompoundArrow;
+                    Point arrowsize = arrow.Size;
+                    Context.DrawSurface(arrow, new Point(Area.Location.X + Area.Size.X - arrowsize.X, Area.Location.Y + Area.Size.Y * 0.5 - arrowsize.Y * 0.5));
                 }
 
                 SeperatorMenuItem smi = Source as SeperatorMenuItem;
                 if (smi != null)
                 {
-                    Context.DrawSurface(
-                        Style.Skin.GetSurface(Style.Seperator, new Point(Area.Size.X, Style.SeperatorHeight)),
-                        Area.Location + new Point(0.0, Style.SeperatorPadding));
+                    Context.DrawSurface(Style.Seperator, new Rectangle(0.0, Style.SeperatorPadding, Area.Size.X, Style.SeperatorHeight) + Area.Location);
                 }
             }
         }
@@ -518,13 +513,27 @@ namespace OpenTKGUI
     /// </summary>
     public class PopupStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Back = new SkinArea(96, 80, 16, 16);
-        public SkinArea ActiveItem = new SkinArea(112, 80, 16, 16);
-        public SkinArea PushedItem = new SkinArea(80, 96, 16, 16);
-        public SkinArea Seperator = new SkinArea(96, 96, 16, 2);
-        public SkinArea CompoundArrow = new SkinArea(64, 96, 16, 16);
-        public Point CompoundArrowSize = new Point(16.0, 16.0);
+        public PopupStyle()
+        {
+
+        }
+
+        public PopupStyle(Skin Skin)
+        {
+            this.Back = Skin.GetStretchableSurface(new SkinArea(96, 80, 16, 16));
+            this.ActiveItem = Skin.GetStretchableSurface(new SkinArea(112, 80, 16, 16));
+            this.PushedItem = Skin.GetStretchableSurface(new SkinArea(80, 96, 16, 16));
+            this.Seperator = Skin.GetStretchableSurface(new SkinArea(96, 96, 16, 2));
+            this.CompoundArrow = Skin.GetSurface(new SkinArea(64, 96, 16, 16));
+        }
+
+        public static readonly PopupStyle Default = new PopupStyle(Skin.Default);
+
+        public Surface Back;
+        public Surface ActiveItem;
+        public Surface PushedItem;
+        public Surface Seperator;
+        public FixedSurface CompoundArrow;
         public Font Font = Font.Default;
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public double Margin = 3.0;
@@ -541,7 +550,7 @@ namespace OpenTKGUI
         public PopupContainer(Control Client)
             : base(Client)
         {
-            this._Style = new PopupStyle();
+            this._Style = PopupStyle.Default;
             this._ShowOnRightClick = true;
         }
 

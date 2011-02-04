@@ -16,7 +16,7 @@ namespace OpenTKGUI
         }
 
         public Button(string Text)
-            : this(new ButtonStyle(), Text)
+            : this(ButtonStyle.Default, Text)
         {
         }
 
@@ -27,7 +27,7 @@ namespace OpenTKGUI
         }
 
         public Button(Control Client)
-            : this(new ButtonStyle(), Client)
+            : this(ButtonStyle.Default, Client)
         {
 
         }
@@ -99,24 +99,24 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Skin s = this._Style.Skin;
+            ButtonStyle style = this._Style;
             Surface sf;
             if (this._MouseOver)
             {
                 if (this._MouseDown)
                 {
-                    sf = s.GetSurface(this._Style.Pushed, this.Size);
+                    sf = style.Pushed;
                 }
                 else
                 {
-                    sf = s.GetSurface(this._Style.Active, this.Size);
+                    sf = style.Active;
                 }
             }
             else
             {
-                sf = s.GetSurface(this._Style.Normal, this.Size);
+                sf = style.Normal;
             }
-            Context.DrawSurface(sf);
+            Context.DrawSurface(sf, new Rectangle(this.Size));
 
             // Render client, if any
             if (this._Client != null)
@@ -197,10 +197,23 @@ namespace OpenTKGUI
     /// </summary>
     public sealed class ButtonStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Normal = new SkinArea(0, 0, 16, 16);
-        public SkinArea Active = new SkinArea(16, 0, 16, 16);
-        public SkinArea Pushed = new SkinArea(32, 0, 16, 16);
+        public ButtonStyle()
+        {
+
+        }
+
+        public ButtonStyle(Skin Skin)
+        {
+            this.Normal = Skin.GetStretchableSurface(new SkinArea(0, 0, 16, 16));
+            this.Active = Skin.GetStretchableSurface(new SkinArea(16, 0, 16, 16));
+            this.Pushed = Skin.GetStretchableSurface(new SkinArea(32, 0, 16, 16));
+        }
+
+        public static readonly ButtonStyle Default = new ButtonStyle(Skin.Default);
+
+        public Surface Normal;
+        public Surface Active;
+        public Surface Pushed;
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
         public LabelStyle TextStyle = new LabelStyle()
         {

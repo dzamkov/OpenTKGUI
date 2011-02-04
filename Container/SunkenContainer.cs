@@ -9,7 +9,7 @@ namespace OpenTKGUI
     public class SunkenContainer : SingleContainer
     {
         public SunkenContainer(Control Client)
-            : this(new SunkenContainerStyle(), Client)
+            : this(SunkenContainerStyle.Default, Client)
         {
 
         }
@@ -23,7 +23,7 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             base.Render(Context);
-            Context.DrawSurface(this._Style.Skin.GetSurface(this._Style.Shading, this.Size), new Point(0.0, 0.0));
+            Context.DrawSurface(this._Style.Shading, new Rectangle(this.Size));
         }
 
         private SunkenContainerStyle _Style;
@@ -34,7 +34,18 @@ namespace OpenTKGUI
     /// </summary>
     public class SunkenContainerStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Shading = new SkinArea(96, 112, 16, 16);
+        public SunkenContainerStyle()
+        {
+
+        }
+
+        public SunkenContainerStyle(Skin Skin)
+        {
+            this.Shading = Skin.GetStretchableSurface(new SkinArea(96, 112, 16, 16));
+        }
+
+        public static readonly SunkenContainerStyle Default = new SunkenContainerStyle(Skin.Default);
+
+        public Surface Shading;
     }
 }

@@ -12,7 +12,7 @@ namespace OpenTKGUI
     public class Menu : Control
     {
         public Menu(IEnumerable<MenuItem> Items)
-            : this(new MenuStyle(), Items)
+            : this(MenuStyle.Default, Items)
         {
 
         }
@@ -34,8 +34,7 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             MenuStyle style = this._Style;
-            Skin s = style.Skin;
-            Context.DrawSurface(s.GetSurface(style.Backing, this.Size), new Point(0.0, 0.0));
+            Context.DrawSurface(style.Backing, new Rectangle(this.Size));
             double height = this.Size.Y;
             foreach (_Item i in this._Items)
             {
@@ -44,11 +43,11 @@ namespace OpenTKGUI
                 {
                     if (this._MouseDown)
                     {
-                        Context.DrawSurface(s.GetSurface(style.Pushed, irect.Size), irect.Location);
+                        Context.DrawSurface(style.Pushed, irect);
                     }
                     else
                     {
-                        Context.DrawSurface(s.GetSurface(style.Active, irect.Size), irect.Location);
+                        Context.DrawSurface(style.Active, irect);
                     }
                 }
                 i.Render(Context, style, irect);
@@ -225,16 +224,30 @@ namespace OpenTKGUI
     /// </summary>
     public class MenuStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Backing = new SkinArea(64, 0, 16, 16);
-        public SkinArea Active = new SkinArea(80, 0, 16, 16);
-        public SkinArea Pushed = new SkinArea(96, 0, 16, 16);
+        public MenuStyle()
+        {
+
+        }
+
+        public MenuStyle(Skin Skin)
+        {
+            this.Backing = Skin.GetStretchableSurface(new SkinArea(64, 0, 16, 16));
+            this.Active = Skin.GetStretchableSurface(new SkinArea(80, 0, 16, 16));
+            this.Pushed = Skin.GetStretchableSurface(new SkinArea(96, 0, 16, 16));
+            this.PopupStyle = new PopupStyle(Skin);
+        }
+
+        public static readonly MenuStyle Default = new MenuStyle(Skin.Default);
+
+        public Surface Backing;
+        public Surface Active;
+        public Surface Pushed;
         public double ItemMargin = 20.0;
         public double ItemSeperation = 5.0;
         public double TextMargin = 3.0;
         public Font TextFont = Font.Default;
         public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
-        public PopupStyle PopupStyle = new PopupStyle();
+        public PopupStyle PopupStyle;
     }
 
 

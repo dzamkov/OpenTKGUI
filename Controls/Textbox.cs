@@ -18,7 +18,7 @@ namespace OpenTKGUI
         }
 
         public Textbox()
-            : this(new TextboxStyle())
+            : this(TextboxStyle.Default)
         {
 
         }
@@ -61,8 +61,8 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Skin s = this._Style.Skin;
-            Context.DrawSurface(s.GetSurface(this._Style.Textbox, this.Size));
+            TextboxStyle style = this._Style;
+            Context.DrawSurface(style.Textbox, new Rectangle(this.Size));
 
             Rectangle inner = new Rectangle(this.Size).Margin(this._Style.InteriorMargin);
             Context.PushClip(inner);
@@ -407,8 +407,19 @@ namespace OpenTKGUI
     /// </summary>
     public sealed class TextboxStyle
     {
-        public Skin Skin = Skin.Default;
-        public SkinArea Textbox = new SkinArea(48, 0, 16, 16);
+        public TextboxStyle()
+        {
+
+        }
+
+        public TextboxStyle(Skin Skin)
+        {
+            this.Textbox = Skin.GetStretchableSurface(new SkinArea(48, 0, 16, 16));
+        }
+
+        public static readonly TextboxStyle Default = new TextboxStyle(Skin.Default);
+
+        public Surface Textbox;
         public double CursorFlashRate = 0.5;
         public double InteriorMargin = 4.0;
         public Color CursorColor = Color.RGB(0.0, 0.0, 0.0);

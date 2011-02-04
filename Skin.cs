@@ -81,6 +81,22 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets a surface that displays by stretching the given rectangle at its midline.
+        /// </summary>
+        public Surface GetStretchableSurface(SkinArea Rect)
+        {
+            return new _StretchableSurface(this, Rect, Rect.Width / 2, Rect.Height / 2);
+        }
+
+        /// <summary>
+        /// Gets a surface that displays by stretching on the defined lines (relative to the source rectangle).
+        /// </summary>
+        public Surface GetStretchableSurface(SkinArea Rect, int XStretchLine, int YStretchLine)
+        {
+            return new _StretchableSurface(this, Rect, XStretchLine, YStretchLine);
+        }
+
+        /// <summary>
         /// Gets a skin surface for the given region in the skin. The surface will be stretched at the stretch lines to get the target size.
         /// </summary>
         public SkinSurface GetSurface(SkinArea Rect, int XStretchLine, int YStretchLine, Point TargetSize)
@@ -112,6 +128,30 @@ namespace OpenTKGUI
         public SkinSurface GetSurface(List<SkinSurface.Stop> XStops, List<SkinSurface.Stop> YStops)
         {
             return new SkinSurface(this, XStops, YStops);
+        }
+
+        /// <summary>
+        /// A surface from a skin that can be stretched.
+        /// </summary>
+        private class _StretchableSurface : Surface
+        {
+            public _StretchableSurface(Skin Skin, SkinArea Rect, int XStretchLine, int YStretchLine)
+            {
+                this.Skin = Skin;
+                this.Rect = Rect;
+                this.XStretchLine = XStretchLine;
+                this.YStretchLine = YStretchLine;
+            }
+
+            public override void Render(Rectangle Area, GUIRenderContext Context)
+            {
+                Context.DrawSurface(Skin.GetSurface(this.Rect, this.XStretchLine, this.YStretchLine, Area.Size), Area.Location);
+            }
+
+            public Skin Skin;
+            public SkinArea Rect;
+            public int XStretchLine;
+            public int YStretchLine;
         }
 
         /// <summary>
@@ -177,7 +217,7 @@ namespace OpenTKGUI
     /// <summary>
     /// A surface that renders part of a skin, with optional modifications.
     /// </summary>
-    public class SkinSurface : Surface
+    public class SkinSurface : FixedSurface
     {
         internal SkinSurface(Skin Skin, List<Stop> XStops, List<Stop> YStops)
         {
