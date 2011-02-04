@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Color.cs" />
-    <Compile Include="Container\AlignContainer.cs" />
+    <Compile Include="Containers\AlignContainer.cs" />
     <Compile Include="Control.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUIContext.cs" />
@@ -77,17 +77,17 @@
     <Compile Include="Controls\Progressbar.cs" />
     <Compile Include="Controls\Popup.cs" />
     <Compile Include="Controls\Menu.cs" />
-    <Compile Include="Container\BorderContainer.cs" />
-    <Compile Include="Container\ManualContainer.cs" />
-    <Compile Include="Container\MarginContainer.cs" />
-    <Compile Include="Container\LayerContainer.cs" />
+    <Compile Include="Containers\BorderContainer.cs" />
+    <Compile Include="Containers\ManualContainer.cs" />
+    <Compile Include="Containers\MarginContainer.cs" />
+    <Compile Include="Containers\LayerContainer.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
     <Compile Include="Controls\Blank.cs" />
-    <Compile Include="Container\FlowContainer.cs" />
-    <Compile Include="Container\SunkenContainer.cs" />
-    <Compile Include="Container\SplitContainer.cs" />
-    <Compile Include="Container\ScrollContainer.cs" />
-    <Compile Include="Container\WindowContainer.cs" />
+    <Compile Include="Containers\FlowContainer.cs" />
+    <Compile Include="Containers\SunkenContainer.cs" />
+    <Compile Include="Containers\SplitContainer.cs" />
+    <Compile Include="Containers\ScrollContainer.cs" />
+    <Compile Include="Containers\WindowContainer.cs" />
     <Compile Include="Controls\Textbox.cs" />
     <Compile Include="Test.cs" />
   </ItemGroup>
