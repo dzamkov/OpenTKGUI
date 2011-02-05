@@ -49,6 +49,17 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets if this rectangle intersects another.
+        /// </summary>
+        public bool Intersects(Rectangle Rect)
+        {
+            return this.Location.X < Rect.Location.X + Rect.Size.X
+                && this.Location.Y < Rect.Location.Y + Rect.Size.Y
+                && Rect.Location.X < this.Location.X + this.Size.X
+                && Rect.Location.Y < this.Location.Y + this.Size.Y;
+        }
+
+        /// <summary>
         /// Gets the intersection of two rectangles.
         /// </summary>
         public static Rectangle Intersection(Rectangle A, Rectangle B)
