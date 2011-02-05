@@ -262,6 +262,14 @@ namespace OpenTKGUI
                 return this._Source.HasReleasedButton(Button);
             }
 
+            public override double Scroll
+            {
+                get
+                {
+                    return this._Source.Scroll;
+                }
+            }
+
             private Point _Position;
             private MouseState _Source;
         }
@@ -322,6 +330,18 @@ namespace OpenTKGUI
         /// Gets if the mouse button has been released since the last update.
         /// </summary>
         public abstract bool HasReleasedButton(MouseButton Button);
+
+        /// <summary>
+        /// Gets the amount (in "pixels") the mouse has scrolled since the last update. Positive numbers indicate
+        /// upward scrolling and negative numbers indicate downard scrolling.
+        /// </summary>
+        public virtual double Scroll
+        {
+            get
+            {
+                return 0.0;
+            }
+        }
     }
 
     /// <summary>
@@ -400,6 +420,8 @@ namespace OpenTKGUI
         /// </summary>
         public void Update()
         {
+            this._OldWheel = this._NewWheel;
+            this._NewWheel = this._Device.WheelPrecise;
             bool[] nbuttonstate = this._OldButtonState;
             this._OldButtonState = this._ButtonState;
             for (int t = 0; t < _ButtonAmount; t++)
@@ -432,9 +454,20 @@ namespace OpenTKGUI
             return this._OldButtonState[(int)Button] && !this._ButtonState[(int)Button];    
         }
 
+
+        public override double Scroll
+        {
+            get
+            {
+                return (double)(this._NewWheel - this._OldWheel) * 10.0;
+            }
+        }
+
         private const int _ButtonAmount = 12;
 
         private MouseDevice _Device;
+        private float _OldWheel;
+        private float _NewWheel;
         private bool[] _ButtonState;
         private bool[] _OldButtonState;
     }

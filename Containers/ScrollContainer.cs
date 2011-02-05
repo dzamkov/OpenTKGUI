@@ -98,6 +98,21 @@ namespace OpenTKGUI
 
         public override void Update(GUIControlContext Context, double Time)
         {
+            // Try scrollwheel
+            if (this._VScroll != null)
+            {
+                MouseState ms = Context.MouseState;
+                if (ms != null)
+                {
+                    double scrollamount = ms.Scroll;
+                    if (Math.Abs(scrollamount) > 0.0)
+                    {
+                        this._VScroll.Value -= scrollamount / (this._ClientHeight.Value - this.Size.Y);
+                    }
+                }
+            }
+
+
             this._View.Update(Context.CreateChildContext(this._View, new Point(0.0, 0.0)), Time);
             if (this._VScroll != null)
             {
