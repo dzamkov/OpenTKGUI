@@ -73,6 +73,34 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets the relative offset of the given absolute point in this rectangle.
+        /// </summary>
+        public Point ToRelative(Point Absolute)
+        {
+            return new Point(
+                (Absolute.X - this.Location.X) / this.Size.X,
+                (Absolute.Y - this.Location.Y) / this.Size.Y);
+        }
+
+        /// <summary>
+        /// Gets the relative offset of the given rectangle in this rectangle.
+        /// </summary>
+        public Rectangle ToRelative(Rectangle Absolute)
+        {
+            return new Rectangle(
+                this.ToRelative(Absolute.Location),
+                new Point(Absolute.Size.X / this.Size.X, Absolute.Size.Y / this.Size.Y));
+        }
+
+        /// <summary>
+        /// Scales this rectangle by a point multiplier.
+        /// </summary>
+        public Rectangle Scale(Point Scale)
+        {
+            return new Rectangle(this.Location.Scale(Scale), this.Size.Scale(Scale));
+        }
+
+        /// <summary>
         /// Gets or sets the position of the top-left corner of the rectangle.
         /// </summary>
         public Point TopLeft

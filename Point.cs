@@ -49,6 +49,14 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Scales the point by the given point.
+        /// </summary>
+        public Point Scale(Point Scale)
+        {
+            return new Point(this.X * Scale.X, this.Y * Scale.Y);
+        }
+
+        /// <summary>
         /// Gets a point that has its components swapped from this point.
         /// </summary>
         public Point Swap
