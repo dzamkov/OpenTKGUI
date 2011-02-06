@@ -60,6 +60,20 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets the intersecting area between this rectangle and another.
+        /// </summary>
+        public Rectangle Intersection(Rectangle Rect)
+        {
+            Point atl = this.Location; Point btl = Rect.Location;
+            Point abr = this.BottomRight; Point bbr = Rect.BottomRight;
+            double x = Math.Max(atl.X, btl.X);
+            double y = Math.Max(atl.Y, btl.Y);
+            double xx = Math.Min(abr.X, bbr.X);
+            double yy = Math.Min(abr.Y, bbr.Y);
+            return new Rectangle(x, y, xx - x, yy - y);
+        }
+
+        /// <summary>
         /// Gets the intersection of two rectangles.
         /// </summary>
         public static Rectangle Intersection(Rectangle A, Rectangle B)
