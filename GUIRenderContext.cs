@@ -166,7 +166,7 @@ namespace OpenTKGUI
             }
             else
             {
-                Clip = Rectangle.Intersection(Clip, this._TopClip.Rectangle);
+                Clip = Clip.Intersection(this._TopClip.Rectangle);
             }
             _ClipEffect ce = new _ClipEffect()
             {
