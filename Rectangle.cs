@@ -73,20 +73,6 @@ namespace OpenTKGUI
             return new Rectangle(x, y, xx - x, yy - y);
         }
 
-        /// <summary>
-        /// Gets the intersection of two rectangles.
-        /// </summary>
-        public static Rectangle Intersection(Rectangle A, Rectangle B)
-        {
-            Point loc = new Point(
-               Math.Max(A.Location.X, B.Location.X),
-               Math.Max(A.Location.Y, B.Location.Y));
-            Point size = new Point(
-                Math.Min(A.Location.X + A.Size.X, B.Location.X + B.Size.X) - loc.X,
-                Math.Min(A.Location.Y + A.Size.Y, B.Location.Y + B.Size.Y) - loc.Y);
-            return new Rectangle(loc, size);
-        }
-
         public static implicit operator Rectangle(RectangleF A)
         {
             return new Rectangle(A.X, A.Y, A.Width, A.Height);

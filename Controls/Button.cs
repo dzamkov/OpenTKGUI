@@ -11,7 +11,7 @@ namespace OpenTKGUI
     public class Button : Control
     {
         public Button()
-            : this(new ButtonStyle())
+            : this(ButtonStyle.Default)
         {
         }
 
