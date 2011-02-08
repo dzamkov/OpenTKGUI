@@ -26,9 +26,8 @@ namespace OpenTKGUI
             foreach (MessageBoxOptions._Button b in Options._Buttons)
             {
                 string name = b.Name;
-                Label label = new Label(name, bstyle.TextColor, bstyle.TextStyle);
-                Button button = new Button(bstyle);
-                button.Client = label;
+                Label label = new Label(name, style.ButtonTextColor, style.ButtonLabelStyle);
+                Button button = new Button(bstyle, label);
                 button.Click += b.Click;
                 button.Click += delegate { anyclick(); };
                 buttonflow.AddChild(button, button.GetFullSize(label.SuggestSize).X);
@@ -201,6 +200,13 @@ namespace OpenTKGUI
             VerticalAlign = TextAlign.Center,
             Wrap = TextWrap.Wrap,
         };
+        public LabelStyle ButtonLabelStyle = new LabelStyle()
+        {
+            HorizontalAlign = TextAlign.Center,
+            VerticalAlign = TextAlign.Center,
+            Wrap = TextWrap.Ellipsis,
+        };
+        public Color ButtonTextColor = Color.RGB(0.0, 0.0, 0.0);
         public Color BorderColor = Color.RGB(0.0, 0.0, 0.0);
         public double BorderSize = 1.0;
         public Color MessageColor = Color.RGB(0.0, 0.0, 0.0);

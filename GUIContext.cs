@@ -166,7 +166,7 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Gets the mouse state for the control
+        /// Gets the mouse state for the control.
         /// </summary>
         public MouseState MouseState
         {
@@ -213,7 +213,7 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Gets the keyboard state for the control
+        /// Gets the keyboard state for the control.
         /// </summary>
         public KeyboardState KeyboardState
         {
@@ -228,6 +228,19 @@ namespace OpenTKGUI
                     }
                 }
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a keyboard state for the control that doesn't require keyboard focus. This should not be
+        /// used for keyboard-intensive tasks such as typing as it may confuse the user. This would best be used
+        /// for modifiers to a mouse action.
+        /// </summary>
+        public KeyboardState SimpleKeyboardState
+        {
+            get
+            {
+                return this._Source.KeyboardState;
             }
         }
 
