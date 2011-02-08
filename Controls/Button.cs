@@ -16,12 +16,17 @@ namespace OpenTKGUI
         }
 
         public Button(string Text)
-            : this(ButtonStyle.Default, Text)
+            : this(ButtonStyle.Default, new LabelStyle()
+            {
+                HorizontalAlign = TextAlign.Center,
+                VerticalAlign = TextAlign.Center,
+                Wrap = TextWrap.Ellipsis,
+            }, Color.RGB(0.0, 0.0, 0.0), Text)
         {
         }
 
-        public Button(ButtonStyle Style, string Text)
-            : this(Style)
+        public Button(ButtonStyle Style, LabelStyle LabelStyle, Color TextColor, string Text)
+            : this(Style, new Label(Text, TextColor, LabelStyle))
         {
             this.Text = Text;
         }
@@ -44,18 +49,26 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Sets the text in the middle of the button. This will replace any client the button currently has.
+        /// Gets or sets the text in the middle of the button. This may only be done if the client of the button is a label.
         /// </summary>
         public string Text
         {
+            get
+            {
+                Label l = this._Client as Label;
+                if (l != null)
+                {
+                    return l.Text;
+                }
+                else
+                {
+                    return null;
+                }
+            }
             set
             {
                 Label l = this._Client as Label;
-                if (l == null)
-                {
-                    this._Client = new Label(value, this._Style.TextColor, this._Style.TextStyle);
-                }
-                else
+                if (l != null)
                 {
                     l.Text = value;
                 }
@@ -63,18 +76,13 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Gets or sets the client control that appears in the middle of the button.
+        /// Gets the client control that appears in the middle of the button.
         /// </summary>
         public Control Client
         {
             get
             {
                 return this._Client;
-            }
-            set
-            {
-                this._Client = value;
-                this._ResizeClient();
             }
         }
 
@@ -214,13 +222,6 @@ namespace OpenTKGUI
         public Surface Normal;
         public Surface Active;
         public Surface Pushed;
-        public Color TextColor = Color.RGB(0.0, 0.0, 0.0);
-        public LabelStyle TextStyle = new LabelStyle()
-        {
-            HorizontalAlign = TextAlign.Center,
-            VerticalAlign = TextAlign.Center,
-            Wrap = TextWrap.Ellipsis
-        };
         public double ClientMargin = 6.0;
     }
 

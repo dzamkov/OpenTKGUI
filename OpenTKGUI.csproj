@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Color.cs" />
     <Compile Include="Containers\AlignContainer.cs" />
+    <Compile Include="Containers\VariableContainer.cs" />
     <Compile Include="Control.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUIContext.cs" />

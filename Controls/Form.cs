@@ -25,18 +25,13 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Gets or sets the control that is inside the form.
+        /// Gets the control that is inside the form.
         /// </summary>
         public Control Client
         {
             get
             {
                 return this._Client;
-            }
-            set
-            {
-                this._Client = value;
-                this.ResizeChild(this._Client, this.ClientSize);
             }
         }
 
@@ -102,11 +97,7 @@ namespace OpenTKGUI
         /// </summary>
         public Button AddTitlebarButton(ButtonStyle Style, Control Client)
         {
-            Button b = new Button(Style);
-            if (Client != null)
-            {
-                b.Client = Client;
-            }
+            Button b = new Button(Style, Client);
             this.AddTitlebarItem(b, this._Style.TitleBarButtonWidth);
             return b;
         }

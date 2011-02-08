@@ -143,14 +143,20 @@ public static class Program
 
         // Button test
         {
-            Button b1 = new Button("I am a button");
+            Button b1 = new Button("Clear this form");
             Button b2 = new Button(Skin.Default.GetSurface(new SkinArea(64, 96, 16, 16)).WithAlign(Align.Center, Align.Center).CreateControl());
             FlowContainer flow = new FlowContainer(10.0, Axis.Vertical);
             flow.AddChild(b1, 30.0);
             flow.AddChild(b2, 30.0);
-            Form form = new Form(new SunkenContainer(flow.WithMargin(10.0)).WithBorder(1.0), "Button Test");
+            VariableContainer formcon = new VariableContainer(flow.WithMargin(10.0));
+            Form form = new Form(new SunkenContainer(formcon).WithBorder(1.0), "Button Test");
             form.ClientSize = new Point(180.0, flow.SuggestLength + 22.0);
             lc.AddControl(form, new Point(300.0, 300.0));
+
+            b1.Click += delegate
+            {
+                formcon.Client = new Blank(Color.RGB(1.0, 1.0, 1.0));
+            };
         }
 
         window.Control = lc;
