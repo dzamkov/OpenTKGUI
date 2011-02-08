@@ -36,7 +36,10 @@ namespace OpenTKGUI
                         this._Client.Dispose();
                     }
                     this._Client = value;
-                    this.ResizeChild(this._Client, this.Size);
+                    if (this._Client != null)
+                    {
+                        this.ResizeChild(this._Client, this.Size);
+                    }
                 }
             }
         }
@@ -59,7 +62,10 @@ namespace OpenTKGUI
 
         protected override void OnResize(Point Size)
         {
-            this.ResizeChild(this._Client, this.Size);
+            if (this._Client != null)
+            {
+                this.ResizeChild(this._Client, this.Size);
+            }
         }
 
         protected override void OnDispose()
