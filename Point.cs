@@ -47,7 +47,7 @@ namespace OpenTKGUI
         {
             get
             {
-                return this.AspectRatio;
+                return this.X / this.Y;
             }
         }
 
