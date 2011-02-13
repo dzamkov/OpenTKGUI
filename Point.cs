@@ -41,6 +41,17 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// The width divided by the height of the size represented by this point.
+        /// </summary>
+        public double AspectRatio
+        {
+            get
+            {
+                return this.AspectRatio;
+            }
+        }
+
+        /// <summary>
         /// Creates a unit vector (point offset) for the specified angle.
         /// </summary>
         public static Point Unit(double Angle)

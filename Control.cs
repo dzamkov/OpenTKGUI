@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+
 namespace OpenTKGUI
 {
     /// <summary>
@@ -141,6 +146,47 @@ namespace OpenTKGUI
         }
 
         internal Point _Size;
+    }
+
+    /// <summary>
+    /// A control that displays a 3D scene.
+    /// </summary>
+    public abstract class Render3DControl : Control
+    {
+        /// <summary>
+        /// Sets up the projection matrix for the 3D scene.
+        /// </summary>
+        public abstract void SetupProjection(Point Viewsize);
+
+        /// <summary>
+        /// Renders the scene for the control. This may use calls outside of a GUI render context, as long as it
+        /// resets the GL state to how it was before the render.
+        /// </summary>
+        public abstract void RenderScene();
+
+        /// <summary>
+        /// Performs 2D rendering over the scene, for HUDs or overlays.
+        /// </summary>
+        public virtual void OverRender(GUIRenderContext Context)
+        {
+
+        }
+
+        public sealed override void Render(GUIRenderContext Context)
+        {
+            Point size = this.Size;
+            Context.PushClip(new Rectangle(size));
+            GL.PushMatrix();
+            GL.Scale(-size.X, -size.Y, 1.0);
+            GL.Translate(-0.5, -0.5, 0.0);
+            this.SetupProjection(this.Size);
+            GL.MatrixMode(MatrixMode.Modelview);
+            this.RenderScene();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PopMatrix();
+            this.OverRender(Context);
+            Context.Pop();
+        }
     }
 
     /// <summary>
