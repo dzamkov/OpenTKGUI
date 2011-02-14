@@ -177,8 +177,8 @@ namespace OpenTKGUI
             Point size = this.Size;
             Context.PushClip(new Rectangle(size));
             GL.PushMatrix();
-            GL.Scale(-size.X, -size.Y, 1.0);
-            GL.Translate(-0.5, -0.5, 0.0);
+            GL.Scale(size.X * 0.5, -size.Y * 0.5, 1.0);
+            GL.Translate(1.0, -1.0, 0.0);
             this.SetupProjection(this.Size);
             GL.MatrixMode(MatrixMode.Modelview);
             this.RenderScene();
