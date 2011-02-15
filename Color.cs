@@ -102,11 +102,7 @@ namespace OpenTKGUI
         /// </summary>
         public static implicit operator Color4(Color Color)
         {
-            return new Color4(
-                (byte)(Color.R * 255.0),
-                (byte)(Color.G * 255.0),
-                (byte)(Color.B * 255.0),
-                (byte)(Color.A * 255.0));
+            return new Color4((float)Color.R, (float)Color.G, (float)Color.B, (float)Color.A);
         }
 
         public static implicit operator System.Drawing.Color(Color Color)
@@ -116,6 +112,14 @@ namespace OpenTKGUI
                 (int)(Color.R * 255.0),
                 (int)(Color.G * 255.0),
                 (int)(Color.B * 255.0));
+        }
+
+        /// <summary>
+        /// Sends the color to the current GL context.
+        /// </summary>
+        public void Render()
+        {
+            OpenTK.Graphics.OpenGL.GL.Color4(this.R, this.G, this.B, this.A);
         }
 
         /// <summary>

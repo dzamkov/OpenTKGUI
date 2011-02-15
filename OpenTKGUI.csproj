@@ -90,6 +90,7 @@
     <Compile Include="Containers\ScrollContainer.cs" />
     <Compile Include="Containers\WindowContainer.cs" />
     <Compile Include="Controls\Textbox.cs" />
+    <Compile Include="Surfaces\AlignSurface.cs" />
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>
