@@ -70,10 +70,12 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Context.DrawSurface(this._Style.Pane, new Rectangle(this.Size));
-            Context.PushTranslate(this.ClientRectangle.Location);
+            Rectangle clirect = this.ClientRectangle;
+            Context.DrawSolid(this._Style.BackColor, clirect);
+            Context.PushTranslate(clirect.Location);
             this._Client.Render(Context);
             Context.Pop();
+            Context.DrawSurface(this._Style.Pane, new Rectangle(this.Size));
         }
 
         public override void Update(GUIControlContext Context, double Time)
@@ -113,6 +115,7 @@ namespace OpenTKGUI
         public static readonly PaneStyle Default = new PaneStyle(Skin.Default);
 
         public Surface Pane;
+        public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
         public double BorderSize = 6.0;
     }
 }
