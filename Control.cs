@@ -174,18 +174,8 @@ namespace OpenTKGUI
 
         public sealed override void Render(GUIRenderContext Context)
         {
-            Point size = this.Size;
-            Context.PushClip(new Rectangle(size));
-            GL.PushMatrix();
-            GL.Scale(size.X * 0.5, -size.Y * 0.5, 1.0);
-            GL.Translate(1.0, -1.0, 0.0);
-            this.SetupProjection(this.Size);
-            GL.MatrixMode(MatrixMode.Modelview);
-            this.RenderScene();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PopMatrix();
+            Context.Draw3D(this.SetupProjection, this.RenderScene, this.Size);
             this.OverRender(Context);
-            Context.Pop();
         }
     }
 

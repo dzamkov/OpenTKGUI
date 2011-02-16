@@ -153,6 +153,25 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Draws a 3D scene.
+        /// </summary>
+        public void Draw3D(SetupProjectionHandler SetupProjection, SceneRenderHandler RenderScene, Point Size)
+        {
+            GL.Viewport(0, 0, (int)this._ViewSize.X, (int)this._ViewSize.Y);
+            this.PushClip(new Rectangle(Size));
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.PushMatrix();
+            GL.Scale(Size.X * 0.5, -Size.Y * 0.5, 1.0);
+            GL.Translate(1.0, -1.0, 0.0);
+            SetupProjection(Size);
+            GL.MatrixMode(MatrixMode.Modelview);
+            RenderScene();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PopMatrix();
+            this.Pop();
+        }
+
+        /// <summary>
         /// Pushes an effect on the stack that will cause all rendering not the specified region defined by a rectangle to be
         /// ignored. The rectangle is in the current coordinate space of the context.
         /// </summary>
@@ -272,4 +291,14 @@ namespace OpenTKGUI
         private _ClipEffect _TopClip;
         private Stack<_Effect> _Effects;
     }
+
+    /// <summary>
+    /// When called, multiplies the current matrix on the current GL matrix to reflect a projection.
+    /// </summary>
+    public delegate void SetupProjectionHandler(Point Size);
+
+    /// <summary>
+    /// When called, renders a 3D scene on the current GL context.
+    /// </summary>
+    public delegate void SceneRenderHandler();
 }

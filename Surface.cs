@@ -50,6 +50,30 @@ namespace OpenTKGUI
     }
 
     /// <summary>
+    /// A surface that renders a 3D scene.
+    /// </summary>
+    public abstract class Render3DSurface : Surface
+    {
+        /// <summary>
+        /// Sets up the projection matrix for the 3D scene.
+        /// </summary>
+        public abstract void SetupProjection(Point Viewsize);
+
+        /// <summary>
+        /// Renders the scene for the syrface. This may use calls outside of a GUI render context, as long as it
+        /// resets the GL state to how it was before the render.
+        /// </summary>
+        public abstract void RenderScene();
+
+        public sealed override void Render(Rectangle Area, GUIRenderContext Context)
+        {
+            Context.PushTranslate(Area.Location);
+            Context.Draw3D(this.SetupProjection, this.RenderScene, Area.Size);
+            Context.Pop();
+        }
+    }
+
+    /// <summary>
     /// A surface with a fixed a size.
     /// </summary>
     public abstract class FixedSurface : Surface
