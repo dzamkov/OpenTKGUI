@@ -12,7 +12,7 @@ namespace OpenTKGUI
     /// <summary>
     /// A static 2D image that can be rendered with a render context without causing interference to future render calls.
     /// </summary>
-    public abstract class Surface
+    public abstract class Surface : IDisposable
     {
         /// <summary>
         /// Renders the surface to an area on the given context.
@@ -25,6 +25,51 @@ namespace OpenTKGUI
         public SurfaceControl CreateControl()
         {
             return new SurfaceControl(this);
+        }
+
+        /// <summary>
+        /// Called when the surface is disposed. The surface may not be used after this.
+        /// </summary>
+        public virtual void OnDispose()
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a texture surface representation of this surface.
+        /// </summary>
+        public TextureSurface AsTexture(int Width, int Height)
+        {
+            return TextureSurface.Create(this, Width, Height);
+        }
+
+        public void Dispose()
+        {
+            this.OnDispose();
+        }
+    }
+
+    /// <summary>
+    /// A surface that renders a 3D scene.
+    /// </summary>
+    public abstract class Render3DSurface : Surface
+    {
+        /// <summary>
+        /// Sets up the projection matrix for the 3D scene.
+        /// </summary>
+        public abstract void SetupProjection(Point Viewsize);
+
+        /// <summary>
+        /// Renders the scene for the syrface. This may use calls outside of a GUI render context, as long as it
+        /// resets the GL state to how it was before the render.
+        /// </summary>
+        public abstract void RenderScene();
+
+        public sealed override void Render(Rectangle Area, GUIRenderContext Context)
+        {
+            Context.PushTranslate(Area.Location);
+            Context.Draw3D(this.SetupProjection, this.RenderScene, Area.Size);
+            Context.Pop();
         }
     }
 
@@ -58,6 +103,14 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Creates a texture surface representation of this surface.
+        /// </summary>
+        public TextureSurface AsTexture()
+        {
+            return TextureSurface.Create(this);
+        }
+
+        /// <summary>
         /// Gets the size of the surface.
         /// </summary>
         public abstract Point Size { get; }
@@ -66,74 +119,6 @@ namespace OpenTKGUI
         /// Renders the surface to a context with the given point at the upper-left corner of the rendered surface.
         /// </summary>
         public abstract void Render(Point Point, GUIRenderContext Context);
-    }
-
-    /// <summary>
-    /// A surface that aligns a fixed surface to make a resizable surface.
-    /// </summary>
-    public class AlignSurface : Surface
-    {
-        public AlignSurface(FixedSurface Source)
-        {
-            this._Source = Source;
-        }
-
-        public AlignSurface(FixedSurface Source, Align Horizontal, Align Vertical)
-        {
-            this._Source = Source;
-            this._Horizontal = Horizontal;
-            this._Vertical = Vertical;
-        }
-
-        /// <summary>
-        /// Gets the fixed surface drawn by this align surface.
-        /// </summary>
-        public FixedSurface Source
-        {
-            get
-            {
-                return this._Source;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the horizontal alignment of the source surface.
-        /// </summary>
-        public Align Horizontal
-        {
-            get
-            {
-                return this._Horizontal;
-            }
-            set
-            {
-                this._Horizontal = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the vertical alignment of the source surface.
-        /// </summary>
-        public Align Vertical
-        {
-            get
-            {
-                return this._Vertical;
-            }
-            set
-            {
-                this._Vertical = value;
-            }
-        }
-
-        public override void Render(Rectangle Area, GUIRenderContext Context)
-        {
-            Context.DrawSurface(this._Source, this._Horizontal, this._Vertical, Area);
-        }
-
-        private Align _Horizontal;
-        private Align _Vertical;
-        private FixedSurface _Source;
     }
 
     /// <summary>
