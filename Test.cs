@@ -93,10 +93,9 @@ public static class Program
                 MenuItem.Create("Keyboard", delegate { }),
             };
 
-            Form form = new Form(pc.WithAlign(label.SuggestSize, Align.Center, Align.Center).WithBorder(1.0), "Popup Test");
-            form.ClientSize = new Point(200.0, 50.0);
-            lc.AddControl(form, new Point(230.0, 45.0));
-            form.AddCloseButton();
+            Pane pane = new Pane(pc.WithAlign(label.SuggestSize, Align.Center, Align.Center).WithBorder(1.0));
+            pane.ClientSize = new Point(200.0, 50.0);
+            lc.AddControl(pane, new Point(230.0, 45.0));
         }
 
         // Timers and progress bars

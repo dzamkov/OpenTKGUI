@@ -55,6 +55,7 @@
     <Compile Include="Containers\AlignContainer.cs" />
     <Compile Include="Containers\VariableContainer.cs" />
     <Compile Include="Control.cs" />
+    <Compile Include="Controls\Pane.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUIContext.cs" />
     <Compile Include="GUIRenderContext.cs" />
