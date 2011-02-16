@@ -137,7 +137,8 @@ namespace OpenTKGUI
 
             // Form
             FormStyle style = this._Style;
-            Context.DrawSurface(style.Form, new Rectangle(this.Size));
+            Context.DrawSurface(style.Pane, new Rectangle(new Point(0.0, style.TitleBarSize - style.BorderSize), this.Size - new Point(0.0, style.TitleBarSize - style.BorderSize)));
+            Context.DrawSurface(style.TitleBar, new Rectangle(0.0, 0.0, this.Size.X, style.TitleBarSize));
 
             // Right of the title bar.
             Context.PushTranslate(this._RightTitleBarOffset);
@@ -251,7 +252,8 @@ namespace OpenTKGUI
 
         public FormStyle(Skin Skin)
         {
-            this.Form = Skin.GetStretchableSurface(new SkinArea(0, 32, 64, 64), 32, 44);
+            this.Pane = Skin.GetStretchableSurface(new SkinArea(16, 16, 16, 16));
+            this.TitleBar = Skin.GetStretchableSurface(new SkinArea(0, 16, 16, 16));
             this.CloseButtonStyle = new ButtonStyle()
             {
                 Normal = Skin.GetStretchableSurface(new SkinArea(64, 32, 16, 16)),
@@ -262,7 +264,8 @@ namespace OpenTKGUI
 
         public static readonly FormStyle Default = new FormStyle(Skin.Default);
 
-        public Surface Form;
+        public Surface Pane;
+        public Surface TitleBar;
         public Color BackColor = Color.RGB(0.8, 0.8, 0.8);
         public double BorderSize = 6.0;
         public double TitleBarSize = 31.0;
