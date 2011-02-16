@@ -145,7 +145,7 @@ namespace OpenTKGUI
             Point offset;
             if (Context.FindAncestor<LayerContainer>(out container, out offset))
             {
-                offset = new Point(ItemRect.Location.X, ItemRect.Location.Y + ItemRect.Size.Y) - offset;
+                offset = new Point(ItemRect.Location.X, ItemRect.Location.Y + ItemRect.Size.Y) + offset;
                 Popup popup = Popup.Call(container, offset, Items, this._Style.PopupStyle);
                 popup.MinWidth = ItemRect.Size.X;
                 this._CurPopup = popup;

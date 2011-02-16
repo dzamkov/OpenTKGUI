@@ -645,7 +645,7 @@ namespace OpenTKGUI
                 Point layeroffset;
                 if (Context.FindAncestor<LayerContainer>(out container, out layeroffset))
                 {
-                    Popup popup = Popup.Call(container, cp - layeroffset, this._Items, this._Style);
+                    Popup popup = Popup.Call(container, cp + layeroffset, this._Items, this._Style);
                     if (this.PopupCreated != null)
                     {
                         this.PopupCreated.Invoke(popup);
