@@ -22,6 +22,15 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Makes the pane go away and be disposed.
+        /// </summary>
+        public void Dismiss()
+        {
+            this.Container.RemoveControl(this);
+            this.Dispose();
+        }
+
+        /// <summary>
         /// Gets the control that is inside the pane.
         /// </summary>
         public Control Client
