@@ -102,7 +102,7 @@ public static class Program
         {
             FlowContainer flow = new FlowContainer(10.0, Axis.Vertical);
             Button addbutton = new Button("Add Some");
-            Button resetbutton = new Button("Reset");
+            Button resetbutton = new Button(ButtonStyle.CreateSolid(Skin.Default), "Reset");
             Progressbar bar = new Progressbar();
             flow.AddChild(addbutton, 30.0);
             flow.AddChild(resetbutton, 30.0);
