@@ -16,13 +16,19 @@ namespace OpenTKGUI
         }
 
         public Button(string Text)
-            : this(ButtonStyle.Default, new LabelStyle()
+            : this(ButtonStyle.Default, Text)
+        {
+        }
+
+        public Button(ButtonStyle Style, string Text)
+            : this(Style, new LabelStyle()
             {
                 HorizontalAlign = TextAlign.Center,
                 VerticalAlign = TextAlign.Center,
                 Wrap = TextWrap.Ellipsis,
             }, Color.RGB(0.0, 0.0, 0.0), Text)
         {
+
         }
 
         public Button(ButtonStyle Style, LabelStyle LabelStyle, Color TextColor, string Text)
@@ -218,6 +224,18 @@ namespace OpenTKGUI
         }
 
         public static readonly ButtonStyle Default = new ButtonStyle(Skin.Default);
+
+        /// <summary>
+        /// Creates a button style for a solid button.
+        /// </summary>
+        public static ButtonStyle CreateSolid(Skin Skin)
+        {
+            ButtonStyle bs = new ButtonStyle();
+            bs.Normal = Skin.GetStretchableSurface(new SkinArea(0, 32, 16, 16));
+            bs.Active = Skin.GetStretchableSurface(new SkinArea(16, 32, 16, 16));
+            bs.Pushed = Skin.GetStretchableSurface(new SkinArea(32, 32, 16, 16));
+            return bs;
+        }
 
         public Surface Normal;
         public Surface Active;

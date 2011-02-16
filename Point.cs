@@ -134,6 +134,28 @@ namespace OpenTKGUI
             return A.X * B.X + A.Y * B.Y;
         }
 
+        /// <summary>
+        /// Rotates the point by an increment of 90 degrees about the origin.
+        /// </summary>
+        public Point Rotate(Rotation Rotation)
+        {
+            switch (Rotation)
+            {
+                case Rotation.None: return this;
+                case Rotation.CounterClockwise: return new Point(this.Y, -this.X);
+                case Rotation.Half: return new Point(-this.X, -this.Y);
+                default: return new Point(-this.Y, this.X);
+            }
+        }
+
+        /// <summary>
+        /// Rotates the point by an increment of 90 degrees about the pivot.
+        /// </summary>
+        public Point Rotate(Point Pivot, Rotation Rotation)
+        {
+            return (this - Pivot).Rotate(Rotation) + Pivot;
+        }
+
         public static implicit operator Vector2(Point Vector)
         {
             return new Vector2((float)Vector.X, (float)Vector.Y);
@@ -175,5 +197,31 @@ namespace OpenTKGUI
     {
         Horizontal,
         Vertical
+    }
+
+    /// <summary>
+    /// Represents a rotation in increments of 90 degrees.
+    /// </summary>
+    public enum Rotation
+    {
+        /// <summary>
+        /// No rotation.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Rotation of 90 degrees counterclockwise.
+        /// </summary>
+        CounterClockwise = 1,
+
+        /// <summary>
+        /// Rotation of 180 degrees.
+        /// </summary>
+        Half = 2,
+
+        /// <summary>
+        /// Rotation of 90 degrees clockwise.
+        /// </summary>
+        Clockwise = 3,
     }
 }
