@@ -12,7 +12,7 @@ namespace OpenTKGUI
     /// <summary>
     /// A static 2D image that can be rendered with a render context without causing interference to future render calls.
     /// </summary>
-    public abstract class Surface
+    public abstract class Surface : IDisposable
     {
         /// <summary>
         /// Renders the surface to an area on the given context.
@@ -25,6 +25,27 @@ namespace OpenTKGUI
         public SurfaceControl CreateControl()
         {
             return new SurfaceControl(this);
+        }
+
+        /// <summary>
+        /// Called when the surface is disposed. The surface may not be used after this.
+        /// </summary>
+        public virtual void OnDispose()
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a texture surface representation of this surface.
+        /// </summary>
+        public TextureSurface AsTexture(int Width, int Height)
+        {
+            return TextureSurface.Create(this, Width, Height);
+        }
+
+        public void Dispose()
+        {
+            this.OnDispose();
         }
     }
 
@@ -55,6 +76,14 @@ namespace OpenTKGUI
         public AlignSurface WithAlign(Align Horizontal, Align Vertical)
         {
             return new AlignSurface(this, Horizontal, Vertical);
+        }
+
+        /// <summary>
+        /// Creates a texture surface representation of this surface.
+        /// </summary>
+        public TextureSurface AsTexture()
+        {
+            return TextureSurface.Create(this);
         }
 
         /// <summary>

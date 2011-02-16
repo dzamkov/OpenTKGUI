@@ -92,6 +92,7 @@
     <Compile Include="Containers\WindowContainer.cs" />
     <Compile Include="Controls\Textbox.cs" />
     <Compile Include="Surfaces\AlignSurface.cs" />
+    <Compile Include="Surfaces\TextureSurface.cs" />
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>

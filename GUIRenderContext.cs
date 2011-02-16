@@ -23,6 +23,7 @@ namespace OpenTKGUI
         /// </summary>
         public void Setup()
         {
+            GL.Viewport(0, 0, (int)this._ViewSize.X, (int)this._ViewSize.Y);
             GL.MatrixMode(MatrixMode.Projection);
             GL.Scale(2.0, -2.0, 1.0);
             GL.Translate(-0.5, -0.5, 0.0);
