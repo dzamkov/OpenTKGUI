@@ -55,8 +55,8 @@ public static class Program
             ScrollContainer scroll = new ScrollContainer(win, sunken.WithBorder(1.0, 1.0, 0.0, 1.0));
             scroll.ClientHeight = targetmarginsize.Y;
 
-            Form form = new Form(scroll, "Lots of buttons");
-            form.ClientSize = new Point(targetmarginsize.X + 20.0, 200.0);
+            Form form = new Form(scroll.WithRotate(Rotation.CounterClockwise), "Lots of buttons");
+            form.ClientSize = new Point(200.0, targetmarginsize.X + 20.0);
             lc.AddControl(form, new Point(30.0, 45.0));
         }
 

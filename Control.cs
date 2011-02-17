@@ -66,6 +66,14 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// A convenience function for wrapping the control in an RotateContainer, rotating it by an increment of 90 degrees.
+        /// </summary>
+        public RotateContainer WithRotate(Rotation Rotation)
+        {
+            return new RotateContainer(this, Rotation);
+        }
+
+        /// <summary>
         /// Gets the size (in pixels) of this panel when rendered.
         /// </summary>
         public Point Size

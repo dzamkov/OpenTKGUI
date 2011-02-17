@@ -177,22 +177,19 @@ namespace OpenTKGUI
         /// </summary>
         public void PushClip(Rectangle Clip)
         {
-            if (this._TopTranslate != null)
-            {
-                Clip.Location += this._TopTranslate.Offset;
-            }
+            Clip = this._ToViewRect(Clip);
             if (this._TopClip == null)
             {
                 GL.Enable(EnableCap.ScissorTest);
             }
             else
             {
-                Clip = Clip.Intersection(this._TopClip.Rectangle);
+                Clip = Clip.Intersection(this._TopClip.AbsoluteRectangle);
             }
             _ClipEffect ce = new _ClipEffect()
             {
                 Previous = this._TopClip,
-                Rectangle = Clip
+                AbsoluteRectangle = Clip
             };
             ce.Apply(this._ViewSize.Y);
             this._Effects.Push(this._TopClip = ce);
@@ -204,16 +201,26 @@ namespace OpenTKGUI
         public void PushTranslate(Point Offset)
         {
             GL.Translate(Offset.X, Offset.Y, 0.0);
-            if (this._TopTranslate != null)
-            {
-                Offset += this._TopTranslate.Offset;
-            }
-            _TranslateEffect te = new _TranslateEffect()
+            this._Effects.Push(new _TranslateEffect()
             {
                 Offset = Offset,
-                Previous = this._TopTranslate
-            };
-            this._Effects.Push(this._TopTranslate = te);
+            });
+        }
+
+        /// <summary>
+        /// Pushes an effect on the effect stack that rotates all affected render operations.
+        /// </summary>
+        public void PushRotate(Point Pivot, Rotation Rotation)
+        {
+            GL.PushMatrix();
+            GL.Translate(Pivot.X, Pivot.Y, 0.0);
+            GL.Rotate(-(int)Rotation * 90.0, 0.0, 0.0, 1.0);
+            GL.Translate(-Pivot.X, -Pivot.Y, 0.0);
+            this._Effects.Push(new _RotateEffect()
+            {
+                Pivot = Pivot,
+                Rotation = Rotation
+            });
         }
 
         /// <summary>
@@ -242,17 +249,43 @@ namespace OpenTKGUI
             _TranslateEffect te = e as _TranslateEffect;
             if (te != null)
             {
-                this._TopTranslate = te.Previous;
-                if (this._TopTranslate != null)
+                GL.Translate(-te.Offset.X, -te.Offset.Y, 0.0);
+            }
+
+            // Remove rotate effect
+            _RotateEffect re = e as _RotateEffect;
+            if (re != null)
+            {
+                GL.PopMatrix();
+            }
+        }
+
+        /// <summary>
+        /// Gets the specified rectangle in view coordinates.
+        /// </summary>
+        private Rectangle _ToViewRect(Rectangle Rectangle)
+        {
+            foreach (_Effect e in this._Effects)
+            {
+                // Untranslate 
+                _TranslateEffect te = e as _TranslateEffect;
+                if (te != null)
                 {
-                    Point noffset = this._TopTranslate.Offset - te.Offset;
-                    GL.Translate(noffset.X, noffset.Y, 0.0);
+                    Rectangle.Location += te.Offset;
+                    continue;
                 }
-                else
+
+                // Unrotate
+                _RotateEffect re = e as _RotateEffect;
+                if (re != null)
                 {
-                    GL.Translate(-te.Offset.X, -te.Offset.Y, 0.0);
+                    Rectangle.Location = Rectangle.Location.Rotate(re.Pivot, re.Rotation);
+                    Rectangle.Size = Rectangle.Size.Rotate(re.Rotation);
+                    Rectangle = Rectangle.Fix;
+                    continue;
                 }
             }
+            return Rectangle;
         }
 
         private class _Effect
@@ -262,32 +295,36 @@ namespace OpenTKGUI
 
         private class _ClipEffect : _Effect
         {
-            public Rectangle Rectangle;
+            public Rectangle AbsoluteRectangle;
             public _ClipEffect Previous;
 
             public void Apply(double ViewHeight)
             {
-                if (this.Rectangle.Size.X < 0.0 || this.Rectangle.Size.Y < 0.0)
+                if (this.AbsoluteRectangle.Size.X < 0.0 || this.AbsoluteRectangle.Size.Y < 0.0)
                 {
-                    this.Rectangle.Size = new Point(0.0, 0.0);
+                    this.AbsoluteRectangle.Size = new Point(0.0, 0.0);
                 }
 
                 GL.Scissor(
-                    (int)this.Rectangle.Location.X,
-                    (int)(ViewHeight - this.Rectangle.Location.Y - this.Rectangle.Size.Y),
-                    (int)this.Rectangle.Size.X,
-                    (int)this.Rectangle.Size.Y);
+                    (int)this.AbsoluteRectangle.Location.X,
+                    (int)(ViewHeight - this.AbsoluteRectangle.Location.Y - this.AbsoluteRectangle.Size.Y),
+                    (int)this.AbsoluteRectangle.Size.X,
+                    (int)this.AbsoluteRectangle.Size.Y);
             }
         }
 
         private class _TranslateEffect : _Effect
         {
             public Point Offset;
-            public _TranslateEffect Previous;
+        }
+
+        private class _RotateEffect : _Effect
+        {
+            public Point Pivot;
+            public Rotation Rotation;
         }
 
         private Point _ViewSize;
-        private _TranslateEffect _TopTranslate;
         private _ClipEffect _TopClip;
         private Stack<_Effect> _Effects;
     }

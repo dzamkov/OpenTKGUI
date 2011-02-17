@@ -156,6 +156,14 @@ namespace OpenTKGUI
             return (this - Pivot).Rotate(Rotation) + Pivot;
         }
 
+        /// <summary>
+        /// Gets the inverse rotation of the specified rotation.
+        /// </summary>
+        public static Rotation Inverse(Rotation Rotation)
+        {
+            return (Rotation)((2 - ((int)Rotation - 2)) % 4);
+        }
+
         public static implicit operator Vector2(Point Vector)
         {
             return new Vector2((float)Vector.X, (float)Vector.Y);

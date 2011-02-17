@@ -30,6 +30,28 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Creates a copy of this insuring that width and height are positive while still covering the same area.
+        /// </summary>
+        public Rectangle Fix
+        {
+            get
+            {
+                Rectangle f = this;
+                if (f.Size.X < 0.0)
+                {
+                    f.Size.X = -f.Size.X;
+                    f.Location.X -= f.Size.X;
+                }
+                if (f.Size.Y < 0.0)
+                {
+                    f.Size.Y = -f.Size.Y;
+                    f.Location.Y -= f.Size.Y;
+                }
+                return f;
+            }
+        }
+
+        /// <summary>
         /// Creates a rectangle from this rectangle with a margin applied.
         /// </summary>
         public Rectangle Margin(double Amount)
