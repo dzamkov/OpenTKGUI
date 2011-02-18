@@ -46,7 +46,7 @@ namespace OpenTKGUI
         {
             public void Dispose()
             {
-                this._Stack.Pop();
+                this.Stack.Pop();
             }
 
             public IEffectStack<TSelf> Stack;
