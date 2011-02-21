@@ -65,41 +65,43 @@ namespace OpenTKGUI
             Context.DrawSurface(style.Textbox, new Rectangle(this.Size));
 
             Rectangle inner = new Rectangle(this.Size).Margin(this._Style.InteriorMargin);
-            Context.PushClip(inner);
-
-            // Draw text
-            Point texloc = new Point(inner.Location.X, inner.Location.Y + inner.Size.Y / 2.0 - this._TextSample.Size.Y / 2.0);
-            Context.DrawText(this._Style.TextColor, this._TextSample, texloc);
-
-            
-            // Draw selection
-            if (this._Selection != null)
+            using (Context.Clip(inner))
             {
-                int starti;
-                int endi;
-                this._Selection.Order(out starti, out endi);
-                Rectangle[] charbounds = this._TextSample.CharacterBounds;
-                if (endi - starti > 0)
+
+                // Draw text
+                Point texloc = new Point(inner.Location.X, inner.Location.Y + inner.Size.Y / 2.0 - this._TextSample.Size.Y / 2.0);
+                Context.DrawText(this._Style.TextColor, this._TextSample, texloc);
+
+
+                // Draw selection
+                if (this._Selection != null)
                 {
-                    double startx = inner.Location.X + SelectionX(charbounds, starti);
-                    double endx = inner.Location.X + SelectionX(charbounds, endi);
-                    Rectangle clip = new Rectangle(startx, inner.Location.Y, endx - startx, inner.Size.Y);
-                    Context.PushClip(clip);
-                    Context.DrawSolid(this._Style.SelectionBackgroundColor, clip);
-                    Context.DrawText(this._Style.SelectionTextColor, this._TextSample, texloc);
-                    Context.Pop();
+                    int starti;
+                    int endi;
+                    this._Selection.Order(out starti, out endi);
+                    Rectangle[] charbounds = this._TextSample.CharacterBounds;
+                    if (endi - starti > 0)
+                    {
+                        double startx = inner.Location.X + SelectionX(charbounds, starti);
+                        double endx = inner.Location.X + SelectionX(charbounds, endi);
+                        Rectangle clip = new Rectangle(startx, inner.Location.Y, endx - startx, inner.Size.Y);
+                        using (Context.Clip(clip))
+                        {
+                            Context.DrawSolid(this._Style.SelectionBackgroundColor, clip);
+                            Context.DrawText(this._Style.SelectionTextColor, this._TextSample, texloc);
+                        }
+                    }
+
+                    // Draw cursor
+                    if (_CursorFlashTime > 0.0)
+                    {
+                        int curi = this._Selection.Start;
+                        double cursx = inner.Location.X + SelectionX(charbounds, curi);
+                        Context.DrawSolid(this._Style.CursorColor, new Rectangle(cursx, inner.Location.Y, 1.0, inner.Size.Y));
+                    }
                 }
 
-                // Draw cursor
-                if (_CursorFlashTime > 0.0)
-                {
-                    int curi = this._Selection.Start;
-                    double cursx = inner.Location.X + SelectionX(charbounds, curi);
-                    Context.DrawSolid(this._Style.CursorColor, new Rectangle(cursx, inner.Location.Y, 1.0, inner.Size.Y));
-                }
             }
-
-            Context.Pop();
         }
 
         public override void Update(GUIControlContext Context, double Time)

@@ -30,9 +30,10 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Context.PushTranslate(this._ClientOffset);
-            this._Client.Render(Context);
-            Context.Pop();
+            using (Context.Translate(this._ClientOffset))
+            {
+                this._Client.Render(Context);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)

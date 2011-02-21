@@ -27,11 +27,11 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Context.PushTranslate(this._Size * 0.5 - this._Client.Size * 0.5);
-            Context.PushRotate(this._Client.Size * 0.5, this._Rotation);
-            this._Client.Render(Context);
-            Context.Pop();
-            Context.Pop();
+            using (Context.Translate(this._Size * 0.5 - this._Client.Size * 0.5))
+            using (Context.Rotate(this._Client.Size * 0.5, this._Rotation))
+            {
+                this._Client.Render(Context);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)

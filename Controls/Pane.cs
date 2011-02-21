@@ -72,9 +72,10 @@ namespace OpenTKGUI
         {
             Rectangle clirect = this.ClientRectangle;
             Context.DrawSolid(this._Style.BackColor, clirect);
-            Context.PushTranslate(clirect.Location);
-            this._Client.Render(Context);
-            Context.Pop();
+            using (Context.Translate(clirect.Location))
+            {
+                this._Client.Render(Context);
+            }
             Context.DrawSurface(this._Style.Pane, new Rectangle(this.Size));
         }
 

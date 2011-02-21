@@ -12,10 +12,27 @@ namespace OpenTKGUI
     /// </summary>
     public class GUIRenderContext
     {
+        public GUIRenderContext(Point ViewSize, IEffectStack<RenderEffect, GUIRenderContext> EffectStack)
+        {
+            this._EffectStack = EffectStack;
+            this._ViewSize = ViewSize;
+        }
+
         public GUIRenderContext(Point ViewSize)
         {
-            this._Effects = new Stack<_Effect>();
+            this._EffectStack = new EffectStack<RenderEffect, GUIRenderContext>(this);
             this._ViewSize = ViewSize;
+        }
+
+        /// <summary>
+        /// Gets the size of the area rendering is done to.
+        /// </summary>
+        public Point ViewSize
+        {
+            get
+            {
+                return this._ViewSize;
+            }
         }
 
         /// <summary>
@@ -158,125 +175,75 @@ namespace OpenTKGUI
         public void Draw3D(SetupProjectionHandler SetupProjection, SceneRenderHandler RenderScene, Point Size)
         {
             GL.Viewport(0, 0, (int)this._ViewSize.X, (int)this._ViewSize.Y);
-            this.PushClip(new Rectangle(Size));
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.PushMatrix();
-            GL.Scale(Size.X * 0.5, -Size.Y * 0.5, 1.0);
-            GL.Translate(1.0, -1.0, 0.0);
-            SetupProjection(Size);
-            GL.MatrixMode(MatrixMode.Modelview);
-            RenderScene();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PopMatrix();
-            this.Pop();
-        }
-
-        /// <summary>
-        /// Pushes an effect on the stack that will cause all rendering not the specified region defined by a rectangle to be
-        /// ignored. The rectangle is in the current coordinate space of the context.
-        /// </summary>
-        public void PushClip(Rectangle Clip)
-        {
-            Clip = this._ToViewRect(Clip);
-            if (this._TopClip == null)
+            using (this.Clip(new Rectangle(Size)))
             {
-                GL.Enable(EnableCap.ScissorTest);
-            }
-            else
-            {
-                Clip = Clip.Intersection(this._TopClip.AbsoluteRectangle);
-            }
-            _ClipEffect ce = new _ClipEffect()
-            {
-                Previous = this._TopClip,
-                AbsoluteRectangle = Clip
-            };
-            ce.Apply(this._ViewSize.Y);
-            this._Effects.Push(this._TopClip = ce);
-        }
-
-        /// <summary>
-        /// Pushes an effect that translates the coordinate space by the specified amount.
-        /// </summary>
-        public void PushTranslate(Point Offset)
-        {
-            GL.Translate(Offset.X, Offset.Y, 0.0);
-            this._Effects.Push(new _TranslateEffect()
-            {
-                Offset = Offset,
-            });
-        }
-
-        /// <summary>
-        /// Pushes an effect on the effect stack that rotates all affected render operations.
-        /// </summary>
-        public void PushRotate(Point Pivot, Rotation Rotation)
-        {
-            GL.PushMatrix();
-            GL.Translate(Pivot.X, Pivot.Y, 0.0);
-            GL.Rotate(-(int)Rotation * 90.0, 0.0, 0.0, 1.0);
-            GL.Translate(-Pivot.X, -Pivot.Y, 0.0);
-            this._Effects.Push(new _RotateEffect()
-            {
-                Pivot = Pivot,
-                Rotation = Rotation
-            });
-        }
-
-        /// <summary>
-        /// Undoes the most recent command/effect given to the context.
-        /// </summary>
-        public void Pop()
-        {
-            _Effect e = this._Effects.Pop();
-
-            // Remove clip effect
-            _ClipEffect ce = e as _ClipEffect;
-            if (ce != null)
-            {
-                this._TopClip = ce.Previous;
-                if (this._TopClip == null)
-                {
-                    GL.Disable(EnableCap.ScissorTest);
-                }
-                else
-                {
-                    this._TopClip.Apply(this._ViewSize.Y);
-                }
-            }
-
-            // Remove translate effect
-            _TranslateEffect te = e as _TranslateEffect;
-            if (te != null)
-            {
-                GL.Translate(-te.Offset.X, -te.Offset.Y, 0.0);
-            }
-
-            // Remove rotate effect
-            _RotateEffect re = e as _RotateEffect;
-            if (re != null)
-            {
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+                GL.PushMatrix();
+                GL.Scale(Size.X * 0.5, -Size.Y * 0.5, 1.0);
+                GL.Translate(1.0, -1.0, 0.0);
+                SetupProjection(Size);
+                GL.MatrixMode(MatrixMode.Modelview);
+                RenderScene();
+                GL.MatrixMode(MatrixMode.Projection);
                 GL.PopMatrix();
             }
         }
 
         /// <summary>
-        /// Gets the specified rectangle in view coordinates.
+        /// Gets the effect stack for this render context.
         /// </summary>
-        private Rectangle _ToViewRect(Rectangle Rectangle)
+        public IEffectStack<RenderEffect, GUIRenderContext> EffectStack
         {
-            foreach (_Effect e in this._Effects)
+            get
             {
-                // Untranslate 
-                _TranslateEffect te = e as _TranslateEffect;
+                return this._EffectStack;
+            }
+        }
+
+        /// <summary>
+        /// Creates an effect on the stack that will cause all rendering not the specified region defined by a rectangle to be
+        /// ignored.
+        /// </summary>
+        public IDisposable Clip(Rectangle Area)
+        {
+            this._EffectStack.Push(new ClipRenderEffect(Area));
+            return EffectStack<RenderEffect, GUIRenderContext>.PopOnDispose(this._EffectStack);
+        }
+
+        /// <summary>
+        /// Creates an effect on the effect stack that rotates render operations.
+        /// </summary>
+        public IDisposable Rotate(Point Pivot, Rotation Rotation)
+        {
+            this._EffectStack.Push(new RotateRenderEffect(Pivot, Rotation));
+            return EffectStack<RenderEffect, GUIRenderContext>.PopOnDispose(this._EffectStack);
+        }
+
+        /// <summary>
+        /// Creates an effect that translates the coordinate space by the specified amount.
+        /// </summary>
+        public IDisposable Translate(Point Offset)
+        {
+            this._EffectStack.Push(new TranslateRenderEffect(Offset));
+            return EffectStack<RenderEffect, GUIRenderContext>.PopOnDispose(this._EffectStack);
+        }
+
+        /// <summary>
+        /// Converts a rectangle in the GUI coordinate system to a rectangle in view coordinates, if possible.
+        /// </summary>
+        public Rectangle ToView(Rectangle Rectangle)
+        {
+            foreach (RenderEffect e in this._EffectStack.Effects)
+            {
+                TranslateRenderEffect te = e as TranslateRenderEffect;
                 if (te != null)
                 {
                     Rectangle.Location += te.Offset;
                     continue;
                 }
 
-                // Unrotate
-                _RotateEffect re = e as _RotateEffect;
+
+                RotateRenderEffect re = e as RotateRenderEffect;
                 if (re != null)
                 {
                     Rectangle.Location = Rectangle.Location.Rotate(re.Pivot, re.Rotation);
@@ -288,45 +255,8 @@ namespace OpenTKGUI
             return Rectangle;
         }
 
-        private class _Effect
-        {
-
-        }
-
-        private class _ClipEffect : _Effect
-        {
-            public Rectangle AbsoluteRectangle;
-            public _ClipEffect Previous;
-
-            public void Apply(double ViewHeight)
-            {
-                if (this.AbsoluteRectangle.Size.X < 0.0 || this.AbsoluteRectangle.Size.Y < 0.0)
-                {
-                    this.AbsoluteRectangle.Size = new Point(0.0, 0.0);
-                }
-
-                GL.Scissor(
-                    (int)this.AbsoluteRectangle.Location.X,
-                    (int)(ViewHeight - this.AbsoluteRectangle.Location.Y - this.AbsoluteRectangle.Size.Y),
-                    (int)this.AbsoluteRectangle.Size.X,
-                    (int)this.AbsoluteRectangle.Size.Y);
-            }
-        }
-
-        private class _TranslateEffect : _Effect
-        {
-            public Point Offset;
-        }
-
-        private class _RotateEffect : _Effect
-        {
-            public Point Pivot;
-            public Rotation Rotation;
-        }
-
         private Point _ViewSize;
-        private _ClipEffect _TopClip;
-        private Stack<_Effect> _Effects;
+        private IEffectStack<RenderEffect, GUIRenderContext> _EffectStack;
     }
 
     /// <summary>
@@ -338,4 +268,167 @@ namespace OpenTKGUI
     /// When called, renders a 3D scene on the current GL context.
     /// </summary>
     public delegate void SceneRenderHandler();
+
+    /// <summary>
+    /// A effect that can be applied to a render context.
+    /// </summary>
+    public abstract class RenderEffect : Effect<GUIRenderContext>
+    {
+
+    }
+
+    /// <summary>
+    /// An effect that translates rendering operations.
+    /// </summary>
+    public class TranslateRenderEffect : RenderEffect
+    {
+        public TranslateRenderEffect(Point Offset)
+        {
+            this._Offset = Offset;
+        }
+
+        public override void Apply(GUIRenderContext Environment)
+        {
+            GL.Translate(this._Offset.X, this._Offset.Y, 0.0);
+        }
+
+        public override void Remove(GUIRenderContext Environment)
+        {
+            GL.Translate(-this._Offset.X, -this._Offset.Y, 0.0);
+        }
+
+        /// <summary>
+        /// Gets the translation offset for this effect.
+        /// </summary>
+        public Point Offset
+        {
+            get
+            {
+                return this._Offset;
+            }
+        }
+
+        private Point _Offset;
+    }
+
+    /// <summary>
+    /// An effect that rotates rendering about a pivot.
+    /// </summary>
+    public class RotateRenderEffect : RenderEffect
+    {
+        public RotateRenderEffect(Point Pivot, Rotation Rotation)
+        {
+            this._Pivot = Pivot;
+            this._Rotation = Rotation;
+        }
+
+        public override void Apply(GUIRenderContext Environment)
+        {
+            GL.PushMatrix();
+            GL.Translate(Pivot.X, Pivot.Y, 0.0);
+            GL.Rotate(-(int)Rotation * 90.0, 0.0, 0.0, 1.0);
+            GL.Translate(-Pivot.X, -Pivot.Y, 0.0);
+        }
+
+        public override void Remove(GUIRenderContext Environment)
+        {
+            GL.PopMatrix();
+        }
+
+        /// <summary>
+        /// Gets the pivot of the rotation.
+        /// </summary>
+        public Point Pivot
+        {
+            get
+            {
+                return this._Pivot;
+            }
+        }
+
+        /// <summary>
+        /// Gets the rotation.
+        /// </summary>
+        public Rotation Rotation
+        {
+            get
+            {
+                return this._Rotation;
+            }
+        }
+
+        private Point _Pivot;
+        private Rotation _Rotation;
+    }
+
+    /// <summary>
+    /// An effect that limits rendering to a rectangular area.
+    /// </summary>
+    public class ClipRenderEffect : RenderEffect
+    {
+        public ClipRenderEffect(Rectangle Area)
+        {
+            this._Area = Area;
+        }
+
+        public override void Apply(GUIRenderContext Environment)
+        {
+            this._Area = Environment.ToView(this._Area);
+
+            bool first = true;
+            foreach (RenderEffect re in Environment.EffectStack.Effects)
+            {
+                var cre = re as ClipRenderEffect;
+                if (cre != null)
+                {
+                    first = false;
+                    this._Area = this._Area.Intersection(cre._Area);
+                    break;
+                }
+            }
+            if (first)
+            {
+                GL.Enable(EnableCap.ScissorTest);
+            }
+
+            if (this._Area.Size.X < 0.0 || this._Area.Size.Y < 0.0)
+            {
+                this._Area.Size = new Point(0.0, 0.0);
+            }
+            _Scissor(Environment.ViewSize.Y, this._Area);
+        }
+
+        public override void Remove(GUIRenderContext Environment)
+        {
+            ClipRenderEffect prev = null;
+            foreach (RenderEffect re in Environment.EffectStack.Effects)
+            {
+                var cre = re as ClipRenderEffect;
+                if (cre != null)
+                {
+                    prev = cre;
+                    break;
+                }
+            }
+            if (prev == null)
+            {
+                GL.Disable(EnableCap.ScissorTest);
+            }
+            else
+            {
+                _Scissor(Environment.ViewSize.Y, prev._Area);
+            }
+        }
+
+        private static void _Scissor(double ViewHeight, Rectangle Area)
+        {
+            GL.Scissor(
+                    (int)Area.Location.X,
+                    (int)(ViewHeight - Area.Location.Y - Area.Size.Y),
+                    (int)Area.Size.X,
+                    (int)Area.Size.Y);
+        }
+
+        private Rectangle _Area;
+    }
 }

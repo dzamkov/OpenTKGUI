@@ -124,9 +124,10 @@ namespace OpenTKGUI
             if (this._Top > 0.0) Context.DrawSolid(this._Color, new Rectangle(0.0, 0.0, size.X, this._Top));
             if (this._Right > 0.0) Context.DrawSolid(this._Color, new Rectangle(size.X - this._Right, 0.0, this._Right, size.Y));
             if (this._Bottom > 0.0) Context.DrawSolid(this._Color, new Rectangle(0.0, size.Y - this._Bottom, size.X, this._Bottom));
-            Context.PushTranslate(new Point(this._Left, this._Top));
-            this._Client.Render(Context);
-            Context.Pop();
+            using (Context.Translate(new Point(this._Left, this._Top)))
+            {
+                this._Client.Render(Context);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)

@@ -31,14 +31,16 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             Rectangle inner = new Rectangle(new Point(), this.Size);
-            Context.PushClip(inner);
-            foreach (_Child c in this._Children)
+            using (Context.Clip(inner))
             {
-                Context.PushTranslate(c.Offset);
-                c.Control.Render(Context);
-                Context.Pop();
+                foreach (_Child c in this._Children)
+                {
+                    using (Context.Translate(c.Offset))
+                    {
+                        c.Control.Render(Context);
+                    }
+                }
             }
-            Context.Pop();
         }
 
         public override void Update(GUIControlContext Context, double Time)

@@ -135,9 +135,10 @@ namespace OpenTKGUI
             // Render client, if any
             if (this._Client != null)
             {
-                Context.PushTranslate(new Point(this._Style.ClientMargin, this._Style.ClientMargin));
-                this._Client.Render(Context);
-                Context.Pop();
+                using (Context.Translate(new Point(this._Style.ClientMargin, this._Style.ClientMargin)))
+                {
+                    this._Client.Render(Context);
+                }
             }
         }
 

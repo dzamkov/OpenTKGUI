@@ -106,9 +106,10 @@ namespace OpenTKGUI
                     lightbox = false;
                 }
                 lc.RenderShadow(lc._Position, Context);
-                Context.PushTranslate(lc._Position);
-                lc.Render(Context);
-                Context.Pop();
+                using (Context.Translate(lc._Position))
+                {
+                    lc.Render(Context);
+                }
             }
             if (this._ModalOptions == null && this._LightboxTime > 0.0)
             {

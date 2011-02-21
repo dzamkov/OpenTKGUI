@@ -33,9 +33,10 @@ namespace OpenTKGUI
         public override void Render(GUIRenderContext Context)
         {
             this._Near.Render(Context);
-            Context.PushTranslate(new Point(this._NearSize, 0.0).SwapIf(this._Direction == Axis.Vertical));
-            this._Far.Render(Context);
-            Context.Pop();
+            using (Context.Translate(new Point(this._NearSize, 0.0).SwapIf(this._Direction == Axis.Vertical)))
+            {
+                this._Far.Render(Context);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)

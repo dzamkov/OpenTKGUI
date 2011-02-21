@@ -56,16 +56,18 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Context.PushClip(new Rectangle(this.Size));
-            double d = 0.0;
-            foreach (_Child c in this._Children)
+            using (Context.Clip(new Rectangle(this.Size)))
             {
-                Context.PushTranslate(new Point(d, 0.0).SwapIf(this._Direction == Axis.Vertical));
-                c.Control.Render(Context);
-                Context.Pop();
-                d += c.Size + this._Seperation;
+                double d = 0.0;
+                foreach (_Child c in this._Children)
+                {
+                    using (Context.Translate(new Point(d, 0.0).SwapIf(this._Direction == Axis.Vertical)))
+                    {
+                        c.Control.Render(Context);
+                    }
+                    d += c.Size + this._Seperation;
+                }
             }
-            Context.Pop();
         }
 
         public override void Update(GUIControlContext Context, double Time)

@@ -45,10 +45,10 @@ namespace OpenTKGUI
 			
 			double width = this.Size.X * this._Value;
 			Rectangle clip = new Rectangle(0, 0, width, this.Size.Y);
-			Context.PushClip(clip);
-            Context.DrawSurface(style.Progress, new Rectangle(this.Size));
-			Context.Pop();
-            
+            using (Context.Clip(clip))
+            {
+                Context.DrawSurface(style.Progress, new Rectangle(this.Size));
+            }
         }
 		
         public override void Update(GUIControlContext Context, double Time)

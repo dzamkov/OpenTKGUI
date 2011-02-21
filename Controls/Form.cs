@@ -131,9 +131,10 @@ namespace OpenTKGUI
             Context.DrawSolid(this._Style.BackColor, clirect);
 
             // Client
-            Context.PushTranslate(clirect.Location);
-            this._Client.Render(Context);
-            Context.Pop();
+            using (Context.Translate(clirect.Location))
+            {
+                this._Client.Render(Context);
+            }
 
             // Form
             FormStyle style = this._Style;
@@ -141,9 +142,10 @@ namespace OpenTKGUI
             Context.DrawSurface(style.TitleBar, new Rectangle(0.0, 0.0, this.Size.X, style.TitleBarSize));
 
             // Right of the title bar.
-            Context.PushTranslate(this._RightTitleBarOffset);
-            this._RightTitleBar.Render(Context);
-            Context.Pop();
+            using (Context.Translate(this._RightTitleBarOffset))
+            {
+                this._RightTitleBar.Render(Context);
+            }
 
             // Text
             if (this._Text != null && this._Text != "")

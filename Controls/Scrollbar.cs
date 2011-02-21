@@ -162,9 +162,10 @@ namespace OpenTKGUI
 
 
             this._TopLeftButton.Render(Context);
-            Context.PushTranslate(this._BottomRightButtonOffset);
-            this._BottomRightButton.Render(Context);
-            Context.Pop();
+            using (Context.Translate(this._BottomRightButtonOffset))
+            {
+                this._BottomRightButton.Render(Context);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)

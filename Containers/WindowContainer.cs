@@ -56,11 +56,11 @@ namespace OpenTKGUI
 
         public override void Render(GUIRenderContext Context)
         {
-            Context.PushClip(new Rectangle(this._Size));
-            Context.PushTranslate(-new Point(Math.Round(this._Offset.X), Math.Round(this._Offset.Y)));
-            this._Client.Render(Context);
-            Context.Pop();
-            Context.Pop();
+            using (Context.Clip(new Rectangle(this._Size)))
+            using (Context.Translate(-new Point(Math.Round(this._Offset.X), Math.Round(this._Offset.Y))))
+            {
+                this._Client.Render(Context);
+            }
         }
 
         public override void Update(GUIControlContext Context, double Time)

@@ -67,9 +67,10 @@ namespace OpenTKGUI
 
         public sealed override void Render(Rectangle Area, GUIRenderContext Context)
         {
-            Context.PushTranslate(Area.Location);
-            Context.Draw3D(this.SetupProjection, this.RenderScene, Area.Size);
-            Context.Pop();
+            using (Context.Translate(Area.Location))
+            {
+                Context.Draw3D(this.SetupProjection, this.RenderScene, Area.Size);
+            }
         }
     }
 
@@ -84,9 +85,10 @@ namespace OpenTKGUI
             Point csize = this.Size;
             if (tsize.X > csize.X || tsize.Y > csize.Y)
             {
-                Context.PushClip(Area);
-                this.Render(Area.Location, Context);
-                Context.Pop();
+                using (Context.Clip(Area))
+                {
+                    this.Render(Area.Location, Context);
+                }
             }
             else
             {

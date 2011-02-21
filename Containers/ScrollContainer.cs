@@ -84,15 +84,17 @@ namespace OpenTKGUI
             this._View.Render(Context);
             if (this._VScroll != null)
             {
-                Context.PushTranslate(new Point(this.Size.X - this._VScroll.Size.X, 0.0));
-                this._VScroll.Render(Context);
-                Context.Pop();
+                using (Context.Translate(new Point(this.Size.X - this._VScroll.Size.X, 0.0)))
+                {
+                    this._VScroll.Render(Context);
+                }
             }
             if (this._HScroll != null)
             {
-                Context.PushTranslate(new Point(0.0, this.Size.Y - this._HScroll.Size.Y));
-                this._HScroll.Render(Context);
-                Context.Pop();
+                using (Context.Translate(new Point(0.0, this.Size.Y - this._HScroll.Size.Y)))
+                {
+                    this._HScroll.Render(Context);
+                }
             }
         }
 
