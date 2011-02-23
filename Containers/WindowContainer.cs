@@ -65,8 +65,10 @@ namespace OpenTKGUI
 
         public override void Update(InputContext Context)
         {
+            using (Context.Stencil)
             using (Context.Translate(-this._Offset))
             {
+                Context.StencilClip(new Rectangle(this.Size));
                 this._Client.Update(Context);
             }
         }

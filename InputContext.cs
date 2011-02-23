@@ -19,6 +19,7 @@ namespace OpenTKGUI
             this._AbsoluteMouseState = this._MouseState = MouseState;
             this._AbsoluteKeyboardState = this._KeyboardState = KeyboardState;
             this._MousePos = MouseState.Position;
+            this._MouseVisible = true;
             this.EffectStack = new EffectStack<InputEffect, InputContext>(this);
         }
 
@@ -61,6 +62,17 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// Gets if the mouse is visible, and not occluded by stencil operations.
+        /// </summary>
+        public bool MouseVisible
+        {
+            get
+            {
+                return this._MouseVisible;
+            }
+        }
+
+        /// <summary>
         /// Gets the keyboard state for the current scope, or null if the keyboard can't be accessed.
         /// </summary>
         public KeyboardState KeyboardState
@@ -99,7 +111,43 @@ namespace OpenTKGUI
             return this.With(new TranslateInputEffect(Offset));
         }
 
+        /// <summary>
+        /// An effect that causes all stencil operations (which determine visibility of an area) to be restored after leaving the scope.
+        /// </summary>
+        public IDisposable Stencil
+        {
+            get
+            {
+                return this.With(new StencilInputEffect());
+            }
+        }
+
+        /// <summary>
+        /// Applies a clip operation to the stencil, which marks everything outside of the given area as occluded.
+        /// </summary>
+        public void StencilClip(Rectangle Area)
+        {
+            this._MouseVisible = this._MouseVisible && Area.In(this._MousePos);
+        }
+
+        /// <summary>
+        /// Applies an occlude operation to the stencil, which marks everthing inside the given area as occluded.
+        /// </summary>
+        public void StencilOcclude(Rectangle Area)
+        {
+            this._MouseVisible = this._MouseVisible && !Area.In(this._MousePos);
+        }
+
+        /// <summary>
+        /// Occludes all areas of the stencil.
+        /// </summary>
+        public void StencilFill()
+        {
+            this._MouseVisible = false;
+        }
+
         private double _Time;
+        internal bool _MouseVisible;
         internal Point _MousePos;
         internal Scope _FocusedScope;
         internal Scope _NextFocusedScope;
@@ -192,6 +240,24 @@ namespace OpenTKGUI
         }
 
         private Point _Offset;
+    }
+
+    /// <summary>
+    /// An input effect that stores and restores the stencil state.
+    /// </summary>
+    public class StencilInputEffect : InputEffect
+    {
+        public override void Apply(InputContext Environment)
+        {
+            this._MouseVisible = Environment._MouseVisible;
+        }
+
+        public override void Remove(InputContext Environment)
+        {
+            Environment._MouseVisible = this._MouseVisible;
+        }
+
+        private bool _MouseVisible;
     }
 
     /// <summary>

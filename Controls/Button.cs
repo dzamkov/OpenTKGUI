@@ -52,6 +52,7 @@ namespace OpenTKGUI
         public Button(ButtonStyle Style)
         {
             this._Style = Style;
+            this._Scope = new _ButtonScope();
         }
 
         /// <summary>
@@ -144,36 +145,45 @@ namespace OpenTKGUI
 
         public override void Update(InputContext Context)
         {
-            MouseState ms = Context.MouseState;
-            if (ms != null)
+            
+            using (Context.Stencil)
             {
-                this._MouseOver = true;
-                if (ms.IsButtonDown(MouseButton.Left))
+                Context.StencilClip(new Rectangle(this.Size));
+                using (Context.Scope(this._Scope))
                 {
-                    this._MouseDown = true;
-                }
-                else
-                {
-                    if (this._MouseDown)
+                    // Update client, if any
+                    if (this._Client != null)
                     {
-                        // That would be a click!
-                        this._Click();
-                        this._MouseDown = false;
+                        using (Context.Translate(new Point(this._Style.ClientMargin, this._Style.ClientMargin)))
+                        {
+                            this._Client.Update(Context);
+                        }
                     }
-                }
-            }
-            else
-            {
-                this._MouseDown = false;
-                this._MouseOver = false;
-            }
 
-            // Update client, if any
-            if (this._Client != null)
-            {
-                using (Context.Translate(new Point(this._Style.ClientMargin, this._Style.ClientMargin)))
-                {
-                    this._Client.Update(Context);
+                    // Check for click
+                    MouseState ms = Context.MouseState;
+                    if (ms != null)
+                    {
+                        this._MouseOver = true;
+                        if (ms.IsButtonDown(MouseButton.Left))
+                        {
+                            this._MouseDown = true;
+                        }
+                        else
+                        {
+                            if (this._MouseDown)
+                            {
+                                // That would be a click!
+                                this._Click();
+                                this._MouseDown = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        this._MouseDown = false;
+                        this._MouseOver = false;
+                    }
                 }
             }
         }
@@ -200,12 +210,28 @@ namespace OpenTKGUI
         }
 
         /// <summary>
+        /// A scope for a button.
+        /// </summary>
+        private class _ButtonScope : Scope
+        {
+            public override void AlterInternalControl(InputContext Context, ref MouseState MouseState, ref KeyboardState KeyboardState)
+            {
+                // Do not allow the button to access an occluded mouse.
+                if (!Context.MouseVisible)
+                {
+                    MouseState = null;
+                }
+            }
+        }
+
+        /// <summary>
         /// An event fired whenever this button is clicked.
         /// </summary>
         public event ClickHandler Click;
 
         private bool _MouseDown;
         private bool _MouseOver;
+        private _ButtonScope _Scope;
         private Control _Client;
         private ButtonStyle _Style;
     }

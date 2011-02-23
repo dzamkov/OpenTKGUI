@@ -126,69 +126,65 @@ namespace OpenTKGUI
 
         public override void Update(InputContext Context)
         {
-            MouseState ms = Context.MouseState;
-            Point? mousepos = ms != null ? (Point?)ms.Position : null;
-            LinkedList<LayerControl> oldlayercontrols = this._LayerControls;
-            this._LayerControls = new LinkedList<LayerControl>(this._LayerControls);
-            ModalOptions mo = this._ModalOptions;
-
-            // Go through control in reverse order (since the last control is the top-most).
-            LinkedListNode<LayerControl> cur = oldlayercontrols.Last;
-            while (cur != null) 
+            using (Context.Stencil)
             {
-                LayerControl lc = cur.Value;
+                LinkedList<LayerControl> oldlayercontrols = this._LayerControls;
+                this._LayerControls = new LinkedList<LayerControl>(this._LayerControls);
+                ModalOptions mo = this._ModalOptions;
 
-                // Standard updating procedure
-                using (Context.Translate(lc._Position))
+                // Go through control in reverse order (since the last control is the top-most).
+                LinkedListNode<LayerControl> cur = oldlayercontrols.Last;
+                while (cur != null)
                 {
-                    lc.Update(Context);
-                }
+                    LayerControl lc = cur.Value;
 
-                if (mousepos != null)
-                {
-                    // If the mouse is over a hover control, do not let it fall through to lower controls.
-                    if (new Rectangle(lc._Position, lc.Size).In(mousepos.Value))
+                    using (Context.Translate(lc._Position))
                     {
-                        mousepos = null;
+                        // Update control
+                        lc.Update(Context);
+
+                        // Occlude future operations
+                        Context.StencilOcclude(new Rectangle(lc.Size));
                     }
-                }
 
-                // Handle modal options
-                if (mo != null)
-                {
-                    if (mo.LowestModal == lc)
+                    // Handle modal options
+                    if (mo != null)
                     {
-                        // Background click?
-                        if (mousepos != null && (ms.IsButtonDown(MouseButton.Left) || ms.IsButtonDown(MouseButton.Right)))
+                        if (mo.LowestModal == lc)
                         {
-                            mo._BackgroundClick();
-                        }
+                            // Background click?
+                            MouseState ms = Context.MouseState;
+                            if (ms != null && Context.MouseVisible && (ms.IsButtonDown(MouseButton.Left) || ms.IsButtonDown(MouseButton.Right)))
+                            {
+                                mo._BackgroundClick();
+                            }
 
-                        // Mouse blocked?
-                        if (!mo.MouseFallthrough)
-                        {
-                            mousepos = null;
+                            // Mouse blocked?
+                            if (!mo.MouseFallthrough)
+                            {
+                                Context.StencilFill();
+                            }
                         }
                     }
+
+                    cur = cur.Previous;
                 }
 
-                cur = cur.Previous;
-            }
 
+                if (this._Background != null)
+                {
+                    this._Background.Update(Context);
+                }
 
-            if (this._Background != null)
-            {
-                this._Background.Update(Context);
-            }
-
-            // Update lightbox (really low priority).
-            if (this._ModalOptions != null && this._ModalOptions.Lightbox)
-            {
-                this._LightboxTime = Math.Min(this._Style.LightBoxFadeTime, this._LightboxTime + Context.Time);
-            }
-            else
-            {
-                this._LightboxTime = Math.Max(0.0, this._LightboxTime - Context.Time);
+                // Update lightbox (really low priority).
+                if (this._ModalOptions != null && this._ModalOptions.Lightbox)
+                {
+                    this._LightboxTime = Math.Min(this._Style.LightBoxFadeTime, this._LightboxTime + Context.Time);
+                }
+                else
+                {
+                    this._LightboxTime = Math.Max(0.0, this._LightboxTime - Context.Time);
+                }
             }
         }
 
