@@ -91,7 +91,7 @@ namespace OpenTKGUI
             this._LayerControls.AddLast(Control);
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             if (this._Background != null)
             {
@@ -117,14 +117,14 @@ namespace OpenTKGUI
             }
         }
 
-        private void _DrawLightbox(GUIRenderContext Context)
+        private void _DrawLightbox(RenderContext Context)
         {
             Color c = this._Style.LightBoxColor;
             c.A *= this._LightboxTime / this._Style.LightBoxFadeTime;
             Context.DrawSolid(c, new Rectangle(this.Size));
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             MouseState ms = Context.MouseState;
             Point? mousepos = ms != null ? (Point?)ms.Position : null;
@@ -139,7 +139,11 @@ namespace OpenTKGUI
                 LayerControl lc = cur.Value;
 
                 // Standard updating procedure
-                lc.Update(Context.CreateChildContext(lc, lc._Position, mousepos == null), Time);
+                using (Context.Translate(lc._Position))
+                {
+                    lc.Update(Context);
+                }
+
                 if (mousepos != null)
                 {
                     // If the mouse is over a hover control, do not let it fall through to lower controls.
@@ -174,17 +178,17 @@ namespace OpenTKGUI
 
             if (this._Background != null)
             {
-                this._Background.Update(Context.CreateChildContext(this._Background, new Point(), mousepos == null), Time);
+                this._Background.Update(Context);
             }
 
             // Update lightbox (really low priority).
             if (this._ModalOptions != null && this._ModalOptions.Lightbox)
             {
-                this._LightboxTime = Math.Min(this._Style.LightBoxFadeTime, this._LightboxTime + Time);
+                this._LightboxTime = Math.Min(this._Style.LightBoxFadeTime, this._LightboxTime + Context.Time);
             }
             else
             {
-                this._LightboxTime = Math.Max(0.0, this._LightboxTime - Time);
+                this._LightboxTime = Math.Max(0.0, this._LightboxTime - Context.Time);
             }
         }
 
@@ -317,7 +321,7 @@ namespace OpenTKGUI
         /// Renders a shadow for the hovering control. The context given will not be translated or clipped from
         /// the layer container.
         /// </summary>
-        public virtual void RenderShadow(Point Position, GUIRenderContext Context)
+        public virtual void RenderShadow(Point Position, RenderContext Context)
         {
             ShadowStyle ss = this._Container.Style.DefaultShadowStyle;
             double width = ss.Width;

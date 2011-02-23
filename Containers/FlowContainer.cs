@@ -54,7 +54,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             using (Context.Clip(new Rectangle(this.Size)))
             {
@@ -70,12 +70,15 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             double d = 0.0;
             foreach (_Child c in this._Children)
             {
-                c.Control.Update(Context.CreateChildContext(c.Control, new Point(d, 0.0).SwapIf(this._Direction == Axis.Vertical)), Time);
+                using (Context.Translate(new Point(d, 0.0).SwapIf(this._Direction == Axis.Vertical)))
+                {
+                    c.Control.Update(Context);
+                }
                 d += c.Size + this._Seperation;
             }
         }

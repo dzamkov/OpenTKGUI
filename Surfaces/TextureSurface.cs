@@ -42,7 +42,7 @@ namespace OpenTKGUI
             GL.FramebufferRenderbuffer(FramebufferTarget.FramebufferExt, FramebufferAttachment.DepthAttachment, RenderbufferTarget.RenderbufferExt, renid);
 
             Point viewsize = new Point(Width, Height);
-            GUIRenderContext rc = new GUIRenderContext(viewsize);
+            RenderContext rc = new RenderContext(viewsize);
             rc.Setup();
             rc.DrawSurface(Surface, new Rectangle(viewsize));
 
@@ -73,7 +73,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(Rectangle Area, GUIRenderContext Context)
+        public override void Render(Rectangle Area, RenderContext Context)
         {
             Context.DrawTexture(this._ID, Area);
         }

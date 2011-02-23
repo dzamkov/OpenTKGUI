@@ -30,7 +30,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             this._Near.Render(Context);
             using (Context.Translate(new Point(this._NearSize, 0.0).SwapIf(this._Direction == Axis.Vertical)))
@@ -39,10 +39,13 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Near.Update(Context.CreateChildContext(this._Near, new Point(0.0, 0.0)), Time);
-            this._Far.Update(Context.CreateChildContext(this._Far, new Point(this._NearSize, 0.0).SwapIf(this._Direction == Axis.Vertical)), Time);
+            this._Near.Update(Context);
+            using (Context.Translate(new Point(this._NearSize, 0.0).SwapIf(this._Direction == Axis.Vertical)))
+            {
+                this._Far.Update(Context);
+            }
         }
 
         protected override void OnResize(Point Size)

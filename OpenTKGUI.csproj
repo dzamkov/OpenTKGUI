@@ -55,12 +55,14 @@
     <Compile Include="Containers\AlignContainer.cs" />
     <Compile Include="Containers\RotateContainer.cs" />
     <Compile Include="Containers\VariableContainer.cs" />
+    <Compile Include="Context.cs" />
     <Compile Include="Control.cs" />
     <Compile Include="Controls\Pane.cs" />
     <Compile Include="EffectStack.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUIContext.cs" />
-    <Compile Include="GUIRenderContext.cs" />
+    <Compile Include="InputContext.cs" />
+    <Compile Include="RenderContext.cs" />
     <Compile Include="HostWindow.cs" />
     <Compile Include="MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

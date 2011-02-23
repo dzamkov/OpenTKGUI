@@ -22,7 +22,7 @@ namespace OpenTKGUI
             return ChildSize + new Point(this._Margin, this._Margin) * 2.0;
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             using (Context.Translate(new Point(this._Margin, this._Margin)))
             {
@@ -30,9 +30,12 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Child.Update(Context.CreateChildContext(this._Child, new Point(this._Margin, this._Margin)), Time);
+            using (Context.Translate(new Point(this._Margin, this._Margin)))
+            {
+                this._Child.Update(Context);
+            }
         }
 
         protected override void OnResize(Point Size)

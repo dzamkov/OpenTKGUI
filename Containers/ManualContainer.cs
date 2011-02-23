@@ -28,7 +28,7 @@ namespace OpenTKGUI
         }
 
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             Rectangle inner = new Rectangle(new Point(), this.Size);
             using (Context.Clip(inner))
@@ -43,11 +43,14 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             foreach (_Child c in this._Children)
             {
-                c.Control.Update(Context.CreateChildContext(c.Control, c.Offset), Time);
+                using (Context.Translate(c.Offset))
+                {
+                    c.Control.Update(Context);
+                }
             }
         }
 

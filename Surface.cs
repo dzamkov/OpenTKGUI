@@ -17,7 +17,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Renders the surface to an area on the given context.
         /// </summary>
-        public abstract void Render(Rectangle Area, GUIRenderContext Context);
+        public abstract void Render(Rectangle Area, RenderContext Context);
 
         /// <summary>
         /// Creates a control that displays this surface.
@@ -65,7 +65,7 @@ namespace OpenTKGUI
         /// </summary>
         public abstract void RenderScene();
 
-        public sealed override void Render(Rectangle Area, GUIRenderContext Context)
+        public sealed override void Render(Rectangle Area, RenderContext Context)
         {
             using (Context.Translate(Area.Location))
             {
@@ -79,7 +79,7 @@ namespace OpenTKGUI
     /// </summary>
     public abstract class FixedSurface : Surface
     {
-        public override void Render(Rectangle Area, GUIRenderContext Context)
+        public override void Render(Rectangle Area, RenderContext Context)
         {
             Point tsize = Area.Size;
             Point csize = this.Size;
@@ -120,7 +120,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Renders the surface to a context with the given point at the upper-left corner of the rendered surface.
         /// </summary>
-        public abstract void Render(Point Point, GUIRenderContext Context);
+        public abstract void Render(Point Point, RenderContext Context);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             Context.DrawSurface(this._Surface, new Rectangle(this.Size));
         }

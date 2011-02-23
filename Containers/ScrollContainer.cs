@@ -79,7 +79,7 @@ namespace OpenTKGUI
             this.OnResize(this.Size);
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             this._View.Render(Context);
             if (this._VScroll != null)
@@ -98,7 +98,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             // Try scrollwheel
             if (this._VScroll != null)
@@ -115,14 +115,20 @@ namespace OpenTKGUI
             }
 
 
-            this._View.Update(Context.CreateChildContext(this._View, new Point(0.0, 0.0)), Time);
+            this._View.Update(Context);
             if (this._VScroll != null)
             {
-                this._VScroll.Update(Context.CreateChildContext(this._VScroll, new Point(this.Size.X - this._VScroll.Size.X, 0.0)), Time);
+                using (Context.Translate(new Point(this.Size.X - this._VScroll.Size.X, 0.0)))
+                {
+                    this._VScroll.Update(Context);
+                }
             }
             if (this._HScroll != null)
             {
-                this._HScroll.Update(Context.CreateChildContext(this._HScroll, new Point(0.0, this.Size.Y - this._HScroll.Size.Y)), Time);
+                using(Context.Translate(new Point(0.0, this.Size.Y - this._HScroll.Size.Y)))
+                {
+                    this._HScroll.Update(Context);
+                }
             }
         }
 

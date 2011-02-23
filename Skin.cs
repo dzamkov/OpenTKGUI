@@ -143,7 +143,7 @@ namespace OpenTKGUI
                 this.YStretchLine = YStretchLine;
             }
 
-            public override void Render(Rectangle Area, GUIRenderContext Context)
+            public override void Render(Rectangle Area, RenderContext Context)
             {
                 Context.DrawSurface(Skin.GetSurface(this.Rect, this.XStretchLine, this.YStretchLine, Area.Size), Area.Location);
             }
@@ -228,7 +228,7 @@ namespace OpenTKGUI
             this._YStops = YStops;
         }
 
-        public override void Render(Point Offset, GUIRenderContext Context)
+        public override void Render(Point Offset, RenderContext Context)
         {
             GL.Enable(EnableCap.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, this._Skin.Texture);

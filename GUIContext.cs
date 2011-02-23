@@ -355,6 +355,57 @@ namespace OpenTKGUI
                 return 0.0;
             }
         }
+
+        /// <summary>
+        /// Creates a new mouse state with a different position but all other properties the same.
+        /// </summary>
+        public MouseState SetPosition(Point Position)
+        {
+            return new _MouseState(Position, this);
+        }
+
+        private class _MouseState : MouseState
+        {
+            public _MouseState(Point MousePos, MouseState Source)
+            {
+                this._MousePos = MousePos;
+                this._Source = Source;
+            }
+
+            public override Point Position
+            {
+                get
+                {
+                    return this._MousePos;
+                }
+            }
+
+            public override double Scroll
+            {
+                get
+                {
+                    return this._Source.Scroll;
+                }
+            }
+
+            public override bool HasPushedButton(OpenTK.Input.MouseButton Button)
+            {
+                return this._Source.HasPushedButton(Button);
+            }
+
+            public override bool HasReleasedButton(OpenTK.Input.MouseButton Button)
+            {
+                return this._Source.HasReleasedButton(Button);
+            }
+
+            public override bool IsButtonDown(OpenTK.Input.MouseButton Button)
+            {
+                return this._Source.IsButtonDown(Button);
+            }
+
+            private Point _MousePos;
+            private MouseState _Source;
+        }
     }
 
     /// <summary>

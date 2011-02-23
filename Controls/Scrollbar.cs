@@ -131,7 +131,7 @@ namespace OpenTKGUI
         }
 
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             ScrollbarStyle style = this._Style;
             double areastart;
@@ -168,10 +168,13 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._TopLeftButton.Update(Context.CreateChildContext(this._TopLeftButton, new Point(0.0, 0.0)), Time);
-            this._BottomRightButton.Update(Context.CreateChildContext(this._BottomRightButton, this._BottomRightButtonOffset), Time);
+            this._TopLeftButton.Update(Context);
+            using (Context.Translate(this._BottomRightButtonOffset))
+            {
+                this._BottomRightButton.Update(Context);
+            }
 
             // Handle mouse
             MouseState ms = Context.MouseState;
@@ -195,7 +198,7 @@ namespace OpenTKGUI
                     if (!this._MouseDown)
                     {
                         this._DragOffset = null;
-                        Context.ReleaseMouse();
+                        //Context.ReleaseMouse();
                     }
                 }
 
@@ -215,7 +218,7 @@ namespace OpenTKGUI
                     // Perhaps the user intends to drag?
                     if (mouse > sliderstart && mouse < sliderstart + slidersize)
                     {
-                        Context.CaptureMouse();
+                        //Context.CaptureMouse();
                         this._DragOffset = mouse - sliderstart;
                     }
                 }

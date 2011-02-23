@@ -67,7 +67,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(Rectangle Area, GUIRenderContext Context)
+        public override void Render(Rectangle Area, RenderContext Context)
         {
             Context.DrawSurface(this._Source, this._Horizontal, this._Vertical, Area);
         }

@@ -20,7 +20,7 @@ namespace OpenTKGUI
             this._Style = Style;
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             base.Render(Context);
             Context.DrawSurface(this._Style.Shading, new Rectangle(this.Size));

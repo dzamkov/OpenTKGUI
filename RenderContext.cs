@@ -8,19 +8,19 @@ using OpenTK.Graphics.OpenGL;
 namespace OpenTKGUI
 {
     /// <summary>
-    /// Context given to a control for render that prevents controls from interfering with each other by setting GL states directly.
+    /// Context given to a control for render, preventing controls from interfering with each other by setting GL states directly.
     /// </summary>
-    public class GUIRenderContext
+    public class RenderContext : Context<RenderContext, RenderEffect>
     {
-        public GUIRenderContext(Point ViewSize, IEffectStack<RenderEffect, GUIRenderContext> EffectStack)
+        public RenderContext(Point ViewSize, IEffectStack<RenderEffect, RenderContext> EffectStack)
         {
-            this._EffectStack = EffectStack;
+            this.EffectStack = EffectStack;
             this._ViewSize = ViewSize;
         }
 
-        public GUIRenderContext(Point ViewSize)
+        public RenderContext(Point ViewSize)
         {
-            this._EffectStack = new EffectStack<RenderEffect, GUIRenderContext>(this);
+            this.EffectStack = new EffectStack<RenderEffect, RenderContext>(this);
             this._ViewSize = ViewSize;
         }
 
@@ -190,24 +190,12 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Gets the effect stack for this render context.
-        /// </summary>
-        public IEffectStack<RenderEffect, GUIRenderContext> EffectStack
-        {
-            get
-            {
-                return this._EffectStack;
-            }
-        }
-
-        /// <summary>
         /// Creates an effect on the stack that will cause all rendering not the specified region defined by a rectangle to be
         /// ignored.
         /// </summary>
         public IDisposable Clip(Rectangle Area)
         {
-            this._EffectStack.Push(new ClipRenderEffect(Area));
-            return EffectStack<RenderEffect, GUIRenderContext>.PopOnDispose(this._EffectStack);
+            return this.With(new ClipRenderEffect(Area));
         }
 
         /// <summary>
@@ -215,8 +203,7 @@ namespace OpenTKGUI
         /// </summary>
         public IDisposable Rotate(Point Pivot, Rotation Rotation)
         {
-            this._EffectStack.Push(new RotateRenderEffect(Pivot, Rotation));
-            return EffectStack<RenderEffect, GUIRenderContext>.PopOnDispose(this._EffectStack);
+            return this.With(new RotateRenderEffect(Pivot, Rotation));
         }
 
         /// <summary>
@@ -224,8 +211,7 @@ namespace OpenTKGUI
         /// </summary>
         public IDisposable Translate(Point Offset)
         {
-            this._EffectStack.Push(new TranslateRenderEffect(Offset));
-            return EffectStack<RenderEffect, GUIRenderContext>.PopOnDispose(this._EffectStack);
+            return this.With(new TranslateRenderEffect(Offset));
         }
 
         /// <summary>
@@ -233,7 +219,7 @@ namespace OpenTKGUI
         /// </summary>
         public Rectangle ToView(Rectangle Rectangle)
         {
-            foreach (RenderEffect e in this._EffectStack.Effects)
+            foreach (RenderEffect e in this.EffectStack.Effects)
             {
                 TranslateRenderEffect te = e as TranslateRenderEffect;
                 if (te != null)
@@ -256,7 +242,6 @@ namespace OpenTKGUI
         }
 
         private Point _ViewSize;
-        private IEffectStack<RenderEffect, GUIRenderContext> _EffectStack;
     }
 
     /// <summary>
@@ -272,7 +257,7 @@ namespace OpenTKGUI
     /// <summary>
     /// A effect that can be applied to a render context.
     /// </summary>
-    public abstract class RenderEffect : Effect<GUIRenderContext>
+    public abstract class RenderEffect : Effect<RenderContext>
     {
 
     }
@@ -287,12 +272,12 @@ namespace OpenTKGUI
             this._Offset = Offset;
         }
 
-        public override void Apply(GUIRenderContext Environment)
+        public override void Apply(RenderContext Environment)
         {
             GL.Translate(this._Offset.X, this._Offset.Y, 0.0);
         }
 
-        public override void Remove(GUIRenderContext Environment)
+        public override void Remove(RenderContext Environment)
         {
             GL.Translate(-this._Offset.X, -this._Offset.Y, 0.0);
         }
@@ -322,7 +307,7 @@ namespace OpenTKGUI
             this._Rotation = Rotation;
         }
 
-        public override void Apply(GUIRenderContext Environment)
+        public override void Apply(RenderContext Environment)
         {
             GL.PushMatrix();
             GL.Translate(Pivot.X, Pivot.Y, 0.0);
@@ -330,7 +315,7 @@ namespace OpenTKGUI
             GL.Translate(-Pivot.X, -Pivot.Y, 0.0);
         }
 
-        public override void Remove(GUIRenderContext Environment)
+        public override void Remove(RenderContext Environment)
         {
             GL.PopMatrix();
         }
@@ -371,7 +356,7 @@ namespace OpenTKGUI
             this._Area = Area;
         }
 
-        public override void Apply(GUIRenderContext Environment)
+        public override void Apply(RenderContext Environment)
         {
             this._Area = Environment.ToView(this._Area);
 
@@ -398,7 +383,7 @@ namespace OpenTKGUI
             _Scissor(Environment.ViewSize.Y, this._Area);
         }
 
-        public override void Remove(GUIRenderContext Environment)
+        public override void Remove(RenderContext Environment)
         {
             ClipRenderEffect prev = null;
             foreach (RenderEffect re in Environment.EffectStack.Effects)

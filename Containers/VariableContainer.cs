@@ -44,7 +44,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             if (this._Client != null)
             {
@@ -52,11 +52,11 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             if (this._Client != null)
             {
-                this._Client.Update(Context.CreateChildContext(this._Client, new Point(0.0, 0.0)), Time);
+                this._Client.Update(Context);
             }
         }
 

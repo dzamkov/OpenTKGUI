@@ -88,7 +88,7 @@ namespace OpenTKGUI
         /// Renders the control with the given context.
         /// </summary>
         /// <remarks>Rendering, when the given context is current, should be done from (0.0, 0.0) to (Size.X, Size.Y).</remarks>
-        public virtual void Render(GUIRenderContext Context)
+        public virtual void Render(RenderContext Context)
         {
 
         }
@@ -96,17 +96,9 @@ namespace OpenTKGUI
         /// <summary>
         /// Updates the state of the control after the specified amount of time elapses.
         /// </summary>
-        public virtual void Update(GUIControlContext Context, double Time)
+        public virtual void Update(InputContext Context)
         {
 
-        }
-
-        /// <summary>
-        /// Updates the state of the control as a root control.
-        /// </summary>
-        public void Update(GUIContext Context, double Time)
-        {
-            this.Update(Context.CreateRootControlContext(this, new Point(0.0, 0.0)), Time);
         }
 
         /// <summary>
@@ -175,12 +167,12 @@ namespace OpenTKGUI
         /// <summary>
         /// Performs 2D rendering over the scene, for HUDs or overlays.
         /// </summary>
-        public virtual void OverRender(GUIRenderContext Context)
+        public virtual void OverRender(RenderContext Context)
         {
 
         }
 
-        public sealed override void Render(GUIRenderContext Context)
+        public sealed override void Render(RenderContext Context)
         {
             Context.Draw3D(this.SetupProjection, this.RenderScene, this.Size);
             this.OverRender(Context);
@@ -208,14 +200,14 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             this._Client.Render(Context);
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context.CreateChildContext(this._Client, new Point(0.0, 0.0)), Time);
+            this._Client.Update(Context);
         }
 
         protected override void OnResize(Point Size)

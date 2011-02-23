@@ -55,7 +55,7 @@ namespace OpenTKGUI
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 			
-            GUIRenderContext rc = new GUIRenderContext(this.ViewSize);
+            RenderContext rc = new RenderContext(this.ViewSize);
             rc.Setup();
             this._Control.Render(rc);
 
@@ -65,61 +65,12 @@ namespace OpenTKGUI
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             this._MouseState.Update();
-            this._Control.Update(new _GUIContext(this), e.Time);
+
+            InputContext ic = new InputContext(e.Time, this._Focused, this._MouseState, this._KeyboardState);
+            this._Control.Update(ic);
+            this._Focused = ic.NextFocusedScope;
+
             this._KeyboardState.PostUpdate();
-        }
-
-        /// <summary>
-        /// The top-level gui context when using a host window.
-        /// </summary>
-        private sealed class _GUIContext : GUIContext
-        {
-            public _GUIContext(HostWindow Window)
-            {
-                this.Window = Window;
-            }
-
-            public override Control KeyboardFocus
-            {
-                get
-                {
-                    return this.Window._KeyboardFocus;
-                }
-                set
-                {
-                    this.Window._KeyboardFocus = value;
-                }
-            }
-
-            public override Control MouseFocus
-            {
-                get
-                {
-                    return this.Window._MouseFocus;
-                }
-                set
-                {
-                    this.Window._MouseFocus = value;
-                }
-            }
-
-            public override MouseState MouseState
-            {
-                get
-                {
-                    return Window._MouseState;
-                }
-            }
-
-            public override KeyboardState KeyboardState
-            {
-                get
-                {
-                    return Window._KeyboardState;
-                }
-            }
-
-            public HostWindow Window;
         }
 
         /// <summary>
@@ -166,8 +117,7 @@ namespace OpenTKGUI
 
         private WindowKeyboardState _KeyboardState;
         private WindowMouseState _MouseState;
-        private Control _MouseFocus;
-        private Control _KeyboardFocus;
+        private Scope _Focused;
         private Control _Control;
     }
 

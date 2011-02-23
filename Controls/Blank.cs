@@ -37,7 +37,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             Context.DrawSolid(this._Color, new Rectangle(this.Size));
         }

@@ -31,7 +31,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             MenuStyle style = this._Style;
             Context.DrawSurface(style.Backing, new Rectangle(this.Size));
@@ -54,7 +54,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             MouseState ms = Context.MouseState;
             if (ms != null)
@@ -93,7 +93,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Called when an item is clicked.
         /// </summary>
-        private void _Click(Rectangle ItemRect, _Item Item, GUIControlContext Context)
+        private void _Click(Rectangle ItemRect, _Item Item, InputContext Context)
         {
             if (this._Selected != null)
             {
@@ -117,7 +117,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Selects an item.
         /// </summary>
-        private void _Select(Rectangle ItemRect, _Item Item, GUIControlContext Context)
+        private void _Select(Rectangle ItemRect, _Item Item, InputContext Context)
         {
             if (Item != this._Selected)
             {
@@ -139,11 +139,11 @@ namespace OpenTKGUI
         /// <summary>
         /// Creates a popup for an item.
         /// </summary>
-        private void _MakePopup(Rectangle ItemRect, IEnumerable<MenuItem> Items, GUIControlContext Context)
+        private void _MakePopup(Rectangle ItemRect, IEnumerable<MenuItem> Items, InputContext Context)
         {
             LayerContainer container;
             Point offset;
-            if (Context.FindAncestor<LayerContainer>(out container, out offset))
+            /*if (Context.FindAncestor<LayerContainer>(out container, out offset))
             {
                 offset = new Point(ItemRect.Location.X, ItemRect.Location.Y + ItemRect.Size.Y) + offset;
                 Popup popup = Popup.Call(container, offset, Items, this._Style.PopupStyle);
@@ -156,7 +156,7 @@ namespace OpenTKGUI
                         this._CurPopup = null;
                     }
                 };
-            }
+            }*/
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace OpenTKGUI
             /// <summary>
             /// Renders the contents of the item to the specified rectangle.
             /// </summary>
-            public void Render(GUIRenderContext Context, MenuStyle Style, Rectangle Area)
+            public void Render(RenderContext Context, MenuStyle Style, Rectangle Area)
             {
                 if (this.Sample != null)
                 {

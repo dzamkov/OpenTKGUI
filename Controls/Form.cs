@@ -123,7 +123,7 @@ namespace OpenTKGUI
             };
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             Rectangle clirect = this.ClientRectangle;
 
@@ -163,10 +163,16 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context.CreateChildContext(this._Client, this.ClientRectangle.Location), Time);
-            this._RightTitleBar.Update(Context.CreateChildContext(this._RightTitleBar, this._RightTitleBarOffset), Time);
+            using (Context.Translate(this.ClientRectangle.Location))
+            {
+                this._Client.Update(Context);
+            }
+            using (Context.Translate(this._RightTitleBarOffset))
+            {
+                this._RightTitleBar.Update(Context);
+            }
 
             // Form needs to be dragged?
             MouseState ms = Context.MouseState;
@@ -183,7 +189,7 @@ namespace OpenTKGUI
                     {
                         if (ms.HasPushedButton(MouseButton.Left))
                         {
-                            Context.CaptureMouse();
+                            //Context.CaptureMouse();
                             this.Container.BringToTop(this);
                             this._FormDragOffset = mousepos;
                         }
@@ -194,7 +200,7 @@ namespace OpenTKGUI
                     this.Position = this.Position + mousepos - this._FormDragOffset.Value;
                     if (!ms.IsButtonDown(MouseButton.Left))
                     {
-                        Context.ReleaseMouse();
+                        //Context.ReleaseMouse();
                         this._FormDragOffset = null;
                     }
                 }

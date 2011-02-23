@@ -25,7 +25,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             using (Context.Translate(this._Size * 0.5 - this._Client.Size * 0.5))
             using (Context.Rotate(this._Client.Size * 0.5, this._Rotation))
@@ -34,9 +34,9 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context, Time);
+            this._Client.Update(Context);
         }
 
         protected override void OnResize(Point Size)

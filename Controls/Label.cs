@@ -140,7 +140,7 @@ namespace OpenTKGUI
             return Math.Ceiling(height);
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             if (this._Text != null && this._Text != "")
             {

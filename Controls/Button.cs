@@ -111,7 +111,7 @@ namespace OpenTKGUI
             return ClientSize + new Point(this._Style.ClientMargin, this._Style.ClientMargin) * 2.0;
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             ButtonStyle style = this._Style;
             Surface sf;
@@ -142,7 +142,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             MouseState ms = Context.MouseState;
             if (ms != null)
@@ -171,7 +171,10 @@ namespace OpenTKGUI
             // Update client, if any
             if (this._Client != null)
             {
-                this._Client.Update(Context.CreateChildContext(this._Client, new Point(this._Style.ClientMargin, this._Style.ClientMargin)), Time);
+                using (Context.Translate(new Point(this._Style.ClientMargin, this._Style.ClientMargin)))
+                {
+                    this._Client.Update(Context);
+                }
             }
         }
 

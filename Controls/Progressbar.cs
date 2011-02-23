@@ -38,7 +38,7 @@ namespace OpenTKGUI
         }
 
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             ProgressbarStyle style = this._Style;
 			Context.DrawSurface(style.Backing, new Rectangle(this.Size));
@@ -51,8 +51,9 @@ namespace OpenTKGUI
             }
         }
 		
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
+
         }
 
         private double _Value;

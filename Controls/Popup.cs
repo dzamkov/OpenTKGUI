@@ -88,7 +88,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             PopupStyle style = this._Style;
 
@@ -106,7 +106,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             // Mouse navigation.
             Rectangle inner = new Rectangle(this.Size).Margin(this._Style.Margin);
@@ -221,11 +221,13 @@ namespace OpenTKGUI
                     }
                 }
             }
+
+            /*
             if (this._Submenu == null && !Context.HasKeyboard)
             {
                 Context.CaptureKeyboard();
             }
-
+            */
         }
 
         private _Item _ItemAtOffsetIndex(_Item Current, int Offset)
@@ -461,7 +463,7 @@ namespace OpenTKGUI
             /// <summary>
             /// Renders the item to the specified location.
             /// </summary>
-            public void Render(GUIRenderContext Context, PopupStyle Style, Rectangle Area)
+            public void Render(RenderContext Context, PopupStyle Style, Rectangle Area)
             {
                 CommandMenuItem cmi = Source as CommandMenuItem;
                 if (cmi != null)
@@ -615,9 +617,9 @@ namespace OpenTKGUI
             this._CallAtMouse = true;
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            base.Update(Context, Time);
+            base.Update(Context);
             MouseState ms = Context.MouseState;
 
             // Shown on right click.
@@ -643,14 +645,14 @@ namespace OpenTKGUI
 
                 LayerContainer container;
                 Point layeroffset;
-                if (Context.FindAncestor<LayerContainer>(out container, out layeroffset))
+                /*if (Context.FindAncestor<LayerContainer>(out container, out layeroffset))
                 {
                     Popup popup = Popup.Call(container, cp + layeroffset, this._Items, this._Style);
                     if (this.PopupCreated != null)
                     {
                         this.PopupCreated.Invoke(popup);
                     }
-                }
+                }*/
 
                 this._Callpoint = null;
             }

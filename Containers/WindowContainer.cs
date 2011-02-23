@@ -54,7 +54,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             using (Context.Clip(new Rectangle(this._Size)))
             using (Context.Translate(-new Point(Math.Round(this._Offset.X), Math.Round(this._Offset.Y))))
@@ -63,9 +63,12 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context.CreateChildContext(this._Client, -this._Offset), Time);
+            using (Context.Translate(-this._Offset))
+            {
+                this._Client.Update(Context);
+            }
         }
 
         protected override void OnDispose()

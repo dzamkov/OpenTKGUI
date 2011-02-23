@@ -61,7 +61,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
 			CheckboxStyle style = this._Style;
 			Context.DrawSurface(style.Box, new Rectangle(style.BoxSize));
@@ -78,7 +78,7 @@ namespace OpenTKGUI
 			Context.DrawText(style.TextColor, this._Sample, textrect);
         }
 		
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
 			MouseState ms = Context.MouseState;
             if (ms != null)

@@ -59,7 +59,7 @@ namespace OpenTKGUI
             return false;
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             TextboxStyle style = this._Style;
             Context.DrawSurface(style.Textbox, new Rectangle(this.Size));
@@ -104,7 +104,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
             // Handle mouse selection.
             MouseState ms = Context.MouseState;
@@ -118,30 +118,30 @@ namespace OpenTKGUI
                     }
                     else
                     {
-                        Context.ReleaseMouse();
+                        //Context.ReleaseMouse();
                         this._MouseDrag = false;
                     }
                 }
                 if (ms.HasPushedButton(MouseButton.Left))
                 {
-                    Context.CaptureMouse();
-                    Context.CaptureKeyboard();
+                    //Context.CaptureMouse();
+                    //Context.CaptureKeyboard();
                     this._Selection = new TextSelection(this._SelectedIndex(ms.Position));
                     this._MouseDrag = true;
                 }
             }
             TextSelection ts = this._Selection;
-            if (ts != null && !Context.HasKeyboard)
+            /*if (ts != null && !Context.HasKeyboard)
             {
                 this._Selection = ts = null;
                 if (this.TextEntered != null)
                 {
                     this.TextEntered(this._Text);
                 }
-            }
+            }*/
 
             // Flash the cursor
-            this._CursorFlashTime += Time;
+            this._CursorFlashTime += Context.Time;
             double cfr = this._Style.CursorFlashRate;
             while (this._CursorFlashTime > cfr)
             {
@@ -226,7 +226,7 @@ namespace OpenTKGUI
                 if (ks.IsKeyDown(Key.Enter))
                 {
                     this._Selection = null;
-                    Context.ReleaseKeyboard();
+                    //Context.ReleaseKeyboard();
 
                     if (this.TextEntered != null)
                     {

@@ -28,7 +28,7 @@ namespace OpenTKGUI
             this._HorizontalAlign = HorizontalAlign;
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             using (Context.Translate(this._ClientOffset))
             {
@@ -36,9 +36,12 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context.CreateChildContext(this._Client, this._ClientOffset), Time);
+            using (Context.Translate(this._ClientOffset))
+            {
+                this._Client.Update(Context);
+            }
         }
 
         protected override void OnResize(Point Size)

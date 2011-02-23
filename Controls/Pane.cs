@@ -68,7 +68,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             Rectangle clirect = this.ClientRectangle;
             Context.DrawSolid(this._Style.BackColor, clirect);
@@ -79,9 +79,12 @@ namespace OpenTKGUI
             Context.DrawSurface(this._Style.Pane, new Rectangle(this.Size));
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context.CreateChildContext(this._Client, this.ClientRectangle.Location), Time);
+            using (Context.Translate(this.ClientRectangle.Location))
+            {
+                this._Client.Update(Context);
+            }
         }
 
         protected override void OnDispose()

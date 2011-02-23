@@ -117,7 +117,7 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Render(GUIRenderContext Context)
+        public override void Render(RenderContext Context)
         {
             Point size = this.Size;
             if (this._Left > 0.0) Context.DrawSolid(this._Color, new Rectangle(0.0, 0.0, this._Left, size.Y));
@@ -130,9 +130,12 @@ namespace OpenTKGUI
             }
         }
 
-        public override void Update(GUIControlContext Context, double Time)
+        public override void Update(InputContext Context)
         {
-            this._Client.Update(Context.CreateChildContext(this._Client, new Point(this._Left, this._Top)), Time);
+            using (Context.Translate(new Point(this._Left, this._Top)))
+            {
+                this._Client.Update(Context);
+            }
         }
 
         protected override void OnDispose()
