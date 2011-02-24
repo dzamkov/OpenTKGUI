@@ -57,7 +57,7 @@ namespace OpenTKGUI
         public override void Render(RenderContext Context)
         {
             using (Context.Clip(new Rectangle(this._Size)))
-            using (Context.Translate(-new Point(Math.Round(this._Offset.X), Math.Round(this._Offset.Y))))
+            using (Context.Translate(-this._Offset.Round))
             {
                 this._Client.Render(Context);
             }
@@ -66,10 +66,12 @@ namespace OpenTKGUI
         public override void Update(InputContext Context)
         {
             using (Context.Stencil)
-            using (Context.Translate(-this._Offset))
             {
                 Context.StencilClip(new Rectangle(this.Size));
-                this._Client.Update(Context);
+                using (Context.Translate(-this._Offset))
+                {
+                    this._Client.Update(Context);
+                }
             }
         }
 
