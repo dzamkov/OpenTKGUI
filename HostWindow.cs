@@ -66,9 +66,9 @@ namespace OpenTKGUI
         {
             this._MouseState.Update();
 
-            InputContext ic = new InputContext(e.Time, this._Focused, this._MouseState, this._KeyboardState);
+            InputContext ic = new InputContext(e.Time, this._FocusStack, this._MouseState, this._KeyboardState);
             this._Control.Update(ic);
-            this._Focused = ic.NextFocusedScope;
+            this._FocusStack = ic.NextFocusStack;
 
             this._KeyboardState.PostUpdate();
         }
@@ -117,7 +117,7 @@ namespace OpenTKGUI
 
         private WindowKeyboardState _KeyboardState;
         private WindowMouseState _MouseState;
-        private Scope _Focused;
+        private Stack<Scope> _FocusStack;
         private Control _Control;
     }
 

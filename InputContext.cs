@@ -12,36 +12,55 @@ namespace OpenTKGUI
     /// </summary>
     public class InputContext : Context<InputContext, InputEffect>
     {
-        public InputContext(double Time, Scope Focused, MouseState MouseState, KeyboardState KeyboardState)
+        public InputContext(double Time, Stack<Scope> FocusStack, MouseState MouseState, KeyboardState KeyboardState)
         {
             this._Time = Time;
-            this._FocusedScope = this._NextFocusedScope = Focused;
-            this._AbsoluteMouseState = this._MouseState = MouseState;
-            this._AbsoluteKeyboardState = this._KeyboardState = KeyboardState;
+            this._FocusStack = FocusStack;
+            this._MouseState = MouseState;
+            this._KeyboardState = KeyboardState;
             this._MousePos = MouseState.Position;
             this._MouseVisible = true;
-            this.EffectStack = new EffectStack<InputEffect, InputContext>(this);
-        }
+            this._ScopeStack = new Stack<Scope>();
 
-        /// <summary>
-        /// Gets the scope that is currently focused.
-        /// </summary>
-        public Scope FocusedScope
-        {
-            get
+            this.EffectStack = new EffectStack<InputEffect, InputContext>(this);
+            
+            // Calculate fixed scope states by focusing
+            if (FocusStack != null)
             {
-                return this._FocusedScope;
+                this._ScopeStates = new Dictionary<Scope, _State>();
+                foreach (Scope s in FocusStack)
+                {
+                    this._ScopeStates[s] = new _State()
+                    {
+                        KeyboardState = KeyboardState,
+                        MouseState = MouseState
+                    };
+                    s.AlterExternalControl(ref MouseState, ref KeyboardState);
+                }
             }
         }
 
         /// <summary>
-        /// Gets the scope to be focused on the next update.
+        /// Gets the current focus stack for the context. The top of the stack contains the
+        /// scope with the highest-priority focus (the scope that requested the focus) while the rest
+        /// of the stack contains the containining scopes of that scope.
         /// </summary>
-        public Scope NextFocusedScope
+        public Stack<Scope> FocusStack
         {
             get
             {
-                return this._NextFocusedScope;
+                return this._FocusStack;
+            }
+        }
+
+        /// <summary>
+        /// Gets the focus stack to be used for the next update.
+        /// </summary>
+        public Stack<Scope> NextFocusStack
+        {
+            get
+            {
+                return this._NextFocusStack;
             }
         }
 
@@ -92,6 +111,14 @@ namespace OpenTKGUI
             {
                 return this._Time;
             }
+        }
+
+        /// <summary>
+        /// Focuses the current scope (The effects of focusing will only be applied at the next update).
+        /// </summary>
+        public void Focus()
+        {
+
         }
 
         /// <summary>
@@ -146,13 +173,20 @@ namespace OpenTKGUI
             this._MouseVisible = false;
         }
 
+        internal struct _State
+        {
+            public MouseState MouseState;
+            public KeyboardState KeyboardState;
+        }
+
         private double _Time;
         internal bool _MouseVisible;
         internal Point _MousePos;
-        internal Scope _FocusedScope;
-        internal Scope _NextFocusedScope;
-        internal MouseState _AbsoluteMouseState;
-        internal KeyboardState _AbsoluteKeyboardState;
+        internal Stack<Scope> _ScopeStack;
+        internal Stack<Scope> _FocusStack;
+        internal Stack<Scope> _NextFocusStack;
+        internal Dictionary<Scope, _State> _ScopeStates;
+
         internal MouseState _MouseState;
         internal KeyboardState _KeyboardState;
     }
@@ -177,43 +211,41 @@ namespace OpenTKGUI
 
         public override void Apply(InputContext Environment)
         {
-            this._Focused = Environment._FocusedScope == this._Scope;
-            if (this._Focused)
+            Environment._ScopeStack.Push(this._Scope);
+            this._RestoreMouseState = Environment._MouseState;
+            this._RestoreKeyboardState = Environment._KeyboardState;
+
+            if (Environment._FocusStack != null)
             {
-                this._RestoreMouseState = Environment._MouseState = Environment._AbsoluteMouseState;
-                this._RestoreKeyboardState = Environment._KeyboardState = Environment._AbsoluteKeyboardState;
+                // Make sure the top of the focus stack reregisters as the next focused scope (if none is already set)
+                if (Environment._FocusStack.Peek() == this._Scope)
+                {
+                    if (Environment._NextFocusStack != null)
+                    {
+                        // This is the quickest way of copying a stack I could find.
+                        Environment._NextFocusStack = new Stack<Scope>(new Stack<Scope>(Environment._FocusStack));
+                    }
+                }
+
+                // Fixed scope states supersede current state
+                InputContext._State s;
+                if (Environment._ScopeStates.TryGetValue(this._Scope, out s))
+                {
+                    Environment._MouseState = s.MouseState;
+                    Environment._KeyboardState = s.KeyboardState;
+                }
             }
-            else
-            {
-                this._RestoreMouseState = Environment._MouseState;
-                this._RestoreKeyboardState = Environment._KeyboardState;
-            }
+
             this._Scope.AlterInternalControl(Environment, ref Environment._MouseState, ref Environment._KeyboardState);
         }
 
         public override void Remove(InputContext Environment)
         {
-            if (this._Focused)
-            {
-                this._Scope.AlterExternalControl(Environment, ref this._RestoreMouseState, ref this._RestoreKeyboardState);
-                foreach (InputEffect ie in Environment.EffectStack.Effects)
-                {
-                    ScopeInputEffect sie = ie as ScopeInputEffect;
-                    if (sie != null)
-                    {
-                        sie._Focused = true;
-                        sie._RestoreMouseState = this._RestoreMouseState;
-                        sie._RestoreKeyboardState = this._RestoreKeyboardState;
-                        sie._Scope.AlterInternalControl(Environment, ref this._RestoreMouseState, ref this._RestoreKeyboardState);
-                        break;
-                    }
-                }
-            }
+            
             Environment._MouseState = this._RestoreMouseState;
             Environment._KeyboardState = this._RestoreKeyboardState;
         }
 
-        private bool _Focused;
         private MouseState _RestoreMouseState;
         private KeyboardState _RestoreKeyboardState;
         private Scope _Scope;
@@ -270,7 +302,7 @@ namespace OpenTKGUI
         /// <summary>
         /// Gets the MouseState and KeyboardState for input queries outside of the scope when focus of it or a descandant is acquired.
         /// </summary>
-        public virtual void AlterExternalControl(InputContext Context, ref MouseState MouseState, ref KeyboardState KeyboardState)
+        public virtual void AlterExternalControl(ref MouseState MouseState, ref KeyboardState KeyboardState)
         {
 
         }
