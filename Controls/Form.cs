@@ -22,6 +22,8 @@ namespace OpenTKGUI
             this._Client = Client;
             this._Style = Style;
             this._Text = Text;
+
+            this._TitleBarScope = new DragScope(MouseButton.Left);
         }
 
         /// <summary>
@@ -175,33 +177,23 @@ namespace OpenTKGUI
             }
 
             // Form needs to be dragged?
-            MouseState ms = Context.MouseState;
-            if (ms != null)
+            using (Context.Stencil)
             {
-                Point mousepos = ms.Position;
-                if (this._FormDragOffset == null)
+                Context.StencilClip(new Rectangle(
+                    this._Style.TitleBarLeftRightMargin,
+                    0.0,
+                    this.Size.X - this._RightTitleBar.Size.X - this._Style.TitleBarLeftRightMargin,
+                    this._Style.TitleBarSize));
+                using (Context.Scope(this._TitleBarScope))
                 {
-                    if (new Rectangle(
-                        this._Style.TitleBarLeftRightMargin, 
-                        0.0, 
-                        this.Size.X - this._RightTitleBar.Size.X - this._Style.TitleBarLeftRightMargin, 
-                        this._Style.TitleBarSize).In(mousepos))
+                    this._TitleBarScope.Update(Context);
+                    if (this._TitleBarScope.Dragging)
                     {
-                        if (ms.HasPushedButton(MouseButton.Left))
-                        {
-                            //Context.CaptureMouse();
-                            this.Container.BringToTop(this);
-                            this._FormDragOffset = mousepos;
-                        }
+                        this.Text = "Dragging";
                     }
-                }
-                else
-                {
-                    this.Position = this.Position + mousepos - this._FormDragOffset.Value;
-                    if (!ms.IsButtonDown(MouseButton.Left))
+                    else
                     {
-                        //Context.ReleaseMouse();
-                        this._FormDragOffset = null;
+                        this.Text = "Not Dragging";
                     }
                 }
             }
@@ -240,6 +232,7 @@ namespace OpenTKGUI
             this._RightTitleBar.Dispose();
         }
 
+        private DragScope _TitleBarScope;
         private TextSample _TextSample;
         private string _Text;
         private Point? _FormDragOffset;

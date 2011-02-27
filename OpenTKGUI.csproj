@@ -63,7 +63,7 @@
     <Compile Include="Controls\Pane.cs" />
     <Compile Include="EffectStack.cs" />
     <Compile Include="Font.cs" />
-    <Compile Include="GUIContext.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="InputContext.cs" />
     <Compile Include="RenderContext.cs" />
     <Compile Include="HostWindow.cs" />

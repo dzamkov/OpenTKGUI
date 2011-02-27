@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace OpenTKGUI
 {
@@ -16,8 +17,6 @@ namespace OpenTKGUI
         {
             this._Time = Time;
             this._FocusStack = FocusStack;
-            this._MouseState = MouseState;
-            this._KeyboardState = KeyboardState;
             this._MousePos = MouseState.Position;
             this._MouseVisible = true;
             this._ScopeStack = new Stack<Scope>();
@@ -38,6 +37,9 @@ namespace OpenTKGUI
                     s.AlterExternalControl(ref MouseState, ref KeyboardState);
                 }
             }
+
+            this._MouseState = MouseState;
+            this._KeyboardState = KeyboardState;
         }
 
         /// <summary>
@@ -114,14 +116,6 @@ namespace OpenTKGUI
         }
 
         /// <summary>
-        /// Focuses the current scope (The effects of focusing will only be applied at the next update).
-        /// </summary>
-        public void Focus()
-        {
-
-        }
-
-        /// <summary>
         /// Sets which input scope enclosed operations are in. Note that all child scopes should be declared before
         /// querying inputs.
         /// </summary>
@@ -163,6 +157,25 @@ namespace OpenTKGUI
         public void StencilOcclude(Rectangle Area)
         {
             this._MouseVisible = this._MouseVisible && !Area.In(this._MousePos);
+        }
+
+        /// <summary>
+        /// Focuses the current scope.
+        /// </summary>
+        public void Focus()
+        {
+            this._NextFocusStack = new Stack<Scope>(new Stack<Scope>(this._ScopeStack));
+        }
+
+        /// <summary>
+        /// Releases focus on the current scope if it is focused.
+        /// </summary>
+        public void Release()
+        {
+            if (this._NextFocusStack != null && this._ScopeStack != null && this._NextFocusStack.Peek() == this._ScopeStack.Peek())
+            {
+                this._NextFocusStack = null;
+            }
         }
 
         /// <summary>
@@ -220,7 +233,7 @@ namespace OpenTKGUI
                 // Make sure the top of the focus stack reregisters as the next focused scope (if none is already set)
                 if (Environment._FocusStack.Peek() == this._Scope)
                 {
-                    if (Environment._NextFocusStack != null)
+                    if (Environment._NextFocusStack == null)
                     {
                         // This is the quickest way of copying a stack I could find.
                         Environment._NextFocusStack = new Stack<Scope>(new Stack<Scope>(Environment._FocusStack));
@@ -241,7 +254,7 @@ namespace OpenTKGUI
 
         public override void Remove(InputContext Environment)
         {
-            
+            Environment._ScopeStack.Pop();
             Environment._MouseState = this._RestoreMouseState;
             Environment._KeyboardState = this._RestoreKeyboardState;
         }
@@ -297,7 +310,7 @@ namespace OpenTKGUI
     /// that can be activated by the program or the user. Note that scopes's act as unique identifiers to the InputContext and should be saved
     /// between methods calls involving the context.
     /// </summary>
-    public class Scope : IDisposable
+    public class Scope
     {
         /// <summary>
         /// Gets the MouseState and KeyboardState for input queries outside of the scope when focus of it or a descandant is acquired.
@@ -314,10 +327,60 @@ namespace OpenTKGUI
         {
 
         }
+    }
 
-        public void Dispose()
+    /// <summary>
+    /// A scope used for dragging an object.
+    /// </summary>
+    public class DragScope : Scope
+    {
+        public DragScope(MouseButton Button)
         {
-
+            this._Button = Button;
         }
+
+        /// <summary>
+        /// Gets if the scope is currently being dragged.
+        /// </summary>
+        public bool Dragging
+        {
+            get
+            {
+                return this._DragPoint != null;
+            }
+        }
+
+        public override void AlterExternalControl(ref MouseState MouseState, ref KeyboardState KeyboardState)
+        {
+            MouseState = null;
+            KeyboardState = null;
+        }
+
+        /// <summary>
+        /// Updates the dragging state of the scope.
+        /// </summary>
+        public void Update(InputContext Context)
+        {
+            MouseState ms = Context.MouseState;
+            if (this.Dragging)
+            {
+                if (ms == null || !ms.IsButtonDown(this._Button))
+                {
+                    Context.Release();
+                    this._DragPoint = null;
+                }
+            }
+            else
+            {
+                if (ms != null && ms.HasPushedButton(this._Button) && Context.MouseVisible)
+                {
+                    Context.Focus();
+                    this._DragPoint = ms.Position;
+                }
+            }
+        }
+
+        private Point? _DragPoint;
+        private MouseButton _Button;
     }
 }
